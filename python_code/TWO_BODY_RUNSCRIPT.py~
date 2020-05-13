@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description = 'Initial parameters for black hol
 parser.add_argument('m1', type=float, help='mass of the first black hole', metavar='NUM')
 parser.add_argument('m2', type=float, help='mass of the second black hole', metavar='NUM')
 parser.add_argument('separation', type=float, help='separation of the binary star system', metavar='SEPARATION')
-parser.add_argument('distance_unit', type=strg, help='units for the separation of the bodies, examples are AU, KM, M', metavar = 'UNIT')
+parser.add_argument('distance_unit', type=str, help='units for the separation of the bodies, examples are AU, KM, M', metavar = 'UNIT')
 
 args = parser.parse_args()
 
