@@ -1,0 +1,55 @@
+import argparse
+import numpy as np
+import math
+
+G = 6.647*10**-11
+YEAR = 31536000
+AU = 1.496 * 10**11
+KM = 1000
+SOLAR_MASS = 1.989 * 10**30
+G_SCALED = 1
+
+M = SOLAR_MASS
+
+parser = argparse.ArgumentParser(description = 'Initial parameters for black hole position and mass.')
+parser.add_argument('m1', type=float, help='mass of the first black hole', metavar='NUM')
+parser.add_argument('m2', type=float, help='mass of the second black hole', metavar='NUM')
+parser.add_argument('separation', type=float, help='separation of the binary star system', metavar='SEPARATION')
+parser.add_argument('distance_unit', type=str, help='units for the separation of the bodies, examples are AU, KM, M', metavar = 'UNIT')
+
+args = parser.parse_args()
+
+mass1 = args.m1
+mass2 = args.m2
+D = args.separation
+unit = args.distance_unit
+
+if unit == "AU": L = AU
+elif unit == "KM": L = KM
+elif unit == "M": L = 1
+
+T = math.sqrt(L**3 / (G * M))
+
+x2, y2 = D / (1 + ( mass2 / mass1 )), 0
+x1, y1 = x2 - D, 0
+
+reduced_mass = mass1 * mass2 / ( mass1 + mass2 )
+p_theta = ( G_SCALED * mass1 * mass2 * reduced_mass * D )**(0.5)
+px2, py2 = 0, p_theta / D
+px1, py1 = 0, -py2
+
+line1 = str(G_SCALED) + ' ' + str(M) + ' ' + str(L) + ' ' + str(T) 
+line2 = str(mass1) + ' ' + str(x1) + ' ' + str(y1) + ' ' + str(px1) + ' ' + str(py1)
+line3 = str(mass2) + ' ' + str(x2) + ' ' + str(y2) + ' ' + str(px2) + ' ' + str(py2)
+
+f = open('/Users/zackarywindham/Library/Developer/Xcode/DerivedData/Two_Body_Problem-gwaokzfdwakjwzgdakwkjebdxqrs/Build/Products/Debug/two_body_final.txt',"w+")
+f.write(line1)
+f.write('\n')
+f.write(line2)
+f.write('\n')
+f.write(line3)
+f.close()
+
+print(line1)
+print(line2)
+print(line3)
