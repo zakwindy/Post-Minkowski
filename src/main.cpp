@@ -18,11 +18,31 @@ void rungeKutta4(const double& stepSize, Body& body1, Body& body2, const double&
 
 int main(int argc, const char * argv[]) {
     
+    //make sure the files are there and all work
+    if (argc < 4)
+    {
+        cerr << "Please provide name of input file and output files";
+        return 1;
+    }
     ifstream inputFile(argv[1]);
     if (!inputFile)
     {
         cerr << "Unable to open " << argv[1] << " for input." << endl;
         return 2;
+    }
+    ofstream firstBody;
+    firstBody.open(argv[2], ofstream::out | ofstream::trunc);
+    if (!firstBody)
+    {
+        cerr << "Unable to open " << argv[2] << " for input." << endl;
+        return 3;
+    }
+    ofstream secondBody;
+    secondBody.open(argv[3], ofstream::out | ofstream::trunc);
+    if (!secondBody)
+    {
+        cerr << "Unable to open " << argv[3] << " for input." << endl;
+        return 4;
     }
     
     //Get the units that this is using
@@ -49,17 +69,13 @@ int main(int argc, const char * argv[]) {
     Body body2 = Body(x2, y2, p2X, p2Y, MASS_2);
     
     //Prepare the files for output of the bodies
-    ofstream firstBody;
-    ofstream secondBody;
-    firstBody.open(argv[2], ofstream::out | ofstream::trunc);
-    secondBody.open(argv[3], ofstream::out | ofstream::trunc);
     string xyline = "x , y";
     firstBody << xyline << endl;
     secondBody << xyline << endl;
     
     //Set parameters for orbit number and step size for the solver
     const double STEP_SIZE = 0.1;
-    const int NUM_ORBITS = 100000;
+    const int NUM_ORBITS = 10000;
     int orbitCount = 0;
     
     //Evolve the system using the solver
@@ -68,13 +84,11 @@ int main(int argc, const char * argv[]) {
         firstBody << body1 << endl;
         secondBody << body2 << endl;
         
-        for (unsigned int i = 0; i < 100; ++i)
+        for (unsigned int i = 0; i < 1; ++i)
         {
             double lasty = body2.getPosition()[1];
             
             rungeKutta4(STEP_SIZE, body1, body2, G_SCALED);
-            
-            cout << i << endl;
             
             if ((body2.getPosition()[0] > 0) && (body2.getPosition()[1] > 0) && (lasty < 0))
             {
