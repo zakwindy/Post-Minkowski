@@ -75,26 +75,26 @@ int main(int argc, const char * argv[]) {
     
     //Set parameters for orbit number and step size for the solver
     const double STEP_SIZE = 0.1;
-    const int NUM_ORBITS = 10000;
+    const int NUM_ORBITS = 100;
     int orbitCount = 0;
     
     //Evolve the system using the solver
     while (orbitCount < NUM_ORBITS)
     {
-        firstBody << body1 << endl;
-        secondBody << body2 << endl;
-        
-        for (unsigned int i = 0; i < 1; ++i)
+        if (NUM_ORBITS - orbitCount < 100)
         {
-            double lasty = body2.getPosition()[1];
+            firstBody << body1 << endl;
+            secondBody << body2 << endl;
+        }
             
-            rungeKutta4(STEP_SIZE, body1, body2, G_SCALED);
+        double lasty = body2.getPosition()[1];
             
-            if ((body2.getPosition()[0] > 0) && (body2.getPosition()[1] > 0) && (lasty < 0))
-            {
-                ++orbitCount;
-                cout << orbitCount << endl;
-            }
+        rungeKutta4(STEP_SIZE, body1, body2, G_SCALED);
+            
+        if ((body2.getPosition()[0] > 0) && (body2.getPosition()[1] > 0) && (lasty < 0))
+        {
+            ++orbitCount;
+            cout << orbitCount << endl;
         }
     }
     
