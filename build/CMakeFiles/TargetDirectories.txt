@@ -1,0 +1,4 @@
+/Users/zackarywindham/Research/grav_waves/build/CMakeFiles/binary.dir
+/Users/zackarywindham/Research/grav_waves/build/CMakeFiles/rebuild_cache.dir
+/Users/zackarywindham/Research/grav_waves/build/CMakeFiles/edit_cache.dir
+/Users/zackarywindham/Research/grav_waves/build/CMakeFiles/body.dir

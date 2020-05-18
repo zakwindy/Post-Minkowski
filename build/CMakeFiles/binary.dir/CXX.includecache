@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/zackarywindham/Research/grav_waves/src/body.cpp
+body.h
+-
+
+/Users/zackarywindham/Research/grav_waves/src/main.cpp
+iostream
+-
+cmath
+-
+fstream
+-
+body.h
+-
+
