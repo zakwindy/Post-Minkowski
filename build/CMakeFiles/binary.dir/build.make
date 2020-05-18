@@ -114,7 +114,6 @@ binary_EXTERNAL_OBJECTS =
 binary: CMakeFiles/binary.dir/src/main.cpp.o
 binary: CMakeFiles/binary.dir/src/body.cpp.o
 binary: CMakeFiles/binary.dir/build.make
-binary: libbody.a
 binary: CMakeFiles/binary.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/zackarywindham/Research/grav_waves/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable binary"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/binary.dir/link.txt --verbose=$(VERBOSE)

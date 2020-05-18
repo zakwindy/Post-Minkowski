@@ -6,8 +6,12 @@
 
 #IncludeRegexTransform: 
 
-/Users/zackarywindham/Research/grav_waves/src/body.cpp
-body.h
+../include/body.h
+vector
+-
+string
+-
+sstream
 -
 
 /Users/zackarywindham/Research/grav_waves/src/main.cpp
@@ -18,5 +22,5 @@ cmath
 fstream
 -
 body.h
--
+/Users/zackarywindham/Research/grav_waves/src/body.h
 

@@ -143,19 +143,6 @@ binary/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/build
 .PHONY : binary/fast
 
-#=============================================================================
-# Target rules for targets named body
-
-# Build rule for target.
-body: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 body
-.PHONY : body
-
-# fast build rule for target.
-body/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/body.dir/build.make CMakeFiles/body.dir/build
-.PHONY : body/fast
-
 src/body.o: src/body.cpp.o
 
 .PHONY : src/body.o
@@ -219,7 +206,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... binary"
-	@echo "... body"
 	@echo "... src/body.o"
 	@echo "... src/body.i"
 	@echo "... src/body.s"
