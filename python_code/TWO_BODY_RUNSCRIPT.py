@@ -42,7 +42,7 @@ line1 = str(G_SCALED) + ' ' + str(M) + ' ' + str(L) + ' ' + str(T)
 line2 = str(mass1) + ' ' + str(x1) + ' ' + str(y1) + ' ' + str(px1) + ' ' + str(py1)
 line3 = str(mass2) + ' ' + str(x2) + ' ' + str(y2) + ' ' + str(px2) + ' ' + str(py2)
 
-f = open('/Users/zackarywindham/Library/Developer/Xcode/DerivedData/Two_Body_Problem-gwaokzfdwakjwzgdakwkjebdxqrs/Build/Products/Debug/two_body_final.txt',"w+")
+f = open('/Users/zackarywindham/Research/grav_waves/build/binaryInput.txt',"w+")
 f.write(line1)
 f.write('\n')
 f.write(line2)
