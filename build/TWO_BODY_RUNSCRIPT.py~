@@ -51,6 +51,6 @@ f.write('\n')
 f.write(line3)
 f.close()
 
-
-
-
+print(line1)
+print(line2)
+print(line3)
