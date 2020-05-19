@@ -12,6 +12,7 @@ G_SCALED = 1
 M = SOLAR_MASS
 
 parser = argparse.ArgumentParser(description = 'Initial parameters for black hole position and mass.')
+parser.add_argument('file', type=argparse.FileType('w'), help='name of the file for this program to write to', metavar='FILE')
 parser.add_argument('m1', type=float, help='mass of the first black hole', metavar='NUM')
 parser.add_argument('m2', type=float, help='mass of the second black hole', metavar='NUM')
 parser.add_argument('separation', type=float, help='separation of the binary star system', metavar='SEPARATION')
@@ -42,7 +43,7 @@ line1 = str(G_SCALED) + ' ' + str(M) + ' ' + str(L) + ' ' + str(T)
 line2 = str(mass1) + ' ' + str(x1) + ' ' + str(y1) + ' ' + str(px1) + ' ' + str(py1)
 line3 = str(mass2) + ' ' + str(x2) + ' ' + str(y2) + ' ' + str(px2) + ' ' + str(py2)
 
-f = open('/Users/zackarywindham/Library/Developer/Xcode/DerivedData/Two_Body_Problem-gwaokzfdwakjwzgdakwkjebdxqrs/Build/Products/Debug/two_body_final.txt',"w+")
+f = args.file 
 f.write(line1)
 f.write('\n')
 f.write(line2)
