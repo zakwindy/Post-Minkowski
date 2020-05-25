@@ -17,6 +17,7 @@ parser.add_argument('m1', type=float, help='mass of the first black hole', metav
 parser.add_argument('m2', type=float, help='mass of the second black hole', metavar='NUM')
 parser.add_argument('separation', type=float, help='separation of the binary star system', metavar='SEPARATION')
 parser.add_argument('distance_unit', type=str, help='units for the separation of the bodies, examples are AU, KM, M', metavar = 'UNIT')
+parser.add_argument('eccentricity', type=float, help='eccentricity of the orbit, must be between 0 and 1', metavar = 'ECC')
 
 args = parser.parse_args()
 
@@ -24,6 +25,11 @@ mass1 = args.m1
 mass2 = args.m2
 D = args.separation
 unit = args.distance_unit
+ecc = arg.eccentricity
+
+if not (0 <= ecc <= 1) : ecc = 0
+qfactor = 1 - ecc
+pfactor = math.sqrt((1 + ecc)/(1 - ecc))
 
 if unit == "AU": L = AU
 elif unit == "KM": L = KM
@@ -33,11 +39,15 @@ T = math.sqrt(L**3 / (G * M))
 
 x2, y2 = D / (1 + ( mass2 / mass1 )), 0
 x1, y1 = x2 - D, 0
+x2 *= qfactor
+x1 *= qfactor
 
 reduced_mass = mass1 * mass2 / ( mass1 + mass2 )
 p_theta = ( G_SCALED * mass1 * mass2 * reduced_mass * D )**(0.5)
 px2, py2 = 0, p_theta / D
 px1, py1 = 0, -py2
+py2 *= pfactor
+py1 *= pfactor
 
 line1 = str(G_SCALED) + ' ' + str(M) + ' ' + str(L) + ' ' + str(T) 
 line2 = str(mass1) + ' ' + str(x1) + ' ' + str(y1) + ' ' + str(px1) + ' ' + str(py1)
@@ -51,6 +61,6 @@ f.write('\n')
 f.write(line3)
 f.close()
 
-print(line1)
-print(line2)
-print(line3)
+
+
+

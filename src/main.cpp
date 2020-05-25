@@ -70,8 +70,8 @@ int main(int argc, const char * argv[]) {
     
     //Prepare the files for output of the bodies
     string xyline = "x , y";
-    firstBody << xyline << endl;
-    secondBody << xyline << endl;
+    //firstBody << xyline << endl;
+    //secondBody << xyline << endl;
     
     //Find out the number of orbits
     int userNum = 0;
