@@ -16,6 +16,8 @@ using namespace std;
 
 void rungeKutta4(const double& stepSize, Body& body1, Body& body2, const double& G);
 
+void rungeKutta4Array(const double& stepSize, Body& body1, Body& body2, const double& G);
+
 int main(int argc, const char * argv[]) {
     
     //make sure the files are there and all work
@@ -110,6 +112,96 @@ int main(int argc, const char * argv[]) {
     secondBody.close();
 
     return 0;
+}
+
+void hamiltonianArray(const Body& body1, const Body& body2, const double& G, double **array)
+{
+    double d1[2]{body1.getMomentum()[0] / body1.getMass(), body1.getMomentum()[1] / body1.getMass()};
+    double d2[2]{body2.getMomentum()[0] / body2.getMass(), body2.getMomentum()[1] / body2.getMass()};
+    
+    double difX = body2.getPosition()[0] - body1.getPosition()[0];
+    double difY = body2.getPosition()[1] - body1.getPosition()[1];
+    double r = G * pow(pow(difX, 2.0) + pow(difY, 2.0), 1.5);
+    double top = body1.getMass() * body1.getMass();
+    
+    double dP1[2]{top * difX / r, top * difY / r};
+    double dP2[2]{- top * difX / r, - top * difY / r};
+    
+    array[0] = d1;
+    array[1] = d2;
+    array[2] = dP1;
+    array[3] = dP2;
+}
+
+void changeArray(const Body& body1, const Body& body2, const double& G, double **array)
+{
+    hamiltonianArray(body1, body2, G, array);
+}
+
+void rungeKutta4Array(const double& stepSize, Body& body1, Body& body2, const double& G)
+{
+    //Establish k1 for the RungeKutta algorithm, use the known derivatives from the Hamiltonian
+    double **change1;
+    changeArray(body1, body2, G, change1);
+    double k1[2][2]{{change1[0][0] * stepSize, change1[0][1] * stepSize}, {change1[1][0] * stepSize, change1[1][1] * stepSize}};
+    double kP1[2][2]{{change1[2][0] * stepSize, change1[2][1] * stepSize}, {change1[3][0] * stepSize, change1[3][1] * stepSize}};
+    
+    double k12[2][2]{{k1[0][0] / 2, k1[0][1] / 2}, {k1[1][0] / 2, k1[1][1] / 2}};
+    double kP12[2][2]{{kP1[0][0] / 2, kP1[0][1] / 2}, {kP1[1][0] / 2, kP1[1][1] / 2}};
+    
+    Body bodyk11 = Body(body1.getPosition()[0] + k12[0][0], body1.getPosition()[1] + k12[0][1], body1.getMomentum()[0] + kP12[0][0], body1.getMomentum()[1] + kP12[0][1], body1.getMass());
+    Body bodyk12 = Body(body2.getPosition()[0] + k12[1][0], body2.getPosition()[1] + k12[1][1], body2.getMomentum()[0] + kP12[1][0], body2.getMomentum()[1] + kP12[1][1], body2.getMass());
+    
+    //Establish k2 for the algorithm
+    double **change2;
+    changeArray(bodyk11, bodyk12, G, change2);
+    double k2[2][2]{{change2[0][0] * stepSize, change2[0][1] * stepSize}, {change2[1][0] * stepSize, change2[1][1] * stepSize}};
+    double kP2[2][2]{{change2[2][0] * stepSize, change2[2][1] * stepSize}, {change2[3][0] * stepSize, change2[3][1] * stepSize}};
+    
+    double k22[2][2]{{k2[0][0] / 2, k2[0][1] / 2}, {k2[1][0] / 2, k2[1][1] / 2}};
+    double kP22[2][2]{{kP2[0][0] / 2, kP2[0][1] / 2}, {kP2[1][0] / 2, kP2[1][1] / 2}};
+    
+    Body bodyk21 = Body(body1.getPosition()[0] + k22[0][0], body1.getPosition()[1] + k22[0][1], body1.getMomentum()[0] + kP22[0][0], body1.getMomentum()[1] + kP22[0][1], body1.getMass());
+    Body bodyk22 = Body(body2.getPosition()[0] + k22[1][0], body2.getPosition()[1] + k22[1][1], body2.getMomentum()[0] + kP22[1][0], body2.getMomentum()[1] + kP22[1][1], body2.getMass());
+    
+    //Establish k3
+    double **change3;
+    changeArray(bodyk21, bodyk22, G, change3);
+    double k3[2][2]{{change3[0][0] * stepSize, change3[0][1] * stepSize}, {change3[1][0] * stepSize, change3[1][1] * stepSize}};
+    double kP3[2][2]{{change3[2][0] * stepSize, change3[2][1] * stepSize}, {change3[3][0] * stepSize, change3[3][1] * stepSize}};
+    
+    Body bodyk31 = Body(body1.getPosition()[0] + k3[0][0], body1.getPosition()[1] + k3[0][1], body1.getMomentum()[0] + kP3[0][0], body1.getMomentum()[1] + kP3[0][1], body1.getMass());
+    Body bodyk32 = Body(body2.getPosition()[0] + k3[1][0], body2.getPosition()[1] + k3[1][1], body2.getMomentum()[0] + kP3[1][0], body2.getMomentum()[1] + kP3[1][1], body2.getMass());
+    
+    //Establish k4
+    double **change4;
+    changeArray(bodyk31, bodyk32, G, change4);
+    double k4[2][2]{{change4[0][0] * stepSize, change4[0][1] * stepSize}, {change4[1][0] * stepSize, change4[1][1] * stepSize}};
+    double kP4[2][2]{{change4[2][0] * stepSize, change4[2][1] * stepSize}, {change4[3][0] * stepSize, change4[3][1] * stepSize}};
+    
+    //Modify k1, k2, k3, and k4 so that they are weighted correctly
+    double k1F[2][2]{{k1[0][0] / 6, k1[0][1] / 6}, {k1[1][0] / 6, k1[1][1] / 6}};
+    double kP1F[2][2]{{kP1[0][0] / 6, kP1[0][1] / 6}, {kP1[1][0] / 6, kP1[1][1] / 6}};
+    
+    double k2F[2][2]{{k2[0][0] / 3, k2[0][1] / 3}, {k2[1][0] / 3, k2[1][1] / 3}};
+    double kP2F[2][2]{{kP2[0][0] / 3, kP2[0][1] / 3}, {kP2[1][0] / 3, kP2[1][1] / 3}};
+    
+    double k3F[2][2]{{k3[0][0] / 3, k3[0][1] / 3}, {k3[1][0] / 3, k3[1][1] / 3}};
+    double kP3F[2][2]{{kP3[0][0] / 3, kP3[0][1] / 3}, {kP3[1][0] / 3, kP3[1][1] / 3}};
+    
+    double k4F[2][2]{{k4[0][0] / 6, k4[0][1] / 6}, {k4[1][0] / 6, k4[1][1] / 6}};
+    double kP4F[2][2]{{kP4[0][0] / 6, kP4[0][1] / 6}, {kP4[1][0] / 6, kP4[1][1] / 6}};
+    
+    //Use the weighted k1, k2, k3, and k4 to create the steps
+    double step[2][2]{{k1F[0][0] + k2F[0][0] + k3F[0][0] + k4F[0][0], k1F[0][1] + k2F[0][1] + k3F[0][1] + k4F[0][1]}, {k1F[1][0] + k2F[1][0] + k3F[1][0] + k4F[1][0], k1F[1][1] + k2F[1][1] + k3F[1][1] + k4F[1][1]}};
+    
+    double stepP[2][2]{{kP1F[0][0] + kP2F[0][0] + kP3F[0][0] + kP4F[0][0], kP1F[0][1] + kP2F[0][1] + kP3F[0][1] + kP4F[0][1]}, {kP1F[1][0] + kP2F[1][0] + kP3F[1][0] + kP4F[1][0], kP1F[1][1] + kP2F[1][1] + kP3F[1][1] + kP4F[1][1]}};
+    
+    //Add the step to the original position and momentum
+    body1.setPosition(body1.getPosition()[0] + step[0][0], body1.getPosition()[1] + step[0][1]);
+    body2.setPosition(body2.getPosition()[0] + step[1][0], body2.getPosition()[1] + step[1][1]);
+    body1.setMomentum(body1.getMomentum()[0] + stepP[0][0], body1.getMomentum()[1] + stepP[0][1]);
+    body2.setMomentum(body2.getMomentum()[0] + stepP[1][0], body2.getMomentum()[1] + stepP[1][1]);
 }
 
 vector<vector<double> > hamiltonian(const Body& body1, const Body& body2, const double& G)
