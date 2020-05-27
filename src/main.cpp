@@ -104,7 +104,8 @@ int main(int argc, const char * argv[]) {
             ++orbitCount;
             if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl;
             else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl;
-            else if (orbitCount % 100 == 0) cout << orbitCount << endl;
+            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl;
+            else if (orbitCount % 1000 == 0) cout << orbitCount << endl;
         }
     }
     
