@@ -9,7 +9,6 @@
 #ifndef BODY_H
 #define BODY_H
 
-#include <vector>
 #include <string>
 #include <sstream>
 
@@ -17,8 +16,8 @@ class Body
 {
 private:
     double mass;
-    std::vector<double> position;
-    std::vector<double> momentum;
+    double position[2];
+    double momentum[2];
     std::string toString() const;
 public:
     //Constructor
@@ -27,8 +26,10 @@ public:
     
     //Getters and setters for different data members
     double getMass() const;
-    std::vector<double> getPosition() const;
-    std::vector<double> getMomentum() const;
+    double getX() const;
+    double getY() const;
+    double getMomentumX() const;
+    double getMomentumY() const;
     void setPosition(double x, double y);
     void setMomentum(double px, double py);
     

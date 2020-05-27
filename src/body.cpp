@@ -8,33 +8,57 @@
 
 #include "body.h"
 
-Body::Body(): mass(0), position({0, 0}), momentum({0, 0}) {}
+Body::Body(): mass(0)
+{
+    position[0] = 0;
+    position[1] = 0;
+    momentum[0] = 0;
+    momentum[1] = 0;
+}
 
-Body::Body(const double& x, const double& y, const double& px, const double& py, const double& m): position({x, y}), momentum({px, py}), mass(m) {}
+Body::Body(const double& x, const double& y, const double& px, const double& py, const double& m):  mass(m)
+{
+    position[0] = x;
+    position[1] = y;
+    momentum[0] = px;
+    momentum[1] = py;
+}
 
 double Body::getMass() const
 {
     return mass;
 }
 
-std::vector<double> Body::getPosition() const
+double Body::getX() const
 {
-    return position;
+    return position[0];
 }
 
-std::vector<double> Body::getMomentum() const
+double Body::getY() const
 {
-    return momentum;
+    return position[1];
+}
+
+double Body::getMomentumX() const
+{
+    return momentum[0];
+}
+
+double Body::getMomentumY() const
+{
+    return momentum[1];
 }
 
 void Body::setPosition(double x, double y)
 {
-    position = {x , y};
+    position[0] = x;
+    position[1] = y;
 }
 
 void Body::setMomentum(double px, double py)
 {
-    momentum = {px, py};
+    momentum[0] = px;
+    momentum[1] = py;
 }
 
 std::string Body::toString() const
