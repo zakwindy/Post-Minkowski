@@ -145,13 +145,13 @@ void rungeKutta4(Body& body1, Body& body2, const double& G)
     //Redefine the step size to fit the arclength
     double qX = body2.getX() - body1.getX();
     double qY = body2.getY() - body1.getY();
-    double pX = body2.getMomentumX() - body1.getMomentumX();
-    double pY = body2.getMomentumY() - body1.getMomentumY();
+    double pX = abs(body2.getMomentumX()) + abs(body1.getMomentumX());
+    double pY = abs(body2.getMomentumY()) + abs(body1.getMomentumY());
     
     double qDot = pow(qX, 2) + pow(qY, 2);
     double pDot = pow(pX, 2) + pow(pY, 2);
     
-    double stepSize = 10 * pow(pDot + (1 / pow(qDot, 2)), -0.5);
+    double stepSize = 2 * pow(pDot + (1 / pow(qDot, 2)), -0.5);
     
     //Establish k1 for the RungeKutta algorithm, use the known derivatives from the Hamiltonian
     double change1[4][2];
