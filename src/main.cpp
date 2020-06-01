@@ -112,6 +112,17 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
+void PM1(const Body& body1, const Body& body2, const double & G, double (&array)[4][2])
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 2; ++j)
+        {
+            array[i][j] = 0.0;
+        }
+    }
+}
+
 void hamiltonian(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
 {
     double d1[2]{body1.getMomentumX() / body1.getMass(), body1.getMomentumY() / body1.getMass()};
@@ -125,14 +136,17 @@ void hamiltonian(const Body& body1, const Body& body2, const double& G, double (
     double dP1[2]{top * difX / r, top * difY / r};
     double dP2[2]{- top * difX / r, - top * difY / r};
     
-    array[0][0] = d1[0];
-    array[0][1] = d1[1];
-    array[1][0] = d2[0];
-    array[1][1] = d2[1];
-    array[2][0] = dP1[0];
-    array[2][1] = dP1[1];
-    array[3][0] = dP2[0];
-    array[3][1] = dP2[1];
+    double pm1[4][2];
+    PM1(body1, body2, G, pm1);
+    
+    array[0][0] = d1[0] + pm1[0][0];
+    array[0][1] = d1[1] + pm1[0][1];
+    array[1][0] = d2[0] + pm1[1][0];
+    array[1][1] = d2[1] + pm1[1][1];
+    array[2][0] = dP1[0] + pm1[2][0];
+    array[2][1] = dP1[1] + pm1[2][1];
+    array[3][0] = dP2[0] + pm1[3][0];
+    array[3][1] = dP2[1] + pm1[3][1];
 }
 
 void change(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
