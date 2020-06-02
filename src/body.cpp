@@ -54,6 +54,11 @@ double Body::getP() const
     return pow(pow(momentum[0], 2.0) + pow(momentum[1], 2.0), 0.5);
 }
 
+double Body::getKE() const
+{
+    return pow(getP(), 2.0) / (2 * mass);
+}
+
 void Body::setPosition(double x, double y)
 {
     position[0] = x;

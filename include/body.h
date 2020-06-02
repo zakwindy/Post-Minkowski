@@ -32,6 +32,7 @@ public:
     double getMomentumX() const;
     double getMomentumY() const;
     double getP() const;
+    double getKE() const;
     void setPosition(double x, double y);
     void setMomentum(double px, double py);
     

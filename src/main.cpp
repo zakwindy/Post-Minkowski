@@ -15,6 +15,7 @@ using namespace std;
 
 void rungeKutta4(Body& body1, Body& body2, const double& G);
 string giveMomentum(const Body& body1, const Body& body2, const double& units);
+string giveKE(const Body& body1, const Body& body2, const double& units);
 
 int main(int argc, const char * argv[]) {
     
@@ -45,7 +46,7 @@ int main(int argc, const char * argv[]) {
         return 4;
     }
     
-    //Get the units that this is using, set up a conversion factor from arbitrary units to SI units for momentum
+    //Get the units that this is using, set up a conversion factor from arbitrary units to SI units for momentum and kinetic energy
     string dataLine;
     getline(inputFile, dataLine);
     stringstream iss1(dataLine);
@@ -53,6 +54,7 @@ int main(int argc, const char * argv[]) {
     iss1 >> G_SCALED >> M >> L >> T;
     
     double pUnits = M * L / T;
+    double KEUnits = pUnits * L / T;
     
     //Grab the parameters for the first body and initialize the first body
     getline(inputFile, dataLine);
@@ -77,7 +79,7 @@ int main(int argc, const char * argv[]) {
     
     //Find out the number of orbits
     int userNum = 0;
-    cout << "For how many orbits should the simulation run?";
+    cout << "For how many orbits should the simulation run? ";
     cin >> userNum;
     cout << endl;
     
@@ -93,6 +95,13 @@ int main(int argc, const char * argv[]) {
             firstBody << body1 << endl;
             secondBody << body2 << endl;
         }
+        if (abs(x1 - x2) * 100 < abs(body1.getX() - body2.getX()))
+        {
+            cerr << "Bodies no longer orbiting." << endl;
+            firstBody.close();
+            secondBody.close();
+            return 5;
+        }
             
         double lasty = body2.getY();
             
@@ -101,10 +110,10 @@ int main(int argc, const char * argv[]) {
         if ((body2.getX() > 0) && (body2.getY() > 0) && (lasty < 0))
         {
             ++orbitCount;
-            if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
-            else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
-            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
-            else if (orbitCount % 1000 == 0) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
+            if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
+            else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
+            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
+            else if (orbitCount % 1000 == 0) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
         }
     }
     
@@ -121,6 +130,15 @@ string giveMomentum(const Body& body1, const Body& body2, const double& units)
     double p2 = body2.getP() * units;
     os << "Body 1's momentum is " << p1 << " Newton-seconds." << endl;
     os << "Body 2's momentum is " << p2 << " Newton-seconds." << endl;
+    return os.str();
+}
+
+string giveKE(const Body& body1, const Body& body2, const double& units)
+{
+    stringstream os;
+    double KE1 = body1.getKE() * units;
+    double KE2 = body2.getKE() * units;
+    os << "Total kinetic energy of the system is " << KE1 + KE2 << " joules." << endl;
     return os.str();
 }
 
