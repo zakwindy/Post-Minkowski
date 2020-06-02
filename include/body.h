@@ -11,6 +11,7 @@
 
 #include <string>
 #include <sstream>
+#include <cmath>
 
 class Body
 {
@@ -30,6 +31,7 @@ public:
     double getY() const;
     double getMomentumX() const;
     double getMomentumY() const;
+    double getP() const;
     void setPosition(double x, double y);
     void setMomentum(double px, double py);
     

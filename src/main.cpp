@@ -7,7 +7,6 @@
 //
 
 #include <iostream>
-#include <cmath>
 #include <fstream>
 
 #include "body.h"
@@ -15,6 +14,7 @@
 using namespace std;
 
 void rungeKutta4(Body& body1, Body& body2, const double& G);
+string giveMomentum(const Body& body1, const Body& body2, const double& units);
 
 int main(int argc, const char * argv[]) {
     
@@ -45,12 +45,14 @@ int main(int argc, const char * argv[]) {
         return 4;
     }
     
-    //Get the units that this is using
+    //Get the units that this is using, set up a conversion factor from arbitrary units to SI units for momentum
     string dataLine;
     getline(inputFile, dataLine);
     stringstream iss1(dataLine);
     double G_SCALED, M, L, T;
     iss1 >> G_SCALED >> M >> L >> T;
+    
+    double pUnits = M * L / T;
     
     //Grab the parameters for the first body and initialize the first body
     getline(inputFile, dataLine);
@@ -99,10 +101,10 @@ int main(int argc, const char * argv[]) {
         if ((body2.getX() > 0) && (body2.getY() > 0) && (lasty < 0))
         {
             ++orbitCount;
-            if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl;
-            else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl;
-            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl;
-            else if (orbitCount % 1000 == 0) cout << orbitCount << endl;
+            if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
+            else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
+            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
+            else if (orbitCount % 1000 == 0) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << endl;
         }
     }
     
@@ -110,6 +112,16 @@ int main(int argc, const char * argv[]) {
     secondBody.close();
 
     return 0;
+}
+
+string giveMomentum(const Body& body1, const Body& body2, const double& units)
+{
+    stringstream os;
+    double p1 = body1.getP() * units;
+    double p2 = body2.getP() * units;
+    os << "Body 1's momentum is " << p1 << " Newton-seconds." << endl;
+    os << "Body 2's momentum is " << p2 << " Newton-seconds." << endl;
+    return os.str();
 }
 
 void PM1(const Body& body1, const Body& body2, const double & G, double (&array)[4][2])

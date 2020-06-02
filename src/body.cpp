@@ -49,6 +49,11 @@ double Body::getMomentumY() const
     return momentum[1];
 }
 
+double Body::getP() const
+{
+    return pow(pow(momentum[0], 2.0) + pow(momentum[1], 2.0), 0.5);
+}
+
 void Body::setPosition(double x, double y)
 {
     position[0] = x;
