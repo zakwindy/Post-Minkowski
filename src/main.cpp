@@ -13,9 +13,12 @@
 
 using namespace std;
 
+const size_t DEG = 2; //The number of degrees of freedom or dimensions for the simulation
+
 void rungeKutta4(Body& body1, Body& body2, const double& G);
 string giveMomentum(const Body& body1, const Body& body2, const double& units);
 string giveKE(const Body& body1, const Body& body2, const double& units);
+string giveSep(const Body& body1, const Body& body2, const double& units);
 
 int main(int argc, const char * argv[]) {
     
@@ -84,8 +87,8 @@ int main(int argc, const char * argv[]) {
     cout << endl;
     
     //Set parameters for orbit number
-    const int NUM_ORBITS = userNum;
-    int orbitCount = 0;
+    const size_t NUM_ORBITS = userNum;
+    size_t orbitCount = 0;
     
     //Evolve the system using the solver
     while (orbitCount < NUM_ORBITS)
@@ -110,10 +113,10 @@ int main(int argc, const char * argv[]) {
         if ((body2.getX() > 0) && (body2.getY() > 0) && (lasty < 0))
         {
             ++orbitCount;
-            if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
-            else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
-            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
-            else if (orbitCount % 1000 == 0) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << endl;
+            if ((NUM_ORBITS <= 100) && (orbitCount % 10 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << giveSep(body1, body2, L) << endl;
+            else if ((NUM_ORBITS <= 1000) && (orbitCount % 50 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << giveSep(body1, body2, L) << endl;
+            else if ((NUM_ORBITS <= 100000) && (orbitCount % 100 == 0)) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << giveSep(body1, body2, L) << endl;
+            else if (orbitCount % 1000 == 0) cout << orbitCount << endl << giveMomentum(body1, body2, pUnits) << giveKE(body1, body2, KEUnits) << giveSep(body1, body2, L) << endl;
         }
     }
     
@@ -139,6 +142,16 @@ string giveKE(const Body& body1, const Body& body2, const double& units)
     double KE1 = body1.getKE() * units;
     double KE2 = body2.getKE() * units;
     os << "Total kinetic energy of the system is " << KE1 + KE2 << " joules." << endl;
+    return os.str();
+}
+
+string giveSep(const Body& body1, const Body& body2, const double& units)
+{
+    stringstream os;
+    double x = body1.getX() - body2.getX();
+    double y = body1.getY() - body2.getY();
+    double sep = pow(pow(x, 2.0) + pow(y, 2.0), 0.5) * units;
+    os << "Separation of bodies is " << sep << " meters." << endl;
     return os.str();
 }
 
