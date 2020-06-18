@@ -173,8 +173,8 @@ void hamiltonian(const Body& body1, const Body& body2, const double& G, double (
     
     double difX = body2.getX() - body1.getX();
     double difY = body2.getY() - body1.getY();
-    double r = G * pow(pow(difX, 2.0) + pow(difY, 2.0), 1.5);
-    double top = body1.getMass() * body1.getMass();
+    double r = pow(pow(difX, 2.0) + pow(difY, 2.0), 1.5);
+    double top = G * body1.getMass() * body2.getMass();
     
     double dP1[2]{top * difX / r, top * difY / r};
     double dP2[2]{- top * difX / r, - top * difY / r};
