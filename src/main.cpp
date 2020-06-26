@@ -13,8 +13,6 @@
 
 using namespace std;
 
-const size_t DEG = 2; //The number of degrees of freedom or dimensions for the simulation
-
 void rungeKutta4(Body& body1, Body& body2, const double& G);
 string giveMomentum(const Body& body1, const Body& body2, const double& units);
 string giveKE(const Body& body1, const Body& body2, const double& units);
