@@ -29,15 +29,13 @@ function Hamiltonian(du, u, p, t)
 end
 
 #Ensure command line arguments are present
-if (size(ARGS, 1) != 4)
-	println("Please provide first the masses of the initial bodies in solar masses, then the initial separation between them in kilometers, then eccentricity.")
+if (size(ARGS, 1) != 7)
+	println("Please provide first the masses of the initial bodies in solar masses, then the initial separation between them in kilometers, then eccentricity, then the y boundary for the plot, then the negative x boundary and the postivie x boundary.")
 	exit()
 end
 
 #Read in the data from the input file
-m1, m2, D, ecc = parse(Float64, ARGS[1]), parse(Float64, ARGS[2]), parse(Float64, ARGS[3]), parse(Float64, ARGS[4]
-
-println(m1, m2, D, ecc)
+m1, m2, D, ecc, ymax, xmin, xmax = parse(Float64, ARGS[1]), parse(Float64, ARGS[2]), parse(Float64, ARGS[3]), parse(Float64, ARGS[4]), parse(Float64, ARGS[5]), parse(Float64, ARGS[6]), parse(Float64, ARGS[7])
 
 G = 1; # Gravitational constant
 
@@ -99,3 +97,30 @@ Df = sqrt(xf^2 + yf^2)
 println("Final kinetic energies, in joules, are ", finalKE1, " and ", finalKE1)
 println("Inital and final distances between bodies, in kilometers, are ", D, " and ", Df)
 
+@userplot TwoBodyPlot
+@recipe function f(tb::TwoBodyPlot)
+    x, y, xarray, yarray, negx, posx, negy, posy = tb.args
+    n = 100
+    xlims --> (negx, posx)
+    ylims --> (negy, posy)
+    append!(xarray, x)
+    append!(yarray, y)
+    if size(xarray)[1] > n
+        deleteat!(xarray, 1)
+        deleteat!(yarray, 1)
+    end
+    linewidth --> range(0, 10, length = n)
+    #seriesalpha --> range(0, 1, length = n)
+    aspect_ratio --> 1
+    label --> false
+    xarray, yarray
+end
+
+xarr1, yarr1, xarr2, yarr2 = [], [], [], []
+
+anim = @gif for i = 1:size(ss1)[1]
+    twobodyplot(ss1[i], ss2[i], xarr1, yarr1, xmin, xmax, -ymax, ymax)
+    twobodyplot!(ss3[i], ss4[i], xarr2, yarr2, xmin, xmax, -ymax, ymax)
+end every 5
+
+display(anim)
