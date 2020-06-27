@@ -35,9 +35,9 @@ if (size(ARGS, 1) != 4)
 end
 
 #Read in the data from the input file
-m1, m2, D, ecc = parse(Float64, ARGS[1]), parse(Float64, ARGS[2]), parse(Float64, ARGS[3]), parse(Float64, ARGS[4]
+M1, M2, D, ecc = parse(Float64, ARGS[1]), parse(Float64, ARGS[2]), parse(Float64, ARGS[3]), parse(Float64, ARGS[4]
 
-println(m1, m2, D, ecc)
+println(M1, M2, D, ecc)
 
 G = 1; # Gravitational constant
 
