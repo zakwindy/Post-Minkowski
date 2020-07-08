@@ -1,2 +1,2 @@
-# black_hole_simulation
+# Post-Minowski
 A code to simulate two spiraling bodies
