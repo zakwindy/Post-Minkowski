@@ -82,7 +82,7 @@ int main(int argc, const char * argv[]) {
     //secondBody << xyline << endl;
     
     //Find out if orbits should be relativistic or not
-    bool relative = false;
+    bool relative = true;
     
     //Find out the number of orbits
     int userNum = 0;
@@ -173,7 +173,7 @@ void hamiltonian(const Body& body1, const Body& body2, const double& G, double (
     array[3][1] = ham.getdpby();
 }
 
-void pm(const Body& body1, const Body& body2, const double & G, double (&array)[4][2])
+void pm(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
 {
     PM pmink = PM(body1, body2, G);
     

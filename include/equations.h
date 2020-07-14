@@ -17,14 +17,9 @@ protected:
     double ma;
     double mb;
     
-    double dqax;
-    double dqay;
-    double dqbx;
-    double dqby;
-    double dpax;
-    double dpay;
-    double dpbx;
-    double dpby;
+    //An array which contains first the positions of both bodies, then the momentums
+    double qdot0[2][2];
+    double pdot0[2][2];
 public:
     Equations(const Body& body1, const Body& body2):
     qax(body1.getX()),
@@ -41,42 +36,42 @@ public:
     
     double getdqax()
     {
-        return dqax;
+        return qdot0[0][0];
     }
     
     double getdqay()
     {
-        return dqay;
+        return qdot0[0][1];
     }
     
     double getdqbx()
     {
-        return dqbx;
+        return qdot0[1][0];
     }
     
     double getdqby()
     {
-        return dqby;
+        return qdot0[1][1];
     }
     
     double getdpax()
     {
-        return dpax;
+        return pdot0[0][0];
     }
     
     double getdpay()
     {
-        return dpay;
+        return pdot0[0][1];
     }
     
     double getdpbx()
     {
-        return dpbx;
+        return pdot0[1][0];
     }
     
     double getdpby()
     {
-        return dpby;
+        return pdot0[1][1];
     }
 };
 

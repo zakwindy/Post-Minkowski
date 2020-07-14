@@ -17,14 +17,14 @@ public:
     G(userG),
     Equations(body1, body2)
     {
-        dqax = pax / ma;
-        dqay = pay / ma;
-        dqbx = pbx / mb;
-        dqby = pby / mb;
-        dpax = top * difX / r;
-        dpay = top * difY / r;
-        dpbx = - top * difX / r;
-        dpby = - top * difY / r;
+        qdot0[0][0] = pax / ma;
+        qdot0[0][1] = pay / ma;
+        qdot0[1][0] = pbx / mb;
+        qdot0[1][1] = pby / mb;
+        pdot0[0][0] = top * difX / r;
+        pdot0[0][1] = top * difY / r;
+        pdot0[1][0] = - top * difX / r;
+        pdot0[1][1] = - top * difY / r;
     }
 };
 
