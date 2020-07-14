@@ -19,7 +19,6 @@ void rungeKutta4(Body& body1, Body& body2, const double& G, const bool& relativi
 string giveMomentum(const Body& body1, const Body& body2, const double& units);
 string giveKE(const Body& body1, const Body& body2, const double& units);
 string giveSep(const Body& body1, const Body& body2, const double& units);
-void pm(const Body& body1, const Body& body2, const double & G, double (&array)[4][2]);
 
 int main(int argc, const char * argv[]) {
     
@@ -82,7 +81,12 @@ int main(int argc, const char * argv[]) {
     //secondBody << xyline << endl;
     
     //Find out if orbits should be relativistic or not
-    bool relative = true;
+    bool relative = false;
+    char ans = 'n';
+    cout << "Use relativistic corrections or not? (y/n) ";
+    cin >> ans;
+    cout << endl;
+    if (ans == 'y') relative = true;
     
     //Find out the number of orbits
     int userNum = 0;
@@ -159,7 +163,7 @@ string giveSep(const Body& body1, const Body& body2, const double& units)
     return os.str();
 }
 
-void hamiltonian(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
+void hamiltonianfunc(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
 {
     Hamiltonian ham = Hamiltonian(body1, body2, G);
     
@@ -173,7 +177,7 @@ void hamiltonian(const Body& body1, const Body& body2, const double& G, double (
     array[3][1] = ham.getdpby();
 }
 
-void pm(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
+void pmfunc(const Body& body1, const Body& body2, const double& G, double (&array)[4][2])
 {
     PM pmink = PM(body1, body2, G);
     
@@ -189,9 +193,9 @@ void pm(const Body& body1, const Body& body2, const double& G, double (&array)[4
 
 void change(const Body& body1, const Body& body2, const double& G, double (&array)[4][2], const bool& relativity)
 {
-    if (relativity) pm(body1, body2, G, array);
+    if (relativity) pmfunc(body1, body2, G, array);
     
-    else hamiltonian(body1, body2, G, array);
+    else hamiltonianfunc(body1, body2, G, array);
 }
 
 void rungeKutta4(Body& body1, Body& body2, const double& G, const bool& relativity)
