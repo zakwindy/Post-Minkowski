@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libbody.a  CMakeFiles/body.dir/src/body.cpp.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libbody.a

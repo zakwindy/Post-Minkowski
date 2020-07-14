@@ -4,6 +4,9 @@
 CMakeFiles/binary.dir/src/body.cpp.o: ../include/body.h
 CMakeFiles/binary.dir/src/body.cpp.o: ../src/body.cpp
 
+CMakeFiles/binary.dir/src/main.cpp.o: ../include/PM.h
 CMakeFiles/binary.dir/src/main.cpp.o: ../include/body.h
+CMakeFiles/binary.dir/src/main.cpp.o: ../include/equations.h
+CMakeFiles/binary.dir/src/main.cpp.o: ../include/hamiltonian.h
 CMakeFiles/binary.dir/src/main.cpp.o: ../src/main.cpp
 

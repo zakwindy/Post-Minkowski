@@ -6,5 +6,5 @@ CXX_FLAGS =  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk 
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/zackarywindham/Research/grav_waves/include 
+CXX_INCLUDES = -I/Users/zackarywindham/Research/Post-Minkowski/include 
 

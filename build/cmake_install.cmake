@@ -1,4 +1,4 @@
-# Install script for directory: /Users/zackarywindham/Research/grav_waves
+# Install script for directory: /Users/zackarywindham/Research/Post-Minkowski
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/zackarywindham/Research/grav_waves/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/zackarywindham/Research/Post-Minkowski/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

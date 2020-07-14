@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+../include/PM.h
+equations.h
+../include/equations.h
+
 ../include/body.h
 string
 -
@@ -14,11 +18,23 @@ sstream
 cmath
 -
 
-/Users/zackarywindham/Research/grav_waves/src/main.cpp
+../include/equations.h
+body.h
+../include/body.h
+
+../include/hamiltonian.h
+equations.h
+../include/equations.h
+
+/Users/zackarywindham/Research/Post-Minkowski/src/main.cpp
 iostream
 -
 fstream
 -
 body.h
-/Users/zackarywindham/Research/grav_waves/src/body.h
+/Users/zackarywindham/Research/Post-Minkowski/src/body.h
+hamiltonian.h
+/Users/zackarywindham/Research/Post-Minkowski/src/hamiltonian.h
+PM.h
+/Users/zackarywindham/Research/Post-Minkowski/src/PM.h
 

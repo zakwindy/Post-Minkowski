@@ -3,7 +3,10 @@
 
 CMakeFiles/binary.dir/src/body.cpp.o
  ../include/body.h
- /Users/zackarywindham/Research/grav_waves/src/body.cpp
+ /Users/zackarywindham/Research/Post-Minkowski/src/body.cpp
 CMakeFiles/binary.dir/src/main.cpp.o
+ ../include/PM.h
  ../include/body.h
- /Users/zackarywindham/Research/grav_waves/src/main.cpp
+ ../include/equations.h
+ ../include/hamiltonian.h
+ /Users/zackarywindham/Research/Post-Minkowski/src/main.cpp
