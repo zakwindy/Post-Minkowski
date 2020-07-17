@@ -21,6 +21,28 @@ protected:
     double qdot0[2][2];
     double pdot0[2][2];
 public:
+    Equations():
+    qax(0),
+    qay(0),
+    qbx(0),
+    qby(0),
+    pax(0),
+    pay(0),
+    pbx(0),
+    pby(0),
+    ma(0),
+    mb(0)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            for (int j = 0; j < 2; ++j)
+            {
+                qdot0[i][j] = 0;
+                pdot0[i][j] = 0;
+            }
+        }
+    }
+    
     Equations(const Body& body1, const Body& body2):
     qax(body1.getX()),
     qay(body1.getY()),
@@ -32,7 +54,16 @@ public:
     pby(body2.getMomentumY()),
     ma(body1.getMass()),
     mb(body2.getMass())
-    {}
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            for (int j = 0; j < 2; ++j)
+            {
+                qdot0[i][j] = 0;
+                pdot0[i][j] = 0;
+            }
+        }
+    }
     
     double getdqax()
     {

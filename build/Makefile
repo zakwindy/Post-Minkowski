@@ -143,6 +143,33 @@ binary/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/build
 .PHONY : binary/fast
 
+src/PM.o: src/PM.cpp.o
+
+.PHONY : src/PM.o
+
+# target to build an object file
+src/PM.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/src/PM.cpp.o
+.PHONY : src/PM.cpp.o
+
+src/PM.i: src/PM.cpp.i
+
+.PHONY : src/PM.i
+
+# target to preprocess a source file
+src/PM.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/src/PM.cpp.i
+.PHONY : src/PM.cpp.i
+
+src/PM.s: src/PM.cpp.s
+
+.PHONY : src/PM.s
+
+# target to generate assembly for a file
+src/PM.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/src/PM.cpp.s
+.PHONY : src/PM.cpp.s
+
 src/body.o: src/body.cpp.o
 
 .PHONY : src/body.o
@@ -206,6 +233,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... binary"
+	@echo "... src/PM.o"
+	@echo "... src/PM.i"
+	@echo "... src/PM.s"
 	@echo "... src/body.o"
 	@echo "... src/body.i"
 	@echo "... src/body.s"
