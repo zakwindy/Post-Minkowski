@@ -1,0 +1,4 @@
+name = "HamiltonianFunctions"
+uuid = "f3072cea-856e-4129-a6b6-f0396e821f17"
+authors = ["Zackary Windham <zwindham@byu.edu>"]
+version = "0.1.0"
