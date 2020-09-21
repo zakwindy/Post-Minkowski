@@ -46,7 +46,7 @@ function PM(du, u, p, t)
 	o4=pax*pax
 	o5=pay*pay
 	o6=o3+o4+o5
-	o7=1./sqrt(o6)
+	o7=1/sqrt(o6)
 	o16=mb*mb
 	o17=pbx*pbx
 	o18=pby*pby
@@ -63,7 +63,7 @@ function PM(du, u, p, t)
 	o27=o23+o26
 	o28=1/sqrt(o27)
 	o9=sqrt(o6)
-	o11=pow(o6,-2)
+	o11=o6^-2
 	o12=-2*o10*o11*pax
 	o14=2*o13*pax
 	o15=o12+o14
@@ -106,7 +106,7 @@ function PM(du, u, p, t)
 	o80=o10*o10
 	o82=o80*o81
 	o83=o77+o78+o79+o82
-	o102=pow(o6,-1.5)
+	o102=o6^-1.5
 	o85=o10*o31
 	o86=-3*o31*o67
 	o87=8*o51*o66*o75
@@ -116,7 +116,7 @@ function PM(du, u, p, t)
 	o93=-o18
 	o94=o92+o93
 	o125=2*o22*o28*o66*o81
-	o107=pow(o71,-2)
+	o107=o71^-2
 	o84=2*o13*o83
 	o91=o69*o7*o90
 	o95=o67*o94
@@ -140,7 +140,7 @@ function PM(du, u, p, t)
 	o142=1/sqrt(o141)
 	o144=o143*o63
 	o145=1+o144
-	o146=pow(o145,-2)
+	o146=o145^-2
 	o148=o31*o31
 	o174=o151*o151
 	o186=o140*o174
@@ -148,9 +148,9 @@ function PM(du, u, p, t)
 	o201=2*o13*pay
 	o202=o200+o201
 	o209=7*pby
-	o72=pow(o71,-3)
+	o72=o71^-3
 	o239=2*o25*o28*o66*o81
-	o138=pow(o68,-1.5)
+	o138=o68^-1.5
 	o242=2*o31*pay
 	o234=2*o75*pby
 	o264=2*o140*o151*o40*o43
@@ -174,7 +174,7 @@ function PM(du, u, p, t)
 	o192=o186+o189+o190+o191+o85
 	o193=o143*o192*o63
 	o194=o179+o188+o193
-	o280=pow(o19,-2)
+	o280=o19^-2
 	o281=-2*o280*o31*pbx
 	o282=2*o32*pbx
 	o283=o281+o282
@@ -183,7 +183,7 @@ function PM(du, u, p, t)
 	o316=2*o75*pax
 	o308=2*o10*pbx
 	o329=2*o174*o37*o43*o57
-	o299=pow(o19,-1.5)
+	o299=o19^-1.5
 	o364=-2*o280*o31*pby
 	o365=2*o32*pby
 	o366=o364+o365
@@ -192,10 +192,10 @@ function PM(du, u, p, t)
 	o398=2*o75*pay
 	o390=2*o10*pby
 	o411=2*o174*o40*o43*o57
-	o356=pow(o145,-3)
-	o358=pow(o141,-1.5)
-	o443=pow(o27,-1.5)
-	o445=pow(o42,-1.5)
+	o356=o145^-3
+	o358=o141^-1.5
+	o443=o27^-1.5
+	o445=o42^-1.5
 	o449=7*o75
 	o458=-(o23*o443*pax)
 	o459=o28*pax
