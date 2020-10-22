@@ -1,0 +1,10 @@
+o3=m1*m1;
+o10=m2*m2;
+o6=x*x;
+o4=r*r;
+o5=o3*o4;
+o7=o5+o6;
+o24=pow(r,-2.);
+o25=o24*o6;
+init0=G*pow(o7,-2.)*(-(o10*o3*o6*pow(r,6.))-3.*o10*pow(m1,4.)*pow(r,8.)+14.*o3*pow(r,4.)*po\
+w(x,4.)+10.*o4*pow(x,6.))+pow(r,7.)*(-(sqrt(o10+o25)/(o10*o4+o6))-sqrt(o25+o3)/o7);
