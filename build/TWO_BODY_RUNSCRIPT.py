@@ -46,75 +46,62 @@ T = math.sqrt(L**3 / (G * M))
 
 #--------Define the functions to solve for initial momentum in PM---#
 def f(x):
+    o4=(D**-2)
+    o5=x*x
+    o6=o4*o5
     o3=mass1*mass1
     o10=mass2*mass2
-    o6=x*x
-    o4=D*D
-    o5=o3*o4
-    o7=o5+o6
-    o24=D**-2
-    o25=o24*o6
-    return G_SCALED*(o7**-2)*(-(o10*o3*o6*(D**6))-3*o10*(mass1**4)*(D**8)+14*o3*(D**4)*(x**4)+10*o4*(x**6))+(D**7)*(-(math.sqrt(o10+o25)/(o10*o4+o6))-math.sqrt(o25+o3)/o7)
+    o14=D*D
+    o15=o14*o3
+    o16=o15+o5
+    o18=o10*o3
+    o19=(x**4)
+    o20=-2*o19
+    o21=o18+o20
+    return (-3*G_SCALED*o21*D)/o16+2*G_SCALED*o21*o5*D*(o16**-2)-1/math.sqrt(o10+o6)-1/math.sqrt(o3+o6)
 
 def f1(x):
-    o3=mass1*mass1
-    o4=D*D
-    o5=o3*o4
-    o6=x*x
-    o7=o5+o6
-    o9=mass2*mass2
-    o10=D**6
-    o12=D**4
-    o31=D**-2
-    o8=o7**-2
-    o33=o31*o6
-    o34=o3+o33
-    o39=o4*o9
-    o40=o39+o6
-    o42=o33+o9
-    return G_SCALED*o8*(-2*o10*o3*o9*x+56*o12*o3*(x**3)+60*o4*(x**5))-4*G_SCALED*x*(o7**-3)*(-(o10*o3*o6*o9)-3*o9*(mass1**4)*(D**8)+14*o12*o3*(x**4)+10*o4*(x**6))+(D**7)*((-1*o31*x)/(o7*math.sqrt(o34))+2*o8*x*math.sqrt(o34)-(1*o31*x)/(o40*math.sqrt(o42))+2*x*(o40**-2)*math.sqrt(o42))
+    o4=mass1*mass1
+    o5=D*D
+    o6=o4*o5
+    o7=x*x
+    o8=o6+o7
+    o14=(D**-2)
+    o15=o14*o7
+    o11=(x**3)
+    o19=mass2*mass2
+    o9=(o8**-2)
+    o24=o19*o4
+    o25=(x**4)
+    o26=-2*o25
+    o27=o24+o26
+    return (24*G_SCALED*o11*D)/o8+10*G_SCALED*o27*o9*D*x+o14*x*((o15+o19)**-1.5)+o14*x*((o15+o4)**-1.5)-8*G_SCALED*o11*o27*D*(o8**-3)-16*G_SCALED*o9*D*(x**5)
     
 def f2(x):
-    o3=mass1*mass1
-    o6=x*x
-    o4=D*D
-    o5=o3*o4
-    o7=o5+o6
-    o9=mass2*mass2
-    o10=(D**6)
-    o12=(D**4)
-    o14=(x**4)
-    o18=(o7**-3)
-    o27=(mass1**4)
-    o28=(D**8)
-    o29=-3*o27*o28*o9
-    o30=-(o10*o3*o6*o9)
-    o31=14*o12*o14*o3
-    o32=(x**6)
-    o33=10*o32*o4
-    o34=o29+o30+o31+o33
-    o40=(D**-2)
-    o8=(o7**-2)
-    o41=o40*o6
-    o42=o3+o41
-    o39=1/o7
-    o45=1/math.sqrt(o42)
-    o48=math.sqrt(o42)
-    o38=(D**-4)
-    o51=o4*o9
-    o52=o51+o6
-    o54=o41+o9
-    o53=1/o52
-    o58=1/math.sqrt(o54)
-    o57=(o52**-2)
-    o62=math.sqrt(o54)
-    return -4*G_SCALED*o18*o34+G_SCALED*o8*(300*o14*o4+168*o12*o3*o6-2*o10*o3*o9)+24*G_SCALED*o34*o6*(o7**-4)+(-(o39*o40*o45)-o40*o53*o58-8*o18*o48*o6+4*o40*o57*o58*o6+2*o57*o62+2*o48*o8+4*o40*o45*o6*o8+o38*o39*o6*(o42**-1.5)-8*o6*o62*(o52**-3)+o38*o53*o6*(o54**-1.5))*(D**7)-8*G_SCALED*o18*x*(-2*o10*o3*o9*x+56*o12*o3*(x**3)+60*o4*(x**5))
+    o4=mass1*mass1
+    o5=D*D
+    o6=o4*o5
+    o7=x*x
+    o8=o6+o7
+    o17=(D**-2)
+    o18=o17*o7
+    o19=o18+o4
+    o16=(D**-4)
+    o24=mass2*mass2
+    o25=o18+o24
+    o11=(x**4)
+    o9=(o8**-3)
+    o31=o24*o4
+    o32=-2*o11
+    o33=o31+o32
+    o12=(o8**-2)
+    return -208*G_SCALED*o11*o12*D+10*G_SCALED*o12*o33*D+(72*G_SCALED*o7*D)/o8-64*G_SCALED*o33*o7*o9*D-3*o16*o7*(o19**-2.5)+o17*(o19**-1.5)-3*o16*o7*(o25**-2.5)+o17*(o25**-1.5)+48*G_SCALED*o11*o33*D*(o8**-4)+128*G_SCALED*o9*D*(x**6)
 
 #-----------Establish reduced mass and a Newtonian estimate for inital momentum--#
 reduced_mass = mass1 * mass2 / ( mass1 + mass2 )
 newton_p_theta = ( G_SCALED * mass1 * mass2 * reduced_mass * D )**(0.5)
 
-if rela == 1: p_theta = optimize.newton(f, newton_p_theta, fprime = f1, args=(), tol=1e-08, maxiter=50, fprime2 = f2, x1=None, rtol=0.0, full_output=False, disp=True)
+if rela == 1: p_theta = optimize.newton(f, newton_p_theta, fprime = None, args=(), tol=1e-08, maxiter=50, fprime2 = None, x1=None, rtol=0.0, full_output=False, disp=True)
 elif rela == 0: p_theta = newton_p_theta
 
 #-----------Set x and y coordinates and momenta----#
