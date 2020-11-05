@@ -45,63 +45,15 @@ elif unit == "M": L = 1
 T = math.sqrt(L**3 / (G * M))
 
 #--------Define the functions to solve for initial momentum in PM---#
-def f(x):
-    o4=(D**-2)
-    o5=x*x
-    o6=o4*o5
-    o3=mass1*mass1
-    o10=mass2*mass2
-    o14=D*D
-    o15=o14*o3
-    o16=o15+o5
-    o18=o10*o3
-    o19=(x**4)
-    o20=-2*o19
-    o21=o18+o20
-    return (-3*G_SCALED*o21*D)/o16+2*G_SCALED*o21*o5*D*(o16**-2)-1/math.sqrt(o10+o6)-1/math.sqrt(o3+o6)
+MTOTAL = mass1 + mass1
+reduced_mass = mass1 * mass2 / (MTOTAL) 
 
-def f1(x):
-    o4=mass1*mass1
-    o5=D*D
-    o6=o4*o5
-    o7=x*x
-    o8=o6+o7
-    o14=(D**-2)
-    o15=o14*o7
-    o11=(x**3)
-    o19=mass2*mass2
-    o9=(o8**-2)
-    o24=o19*o4
-    o25=(x**4)
-    o26=-2*o25
-    o27=o24+o26
-    return (24*G_SCALED*o11*D)/o8+10*G_SCALED*o27*o9*D*x+o14*x*((o15+o19)**-1.5)+o14*x*((o15+o4)**-1.5)-8*G_SCALED*o11*o27*D*(o8**-3)-16*G_SCALED*o9*D*(x**5)
-    
-def f2(x):
-    o4=mass1*mass1
-    o5=D*D
-    o6=o4*o5
-    o7=x*x
-    o8=o6+o7
-    o17=(D**-2)
-    o18=o17*o7
-    o19=o18+o4
-    o16=(D**-4)
-    o24=mass2*mass2
-    o25=o18+o24
-    o11=(x**4)
-    o9=(o8**-3)
-    o31=o24*o4
-    o32=-2*o11
-    o33=o31+o32
-    o12=(o8**-2)
-    return -208*G_SCALED*o11*o12*D+10*G_SCALED*o12*o33*D+(72*G_SCALED*o7*D)/o8-64*G_SCALED*o33*o7*o9*D-3*o16*o7*(o19**-2.5)+o17*(o19**-1.5)-3*o16*o7*(o25**-2.5)+o17*(o25**-1.5)+48*G_SCALED*o11*o33*D*(o8**-4)+128*G_SCALED*o9*D*(x**6)
+pm_p_theta = reduced_mass * D * math.sqrt(G_SCALED * MTOTAL) / math.sqrt(D - (3 * G_SCALED * MTOTAL))
 
 #-----------Establish reduced mass and a Newtonian estimate for inital momentum--#
-reduced_mass = mass1 * mass2 / ( mass1 + mass2 )
 newton_p_theta = ( G_SCALED * mass1 * mass2 * reduced_mass * D )**(0.5)
 
-if rela == 1: p_theta = optimize.newton(f, newton_p_theta, fprime = None, args=(), tol=1e-08, maxiter=50, fprime2 = None, x1=None, rtol=0.0, full_output=False, disp=True)
+if rela == 1: p_theta = pm_p_theta
 elif rela == 0: p_theta = newton_p_theta
 
 #-----------Set x and y coordinates and momenta----#
