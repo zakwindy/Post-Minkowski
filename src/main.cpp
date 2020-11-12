@@ -16,6 +16,7 @@
 using namespace std;
 
 void rungeKutta4(Body& body1, Body& body2, const double& G, const bool& relativity);
+double sep(const Body& body1, const Body& body2);
 string giveMomentum(const Body& body1, const Body& body2, const double& units);
 string giveKE(const Body& body1, const Body& body2, const double& units);
 string giveSep(const Body& body1, const Body& body2, const double& units);
@@ -98,6 +99,8 @@ int main(int argc, const char * argv[]) {
     const size_t NUM_ORBITS = userNum;
     size_t orbitCount = 0;
     
+    double closestPoint = sep(body1, body2);
+    
     //Evolve the system using the solver
     while (orbitCount < NUM_ORBITS)
     {
@@ -111,12 +114,15 @@ int main(int argc, const char * argv[]) {
             cerr << "Bodies no longer orbiting." << endl;
             firstBody.close();
             secondBody.close();
+            cout << "Closest point was " << closestPoint << " in code units." << endl;
             return 5;
         }
-            
+        
         double lasty = body2.getY();
             
         rungeKutta4(body1, body2, G_SCALED, relative);
+        
+        if (sep(body1, body2) < closestPoint) closestPoint = sep(body1, body2);
             
         if ((body2.getX() > 0) && (body2.getY() > 0) && (lasty < 0))
         {
@@ -130,6 +136,8 @@ int main(int argc, const char * argv[]) {
     
     firstBody.close();
     secondBody.close();
+    
+    cout << "Closest point was " << closestPoint << " in code units." << endl;
 
     return 0;
 }
@@ -153,13 +161,19 @@ string giveKE(const Body& body1, const Body& body2, const double& units)
     return os.str();
 }
 
+double sep(const Body& body1, const Body& body2)
+{
+    double x = body1.getX() - body2.getX();
+    double y = body1.getY() - body2.getY();
+    double sep = pow(pow(x, 2.0) + pow(y, 2.0), 0.5);
+    return sep;
+}
+
 string giveSep(const Body& body1, const Body& body2, const double& units)
 {
     stringstream os;
-    double x = body1.getX() - body2.getX();
-    double y = body1.getY() - body2.getY();
-    double sep = pow(pow(x, 2.0) + pow(y, 2.0), 0.5) * units;
-    os << "Separation of bodies is " << sep << " meters." << endl;
+    double separation = sep(body1, body2) * units;
+    os << "Separation of bodies is " << separation << " meters." << endl;
     return os.str();
 }
 

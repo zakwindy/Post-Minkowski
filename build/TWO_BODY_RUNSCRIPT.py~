@@ -48,7 +48,7 @@ T = math.sqrt(L**3 / (G * M))
 MTOTAL = mass1 + mass1
 reduced_mass = mass1 * mass2 / (MTOTAL) 
 
-pm_p_theta = reduced_mass * D * math.sqrt(G(mass1 + mass2)) / math.sqrt(D - (3 * G_SCALED * MTOTAL))
+pm_p_theta = reduced_mass * D * math.sqrt(G_SCALED * MTOTAL) / math.sqrt(D - (3 * G_SCALED * MTOTAL))
 
 #-----------Establish reduced mass and a Newtonian estimate for inital momentum--#
 newton_p_theta = ( G_SCALED * mass1 * mass2 * reduced_mass * D )**(0.5)
@@ -61,7 +61,7 @@ x2, y2 = D / (1 + ( mass2 / mass1 )), 0
 x1, y1 = x2 - D, 0
 x2 *= qfactor
 x1 *= qfactor
-px2, py2 = 0, p_theta / D
+px2, py2 = 0, p_theta / x2
 px1, py1 = 0, -py2
 py2 *= pfactor
 py1 *= pfactor
