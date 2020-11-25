@@ -5,6 +5,7 @@ from scipy import optimize
 
 #----------Set SI units to be used for calculating real values------#
 G = 6.647*10**-11
+C = 3.00*10**8
 YEAR = 31536000
 AU = 1.496 * 10**11
 KM = 1000
@@ -19,7 +20,6 @@ parser.add_argument('file', type=argparse.FileType('w'), help='name of the file 
 parser.add_argument('m1', type=float, help='mass of the first black hole', metavar='NUM')
 parser.add_argument('m2', type=float, help='mass of the second black hole', metavar='NUM')
 parser.add_argument('separation', type=float, help='separation of the binary star system', metavar='SEPARATION')
-parser.add_argument('distance_unit', type=str, help='units for the separation of the bodies, examples are AU, KM, M', metavar = 'UNIT')
 parser.add_argument('eccentricity', type=float, help='eccentricity of the orbit, must be between 0 and 1', metavar = 'ECC')
 parser.add_argument('relativity', type=int, help='whether or not to use PM corrections, 1 for true or 0 for false', metavar = 'REL')
 
@@ -28,7 +28,6 @@ args = parser.parse_args()
 mass1 = args.m1
 mass2 = args.m2
 D = args.separation
-unit = args.distance_unit
 ecc = args.eccentricity
 rela = args.relativity
 
@@ -38,11 +37,8 @@ qfactor = 1 - ecc
 pfactor = math.sqrt((1 + ecc)/(1 - ecc))
 
 #---------Set the units for distance and time---#
-if unit == "AU": L = AU
-elif unit == "KM": L = KM
-elif unit == "M": L = 1
-
-T = math.sqrt(L**3 / (G * M))
+T = G**2 * M / (C**3)
+L = C * T
 
 #--------Define the functions to solve for initial momentum in PM---#
 MTOTAL = mass1 + mass1

@@ -1,0 +1,2 @@
+newtonH=0.5*((pax*pax+pay*pay)/ma+(pbx*pbx+pby*pby)/mb)-0.5*G*((1.*ma*mb)/sqrt(pow(qax-qbx,2.\
+)+pow(qay-qby,2.))+(1.*ma*mb)/sqrt(pow(-qax+qbx,2.)+pow(-qay+qby,2.)));

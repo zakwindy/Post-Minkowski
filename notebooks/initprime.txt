@@ -1,4 +1,4 @@
-o4=m1*m1;
+o4=ma*ma;
 o5=r*r;
 o6=o4*o5;
 o7=x*x;
@@ -6,7 +6,7 @@ o8=o6+o7;
 o14=pow(r,-2.);
 o15=o14*o7;
 o11=pow(x,3.);
-o19=m2*m2;
+o19=mb*mb;
 o9=pow(o8,-2.);
 o24=o19*o4;
 o25=pow(x,4.);
