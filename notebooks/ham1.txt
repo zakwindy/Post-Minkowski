@@ -1,0 +1,34 @@
+        o4=pax*pax
+        o5=pay*pay
+        o6=o4+o5
+        o9=pbx*pbx
+        o10=pby*pby
+        o11=o10+o9
+        o24=-qbx
+        o25=o24+qax
+        o26=o25*o25
+        o27=-qby
+        o28=o27+qay
+        o29=o28*o28
+        o30=o26+o29
+        o34=-qax
+        o35=o34+qbx
+        o36=o35*o35
+        o37=-qay
+        o38=o37+qby
+        o39=o38*o38
+        o40=o36+o39
+        o3=1/ma
+        o8=1/mb
+        o45=1.d0/sqrt(o30)
+        o47=1.d0/sqrt(o40)
+        o53=pax*pbx
+        o54=pay*pby
+        o55=o53+o54
+        o56=-7.d0*o3*o55*o8
+        hamiltonian1=5.d-1*(-(ma*mb*o45)-ma*mb*o47)+5.d-1*(o3*o6+o11*o8)
+     &  +2.5d-1*(-(ma*mb*o45*(o56+(6.d0*o6)/ma**2-o3*o8*(o25*o45*pax+o28
+     &  *o45*pay)*(o25*o45*pbx+o28*o45*pby)))-ma*mb*o47*((6.d0*o11)/mb**
+     &  2+o56-o3*o8*(o35*o47*pax+o38*o47*pay)*(o35*o47*pbx+o38*o47*pby))
+     &  )+5.d-1*((mb*(ma*ma))/o40+(ma*(mb*mb))/o30)+1.25d-1*(-((o11*o11)
+     &  /mb**3)-(o6*o6)/ma**3)

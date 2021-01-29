@@ -26,11 +26,23 @@ body.h
 equations.h
 ../include/equations.h
 
+../include/point_type.h
+boost/operators.hpp
+-
+ostream
+-
+
 /Users/zackarywindham/Research/Post-Minkowski/src/main.cpp
+boost/numeric/odeint.hpp
+-
+boost/array.hpp
+-
 iostream
 -
 fstream
 -
+point_type.h
+/Users/zackarywindham/Research/Post-Minkowski/src/point_type.h
 body.h
 /Users/zackarywindham/Research/Post-Minkowski/src/body.h
 hamiltonian.h

@@ -14,4 +14,5 @@ CMakeFiles/binary.dir/src/main.cpp.o
  ../include/body.h
  ../include/equations.h
  ../include/hamiltonian.h
+ ../include/point_type.h
  /Users/zackarywindham/Research/Post-Minkowski/src/main.cpp
