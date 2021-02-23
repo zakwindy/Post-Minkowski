@@ -13,7 +13,7 @@ function y(m, q, p, a, b)
 	return (1 / mline(a, m, p)) * sqrt(m[a]*m[a] + dot(nhat(q,a,b), p[:,a])*dot(nhat(q,a,b), p[:,a]))
 end
 
-function pmnbody(q, p, params)
+function pmnbody(q, p, params, tspan)
 	paramsCopy = copy(params)
 	G = paramsCopy[length(params)]
 	m = deleteat!(paramsCopy, length(params))
