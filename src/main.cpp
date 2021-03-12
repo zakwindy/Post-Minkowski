@@ -96,13 +96,13 @@ int main(int argc, const char * argv[]) {
     }};
     
     typedef symplectic_rkn_sb3a_mclachlan< container_type > stepper_type;
-    const double dt = 10.0;
+    const double dt = .1;
     
     integrate_const(
                     stepper_type(),
                     make_pair(coor(masses, G_SCALED, q), momentum(masses, G_SCALED, p)),
                     make_pair(boost::ref(q), boost::ref(p)),
-                    0.0, 200000.0, dt, output(firstBody));
+                    0.0, 100000.0, dt, output(firstBody));
     
     /*
     

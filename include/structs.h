@@ -1,10 +1,30 @@
 #include "point_type.h"
 
 const size_t n = 2; //This is the number of bodies in the simulation
+const size_t ndim = 2; //Number of dimensions
 
-typedef point<double, 2> point_type; //Defining a point mass; the second parameter is the number of dimensions.
+typedef point<double, ndim> point_type; //Defining a point mass; the second parameter is the number of dimensions.
 typedef boost::array<point_type, n> container_type;
 typedef boost::array<double, n> mass_type;
+
+struct output
+{
+    std::ostream &m_out;
+    
+    output(std::ostream &out): m_out(out) {}
+    
+    template<class State>
+    void operator()(const State &x, double t) const
+    {
+        container_type &q = x.first;
+        m_out << t;
+        for (size_t i = 0; i < q.size(); ++i)
+        {
+            for (size_t j = 0; j < ndim; ++j) m_out << ',' << "\t" << q[i][j];
+        }
+        m_out << "\n";
+    }
+};
 
 struct coor
 {
@@ -405,18 +425,4 @@ struct momentum
     }
 };
 
-struct output
-{
-    std::ostream &m_out;
-    
-    output(std::ostream &out): m_out(out) {}
-    
-    template<class State>
-    void operator()(const State &x, double t) const
-    {
-        container_type &q = x.first;
-        m_out << t;
-        for (size_t i = 0; i < q.size(); ++i) m_out << "\t" << q[i];
-        m_out << "\n";
-    }
-};
+
