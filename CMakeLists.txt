@@ -18,3 +18,7 @@ add_executable(binary
 	include/PM.h
 	include/boost
 	)
+
+add_executable(make_structs
+	src2/main2.cpp
+	)

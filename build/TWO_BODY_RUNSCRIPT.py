@@ -10,7 +10,7 @@ YEAR = 31536000
 AU = 1.496 * 10**11
 KM = 1000
 SOLAR_MASS = 1.989 * 10**30
-G_SCALED = 1
+G_SCALED = 1 / (16 * math.pi)
 
 M = SOLAR_MASS
 
@@ -53,18 +53,18 @@ if rela == 1: p_theta = pm_p_theta
 elif rela == 0: p_theta = newton_p_theta
 
 #-----------Set x and y coordinates and momenta----#
-x2, y2 = D / (1 + ( mass2 / mass1 )), 0
-x1, y1 = x2 - D, 0
+x2, y2, z2 = D / (1 + ( mass2 / mass1 )), 0, 0
+x1, y1, z1 = x2 - D, 0, 0
 x2 *= qfactor
 x1 *= qfactor
-px2, py2 = 0, p_theta / D
-px1, py1 = 0, -py2
+px2, py2, pz2 = 0.0, p_theta / D, 0.0
+px1, py1, pz1 = 0.0, -py2, 0.0
 py2 *= pfactor
 py1 *= pfactor
 
 line1 = str(G_SCALED) + ' ' + str(M) + ' ' + str(L) + ' ' + str(T) 
-line2 = str(mass1) + ' ' + str(x1) + ' ' + str(y1) + ' ' + str(px1) + ' ' + str(py1)
-line3 = str(mass2) + ' ' + str(x2) + ' ' + str(y2) + ' ' + str(px2) + ' ' + str(py2)
+line2 = str(mass1) + ' ' + str(x1) + ' ' + str(y1) + ' ' + str(z1) + ' '  + str(px1) + ' ' + str(py1) + ' ' + str(pz1)
+line3 = str(mass2) + ' ' + str(x2) + ' ' + str(y2) + ' ' + str(z2) + ' ' + str(px2) + ' ' + str(py2) + ' ' + str(pz2)
 
 f = args.file 
 f.write(line1)

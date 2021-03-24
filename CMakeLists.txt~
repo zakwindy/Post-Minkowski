@@ -16,4 +16,5 @@ add_executable(binary
 	include/equations.h
 	include/hamiltonian.h
 	include/PM.h
+	include/boost
 	)

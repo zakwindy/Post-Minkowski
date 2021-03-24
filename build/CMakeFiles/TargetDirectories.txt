@@ -1,3 +1,4 @@
 /Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles/rebuild_cache.dir
 /Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles/edit_cache.dir
+/Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles/make_structs.dir
 /Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles/binary.dir

@@ -7,9 +7,13 @@
 //
 
 #include <boost/numeric/odeint.hpp>
+#include <boost/numeric/odeint/stepper/symplectic_rkn_sb3a_m4_mclachlan.hpp>
 #include <boost/array.hpp>
+#include <boost/config.hpp>
 #include <iostream>
 #include <fstream>
+#include <ctime>
+#include <cstdlib>
 
 #include "body.h"
 #include "hamiltonian.h"
@@ -26,6 +30,8 @@ string giveKE(const Body& body1, const Body& body2, const double& units);
 string giveSep(const Body& body1, const Body& body2, const double& units);
 
 int main(int argc, const char * argv[]) {
+    
+    srand (static_cast <unsigned> (time(0)));
     
     //make sure the files are there and all work
     if (argc < 4)
@@ -67,18 +73,69 @@ int main(int argc, const char * argv[]) {
     //Grab the parameters for the first body and initialize the first body
     getline(inputFile, dataLine);
     stringstream iss2(dataLine);
-    double MASS_1, x1, y1, p1X, p1Y;
-    iss2 >> MASS_1 >> x1 >> y1 >> p1X >> p1Y;
+    double MASS_1, x1, y1, z1, p1X, p1Y, p1Z;
+    iss2 >> MASS_1 >> x1 >> y1 >> z1 >> p1X >> p1Y >> p1Z;
     
     Body body1 = Body(x1, y1, p1X, p1Y, MASS_1);
     
     //Do the same for the second body
     getline(inputFile, dataLine);
     stringstream iss3(dataLine);
-    double MASS_2, x2, y2, p2X, p2Y;
-    iss3 >> MASS_2 >> x2 >> y2 >> p2X >> p2Y;
+    double MASS_2, x2, y2, z2, p2X, p2Y, p2Z;
+    iss3 >> MASS_2 >> x2 >> y2 >> z2 >> p2X >> p2Y >> p2Z;
     
     Body body2 = Body(x2, y2, p2X, p2Y, MASS_2);
+    
+    double mult_factor = MASS_1 / 100000.0;
+    double extra_masses[n - 2];
+    double extra_x[n - 2];
+    double extra_y[n - 2];
+    double extra_z[n - 2];
+    double extra_px[n - 2];
+    double extra_py[n - 2];
+    double extra_pz[n - 2];
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_masses[i] = val * mult_factor;
+    }
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_x[i] = (2 * val) - 1;
+    }
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_y[i] = (2 * val) - 1;
+    }
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_z[i] = (2 * val) - 1;
+    }
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_px[i] = (10 * val) - 5;
+    }
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_py[i] = (10 * val) - 5;
+    }
+    
+    for(unsigned int i = 0; i < n - 2; ++i)
+    {
+        double val = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+        extra_pz[i] = (10 * val) - 5;
+    }
     
     mass_type masses = {{
         MASS_1,
@@ -86,13 +143,13 @@ int main(int argc, const char * argv[]) {
     }};
     
     container_type q = {{
-        point_type(x1, y1),
-        point_type(x2, y2)
+        point_type(x1, y1, z1),
+        point_type(x2, y2, z2)
     }};
     
     container_type p = {{
-        point_type(p1X, p1Y),
-        point_type(p2X, p2Y)
+        point_type(p1X, p1Y, p1Z),
+        point_type(p2X, p2Y, p2Z)
     }};
     
     typedef symplectic_rkn_sb3a_mclachlan< container_type > stepper_type;
@@ -102,7 +159,7 @@ int main(int argc, const char * argv[]) {
                     stepper_type(),
                     make_pair(coor(masses, G_SCALED, q), momentum(masses, G_SCALED, p)),
                     make_pair(boost::ref(q), boost::ref(p)),
-                    0.0, 100000.0, dt, output(firstBody));
+                    0.0, 10000.0, dt, output(firstBody));
     
     /*
     

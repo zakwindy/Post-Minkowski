@@ -73,6 +73,7 @@ CMAKE_BINARY_DIR = /Users/zackarywindham/Research/Post-Minkowski/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/make_structs.dir/all
 all: CMakeFiles/binary.dir/all
 
 .PHONY : all
@@ -83,9 +84,37 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/make_structs.dir/clean
 clean: CMakeFiles/binary.dir/clean
 
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/make_structs.dir
+
+# All Build rule for target.
+CMakeFiles/make_structs.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles --progress-num=5,6 "Built target make_structs"
+.PHONY : CMakeFiles/make_structs.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/make_structs.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/make_structs.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zackarywindham/Research/Post-Minkowski/build/CMakeFiles 0
+.PHONY : CMakeFiles/make_structs.dir/rule
+
+# Convenience name for target.
+make_structs: CMakeFiles/make_structs.dir/rule
+
+.PHONY : make_structs
+
+# clean rule for target.
+CMakeFiles/make_structs.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/clean
+.PHONY : CMakeFiles/make_structs.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/binary.dir

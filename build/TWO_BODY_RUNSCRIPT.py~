@@ -10,7 +10,7 @@ YEAR = 31536000
 AU = 1.496 * 10**11
 KM = 1000
 SOLAR_MASS = 1.989 * 10**30
-G_SCALED = 1
+G_SCALED = 1 / (16 * math.pi)
 
 M = SOLAR_MASS
 

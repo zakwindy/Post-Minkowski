@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/zackarywindham/Research/Post-Minkowski/src2/main2.cpp
+iostream
+-
+fstream
+-
+sstream
+-
+string
+-
+

@@ -15738,6 +15738,16 @@ boost/numeric/odeint/algebra/operations_dispatcher.hpp
 boost/array.hpp
 -
 
+../include/boost/numeric/odeint/stepper/symplectic_rkn_sb3a_m4_mclachlan.hpp
+boost/numeric/odeint/algebra/default_operations.hpp
+-
+boost/numeric/odeint/algebra/algebra_dispatcher.hpp
+-
+boost/numeric/odeint/algebra/operations_dispatcher.hpp
+-
+boost/numeric/odeint/util/resizer.hpp
+-
+
 ../include/boost/numeric/odeint/stepper/symplectic_rkn_sb3a_mclachlan.hpp
 boost/numeric/odeint/stepper/base/symplectic_rkn_stepper_base.hpp
 -
@@ -23091,7 +23101,11 @@ point_type.h
 /Users/zackarywindham/Research/Post-Minkowski/src/main.cpp
 boost/numeric/odeint.hpp
 -
+boost/numeric/odeint/stepper/symplectic_rkn_sb3a_m4_mclachlan.hpp
+-
 boost/array.hpp
+-
+boost/config.hpp
 -
 iostream
 -

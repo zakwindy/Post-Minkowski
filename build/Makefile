@@ -131,6 +131,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named make_structs
+
+# Build rule for target.
+make_structs: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 make_structs
+.PHONY : make_structs
+
+# fast build rule for target.
+make_structs/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/build
+.PHONY : make_structs/fast
+
+#=============================================================================
 # Target rules for targets named binary
 
 # Build rule for target.
@@ -224,6 +237,33 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binary.dir/build.make CMakeFiles/binary.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src2/main2.o: src2/main2.cpp.o
+
+.PHONY : src2/main2.o
+
+# target to build an object file
+src2/main2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/src2/main2.cpp.o
+.PHONY : src2/main2.cpp.o
+
+src2/main2.i: src2/main2.cpp.i
+
+.PHONY : src2/main2.i
+
+# target to preprocess a source file
+src2/main2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/src2/main2.cpp.i
+.PHONY : src2/main2.cpp.i
+
+src2/main2.s: src2/main2.cpp.s
+
+.PHONY : src2/main2.s
+
+# target to generate assembly for a file
+src2/main2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/make_structs.dir/build.make CMakeFiles/make_structs.dir/src2/main2.cpp.s
+.PHONY : src2/main2.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -233,6 +273,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... binary"
+	@echo "... make_structs"
 	@echo "... src/PM.o"
 	@echo "... src/PM.i"
 	@echo "... src/PM.s"
@@ -242,6 +283,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src2/main2.o"
+	@echo "... src2/main2.i"
+	@echo "... src2/main2.s"
 .PHONY : help
 
 
