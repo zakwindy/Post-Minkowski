@@ -6,18 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../include/PM.h
-equations.h
-../include/equations.h
-
-../include/body.h
-string
--
-sstream
--
-cmath
--
-
 ../include/boost/array.hpp
 boost/detail/workaround.hpp
 -
@@ -15738,16 +15726,6 @@ boost/numeric/odeint/algebra/operations_dispatcher.hpp
 boost/array.hpp
 -
 
-../include/boost/numeric/odeint/stepper/symplectic_rkn_sb3a_m4_mclachlan.hpp
-boost/numeric/odeint/algebra/default_operations.hpp
--
-boost/numeric/odeint/algebra/algebra_dispatcher.hpp
--
-boost/numeric/odeint/algebra/operations_dispatcher.hpp
--
-boost/numeric/odeint/util/resizer.hpp
--
-
 ../include/boost/numeric/odeint/stepper/symplectic_rkn_sb3a_mclachlan.hpp
 boost/numeric/odeint/stepper/base/symplectic_rkn_stepper_base.hpp
 -
@@ -23080,14 +23058,6 @@ boost/winapi/detail/header.hpp
 boost/winapi/detail/footer.hpp
 -
 
-../include/equations.h
-body.h
-../include/body.h
-
-../include/hamiltonian.h
-equations.h
-../include/equations.h
-
 ../include/point_type.h
 boost/operators.hpp
 -
@@ -23101,7 +23071,9 @@ point_type.h
 /Users/zackarywindham/Research/Post-Minkowski/src/main.cpp
 boost/numeric/odeint.hpp
 -
-boost/numeric/odeint/stepper/symplectic_rkn_sb3a_m4_mclachlan.hpp
+boost/numeric/odeint/stepper/controlled_runge_kutta.hpp
+-
+boost/numeric/odeint/stepper/controlled_step_result.hpp
 -
 boost/array.hpp
 -
@@ -23111,12 +23083,10 @@ iostream
 -
 fstream
 -
-body.h
-/Users/zackarywindham/Research/Post-Minkowski/src/body.h
-hamiltonian.h
-/Users/zackarywindham/Research/Post-Minkowski/src/hamiltonian.h
-PM.h
-/Users/zackarywindham/Research/Post-Minkowski/src/PM.h
+ctime
+-
+cstdlib
+-
 structs.h
 /Users/zackarywindham/Research/Post-Minkowski/src/structs.h
 

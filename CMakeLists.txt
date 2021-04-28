@@ -10,12 +10,6 @@ include_directories(include)
 
 add_executable(binary
 	src/main.cpp
-	src/body.cpp
-	src/PM.cpp
-	include/body.h
-	include/equations.h
-	include/hamiltonian.h
-	include/PM.h
 	include/boost
 	)
 

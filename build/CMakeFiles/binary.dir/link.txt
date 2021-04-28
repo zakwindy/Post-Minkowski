@@ -1,1 +1,1 @@
-/Library/Developer/CommandLineTools/usr/bin/c++   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/binary.dir/src/main.cpp.o CMakeFiles/binary.dir/src/body.cpp.o CMakeFiles/binary.dir/src/PM.cpp.o  -o binary 
+/Library/Developer/CommandLineTools/usr/bin/c++   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/binary.dir/src/main.cpp.o  -o binary 

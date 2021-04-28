@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/binary.dir/src/PM.cpp.o"
-  "CMakeFiles/binary.dir/src/body.cpp.o"
   "CMakeFiles/binary.dir/src/main.cpp.o"
   "binary"
   "binary.pdb"
