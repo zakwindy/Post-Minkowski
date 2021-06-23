@@ -1,0 +1,10 @@
+module NBody
+
+using DifferentialEquations
+using LSODA
+
+function julia_main()
+	return 0
+end
+
+end # module
