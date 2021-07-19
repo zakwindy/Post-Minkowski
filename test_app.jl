@@ -1,9 +1,6 @@
-module julia_app
-
 using DifferentialEquations
+using LSODA
 using DelimitedFiles
-
-nbody = 2
 
 function julia_main()::Cint
 	file = ARGS[1]
@@ -26,14 +23,12 @@ function julia_main()::Cint
 
     h01 = [0]
 
-	#=
 	schwarz = [R_Schwarz(C,G,m1), R_Schwarz(C,G,m2)]
 
 	condition_collision(u,t,integrator) = schwarz[1] + schwarz[2] >= sqrt((u[1] - u[5])^2 + (u[2] - u[6])^2)
 	affect_collision!(integrator) = terminate!(integrator)
 
 	cb_collision = DiscreteCallback(condition_collision, affect_collision!, save_positions=(true,true))
-	=# #FIXME Make this section with collision detection n-body compatible.
 
 	u0 = collect(Base.Iterators.flatten([q01, p01, q02, p02, h01]));
 
@@ -87,9 +82,16 @@ function julia_main()::Cint
     return 0
 end
 
+condition_orbits(u,t,integrator) = (u[1] == 0) && (u[2] > 0)
+affect_orbits!(integrator) = integrator.u[10] += 1
+
 CSI = 3.00e8;
 GSI = 6.647e-11;
 MSUN = 1.989e30;
+
+function R_Schwarz(C, G, M)
+	return 2 * G * M / (C^2)
+end
 
 function PM(du, u, p, t)
 	qax = u[1]
@@ -369,4 +371,4 @@ function PM(du, u, p, t)
 	u[9] = o20+0.25*G*(o28*o451+o43*o478)-0.25*G*(o100*o101*o107*o43*o63+o142*o146*o194*o28*o7)+o9-0.5*G*(o20*o28*o34*o9+o20*o34*o43*o9)
 end
 
-end # module
+julia_main()
