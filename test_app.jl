@@ -3,37 +3,56 @@ using LSODA
 using DelimitedFiles
 
 function julia_main()::Cint
+	#=
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4]
+	=#
+
+	file = ARGS[1]
+	arr = readdlm(file, ' ', Float64, '\n')
+	nbody = size(arr)[1]
+	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4]
+	data = arr[2,:][2:end]
+	for i in 2:nbody
+		append!(data, arr[i+1,:][2:end])
+	end
+	c0 = arr[:,1][2:end]
+	append!(c0,G)
+
 	m1, x1, y1, z1, px1, py1, pz1 = arr[2,:]
 	m2, x2, y2, z2, px2, py2, pz2 = arr[3,:]
 
     C = 1.000000000000; #Speed of light
-    tspan = (0.0, 0.1 * 12000.0); # The amount of time for which the simulation runs
+    tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
 	xi, yi, zi = x1 - x2, y1 - y2, z1 - z2
 	D = sqrt(xi^2 + yi^2 + zi^2)
 
-    c0 = [m1, m2, G]
+    #c0 = [m1, m2, G]
 
-    q01 = [x1, y1]
+	q01 = [x1, y1]
     p01 = [px1, py1]
     q02 = [x2, y2]
     p02 = [px2, py2]
 
     h01 = [0]
 
+	#TAYDEN WUZ HERE
+
+	#=
 	schwarz = [R_Schwarz(C,G,m1), R_Schwarz(C,G,m2)]
 
 	condition_collision(u,t,integrator) = schwarz[1] + schwarz[2] >= sqrt((u[1] - u[5])^2 + (u[2] - u[6])^2)
 	affect_collision!(integrator) = terminate!(integrator)
 
 	cb_collision = DiscreteCallback(condition_collision, affect_collision!, save_positions=(true,true))
+	=# #FIXME Make this section with collision detection n-body compatible.
 
-	u0 = collect(Base.Iterators.flatten([q01, p01, q02, p02, h01]));
+	#u0 = collect(Base.Iterators.flatten([q01, p01, q02, p02, h01]));
+	u0 = collect(Base.Iterators.flatten([data, h01]));
 
     prob = ODEProblem(PM, u0, tspan, c0);
-    sol = DifferentialEquations.solve(prob, Vern9(), callback=cb_collision, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 1);
+    sol = DifferentialEquations.solve(prob, Vern9(), #=callback=cb_collision,=# reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
     len = size(sol[1,:])[1]
 

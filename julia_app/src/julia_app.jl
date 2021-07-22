@@ -3,12 +3,18 @@ module julia_app
 using DifferentialEquations
 using DelimitedFiles
 
-nbody = 2
-
 function julia_main()::Cint
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
+	nbody = size(arr)[1]
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4]
+	data = arr[2,:][2:end]
+	for i in 2:nbody
+		append!(data, arr[i+1,:][2:end])
+	end
+	c0 = arr[:,1][2:end]
+	append!(c0,G)
+
 	m1, x1, y1, z1, px1, py1, pz1 = arr[2,:]
 	m2, x2, y2, z2, px2, py2, pz2 = arr[3,:]
 
@@ -26,6 +32,8 @@ function julia_main()::Cint
 
     h01 = [0]
 
+	#TAYDEN WUZ HERE
+
 	#=
 	schwarz = [R_Schwarz(C,G,m1), R_Schwarz(C,G,m2)]
 
@@ -35,10 +43,11 @@ function julia_main()::Cint
 	cb_collision = DiscreteCallback(condition_collision, affect_collision!, save_positions=(true,true))
 	=# #FIXME Make this section with collision detection n-body compatible.
 
-	u0 = collect(Base.Iterators.flatten([q01, p01, q02, p02, h01]));
+	#u0 = collect(Base.Iterators.flatten([q01, p01, q02, p02, h01]));
+	u0 = collect(Base.Iterators.flatten([data, h01]));
 
     prob = ODEProblem(PM, u0, tspan, c0);
-    sol = DifferentialEquations.solve(prob, Vern9(), callback=cb_collision, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 1);
+    sol = DifferentialEquations.solve(prob, Vern9(), #=callback=cb_collision,=# reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
     len = size(sol[1,:])[1]
 
@@ -56,7 +65,7 @@ function julia_main()::Cint
     momentumy2 = sol[8,:]
     momentumz2 = zeros(len)
 
-    hamilArr = sol[9,:];
+    hamilArr = sol[end,:];
 
     deleteat!(hamilArr, 1);
     originalHamiltonian = copy(hamilArr[1])

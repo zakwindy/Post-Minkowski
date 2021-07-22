@@ -1,19 +1,17 @@
-In[1]:=
+In[37]:=
 SetDirectory[NotebookDirectory[]]
-Out[1]= /Users/zackarywindham/Research/Post-Minkowski
-In[52]:= data=Import["/Users/zackarywindham/Research/Post-Minkowski/PMdata.csv"]
+data=Import["/Users/zackarywindham/Research/Post-Minkowski/PMdata.csv"]
 x1=data[[1]];
 y1=data[[2]];
 x2=data[[4]];
 y2=data[[5]];
 distance=data[[8]];
-Out[52]= {{-7.54289,-7.54282,-7.54262,-7.54228,-7.5418,-7.54119,-7.54044, \[CenterEllipsis]1187\[CenterEllipsis] ,-925.727,-926.723,-927.719,-928.715,-929.712,-930.708,-931.704}, \[CenterEllipsis]10\[CenterEllipsis] ,{ \[CenterEllipsis]1\[CenterEllipsis] }}
+Out[37]= /Users/zackarywindham/Research/Post-Minkowski
+Out[38]= {{-8.58684,-8.58677,-8.58654,-8.58616,-8.58562,-8.58494,-8.5841, \[CenterEllipsis]11987\[CenterEllipsis] ,-8.55306,-8.54958,-8.54595,-8.54217,-8.53824,-8.53416,-8.52992}, \[CenterEllipsis]10\[CenterEllipsis] ,{ \[CenterEllipsis]1\[CenterEllipsis] }}
 large output	show less	show more	show all	set size limit...
 
 
-In[80]:= ListPlot[distance,PlotRange->{{0,400},{-17,5}}]
-distance[[265]]
-Out[80]= 
-Out[81]= -14.6283
-In[21]:= ListPlot[{Transpose[{x1,y1}],Transpose[{x2,y2}]},PlotRange->{{-10,10},{-10,10}}]
-Out[21]= 
+In[46]:= ListPlot[distance]
+ListPlot[{Transpose[{x1,y1}],Transpose[{x2,y2}]},PlotRange->{{-10,10},{-10,10}}, AspectRatio->1]
+Out[46]= 
+Out[47]= 
