@@ -1,0 +1,4 @@
+name = "FormattedEquations"
+uuid = "8c7d8343-4bdd-4b45-b318-54157d2add1e"
+authors = ["Zackary Windham <zwindham@byu.edu>"]
+version = "0.1.0"

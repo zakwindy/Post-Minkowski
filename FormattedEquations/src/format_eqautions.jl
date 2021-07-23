@@ -10,9 +10,29 @@ function write_equations()::Cint
 
     close(ndata)
 
-
     equations = open(ARGS[2], "r")
-    output = open("formatted_equations.jl", "w+")
+    output = open("FormattedEquations.jl", "w+")
+
+    write(output, "module FormattedEquations\n")
+    write(output, "function PM(du, u, p, t)\n")
+
+    for i in 1:nbody
+        u_index = (i - 1) * (2 * ndim)
+        write(output, "\tqx", string(i), " = u[", string(u_index + 1), ']', '\n')
+        write(output, "\tqy", string(i), " = u[", string(u_index + 2), ']', '\n')
+        write(output, "\tqz", string(i), " = u[", string(u_index + 3), ']', '\n')
+        write(output, "\tpx", string(i), " = u[", string(u_index + 4), ']', '\n')
+        write(output, "\tpy", string(i), " = u[", string(u_index + 5), ']', '\n')
+        write(output, "\tpz", string(i), " = u[", string(u_index + 6), ']', '\n')
+    end
+
+    write(output, '\n')
+
+    for i in 1:nbody
+        write(output, "\tm", string(i), " = p[", string(i), "]\n")
+    end
+
+    write(output, "\tG = p[", string(nbody + 1), "]\n\n")
 
     lastline = ""
     ibody = 0.0
@@ -43,14 +63,16 @@ function write_equations()::Cint
                 lastline = string("u[", (2 * nbody * ndim) + 1, ']', lastline)
             end
 
-            write(output, lastline, "\n")
+            write(output, '\t', lastline, "\n")
             lastline = ""
         elseif line[1] == 'o'
             line = fix_dot(line)
-            write(output, line, "\n")
+            write(output, '\t', line, "\n")
         end
 
     end
+
+    write(output, "end\nend\n")
 
     close(equations)
     close(output)
