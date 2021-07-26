@@ -4,7 +4,17 @@ using Pkg
 Pkg.activate("FormattedEquations")
 using FormattedEquations
 
-function julia_main()::Cint
+Base.@ccallable function julia_main()::Cint
+	try
+		real_main()
+	catch
+		Base.invokelatest(Base.display_error, Base.catch_stack())
+		return 1
+	end
+	return 0
+end
+
+function real_main()::Cint
 	#=
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
@@ -30,14 +40,7 @@ function julia_main()::Cint
 	xi, yi, zi = x1 - x2, y1 - y2, z1 - z2
 	D = sqrt(xi^2 + yi^2 + zi^2)
 
-    #c0 = [m1, m2, G]
-
-	q01 = [x1, y1]
-    p01 = [px1, py1]
-    q02 = [x2, y2]
-    p02 = [px2, py2]
-
-    h01 = [0]
+	h01 = [0]
 
 	#TAYDEN WUZ HERE
 
@@ -56,23 +59,23 @@ function julia_main()::Cint
     prob = ODEProblem(FormattedEquations.PM, u0, tspan, c0);
     sol = DifferentialEquations.solve(prob, Vern9(), #=callback=cb_collision,=# reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
-    len = size(sol[1,:])[1]
+    #=
 
     xlist1 = sol[1,:]
     ylist1 = sol[2,:]
-    zlist1 = zeros(len)
-    xlist2 = sol[5,:]
-    ylist2 = sol[6,:]
-    zlist2 = zeros(len)
+    zlist1 = sol[3,:]
+    xlist2 = sol[7,:]
+    ylist2 = sol[8,:]
+    zlist2 = sol[9,:]
 
-    momentumx1 = sol[3,:]
-    momentumy1 = sol[4,:]
-    momentumz1 = zeros(len)
-    momentumx2 = sol[7,:]
-    momentumy2 = sol[8,:]
-    momentumz2 = zeros(len)
+    momentumx1 = sol[4,:]
+    momentumy1 = sol[5,:]
+    momentumz1 = sol[6,:]
+    momentumx2 = sol[10,:]
+    momentumy2 = sol[11,:]
+    momentumz2 = sol[12,:]
 
-    hamilArr = sol[9,:];
+    hamilArr = sol[(nbody * 6) + 1,:];
 
     deleteat!(hamilArr, 1);
     originalHamiltonian = copy(hamilArr[1])
@@ -90,14 +93,16 @@ function julia_main()::Cint
     angular_momentum1 = copy(distArr) .*= linear_momentum1
     angular_momentum2 = copy(distArr) .*= linear_momentum2
 
-    xf, yf, zf = xlist1[len] - xlist2[len], ylist1[len] - ylist2[len], zlist1[len] - zlist2[len]
+    xf, yf, zf = xlist1[end] - xlist2[end], ylist1[end] - ylist2[end], zlist1[end] - zlist2[end]
     Df = sqrt(xf^2 + yf^2 + zf^2)
     println("Final distance between objects = ", Df)
 	#println("Schwarzchild distance is ", schwarz[1] + schwarz[2])
     println()
 
+	=#
+
 	open("PMdata.csv", "w+") do io
-		writedlm(io, [xlist1, ylist1, zlist1, xlist2, ylist2, zlist2, hamilVariance, distVar, linear_momentum1, linear_momentum2, angular_momentum1, angular_momentum2], ',')
+		writedlm(io, sol, ',')
 	end
 
     return 0
