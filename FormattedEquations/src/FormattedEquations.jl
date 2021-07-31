@@ -1,4 +1,51 @@
-module FormattedEquations
+module julia_app
+using DifferentialEquations
+using DelimitedFiled
+
+Base.@ccallable function julia_main()::Cint
+	try
+		real_main()
+	catch
+		Base.invokelatest(Base.display_error, Base.catch_stack())
+		return 1
+	end
+	return 0
+end
+
+function real_main()::Cint
+	file = ARGS[1]
+	arr = readdlm(file, ' ', Float64, '\n')
+	nbody = size(arr)[1] - 1
+	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4]
+	data = arr[2,:][2:end]
+	for i in 2:nbody
+		append!(data, arr[i+1,:][2:end])
+	end
+	c0 = arr[:,1][2:end]
+	append!(c0,G)
+	m1, x1, y1, z1, px1, py1, pz1 = arr[2,:]
+	m2, x2, y2, z2, px2, py2, pz2 = arr[3,:]
+	C = 1.000000000000; #Speed of light
+	tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
+	xi, yi, zi = x1 - x2, y1 - y2, z1 - z2
+	D = sqrt(xi^2 + yi^2 + zi^2)
+	h01 = [0]
+	#TAYDEN WUZ HERE
+	u0 = collect(Base.Iterators.flatten([data, h01]));
+	prob = ODEProblem(FormattedEquations.PM, u0, tspan, c0);
+	sol = DifferentialEquations.solve(prob, Vern9(), #=callback=cb_collision,=# reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
+
+	open("PMdata.csv", "w+") do io
+		writedlm(io, sol, ',')
+	end
+
+	return 0
+end
+
+CSI = 3.00e8;
+GSI = 6.647e-11;
+MSUN = 1.989e30;
+
 function PM(du, u, p, t)
 	qx1 = u[1]
 	qy1 = u[2]
@@ -956,4 +1003,5 @@ function PM(du, u, p, t)
 	du[18]=0.5*G*(o22*o2225*o59*o705*o710-o22*o2227*o59*o710*o716+o10*o1684*o59*o67*o75-o10*o1686*o59*o75*o81)-0.25*G*(o1684*o1727*o67+(o108*o3117+o263*o3123)*o70+o2225*o2263*o705-o2227*o2294*o716-o1686*o1758*o81+o708*(o3131*o734+o3137*o811)+(o115*o3153+o3147*o349)*o84+o719*(o3168*o741+o3162*o892))+0.25*G*(o1684*o339*o343*o389*o67*o8-2.0*o115*o1344*o1866*o259*o3147*o389*o70*o8-o115*o1346*o3147*o343*o389*o70*o8+o339*o343*o70*(o115*o259*o3147*o339*o387+o259*o340*(-6.0*o11*o115*o3147+8.0*o115*o273*o3153+o3237+o3238+8.0*o273*o3147*o349-6.0*o3153*o349*o72)+2.0*(2.0*o115*o247*o3147+2.0*o115*o273*o3153+o3237+o3238+2.0*o273*o3147*o349-2.0*o3153*o349*o72)+2.0*(4.0*o115*o274*o3147+2.0*o3153*o345*o349-2.0*o115*o273*o3153*o72-2.0*o273*o3147*o349*o72)*o73)*o8-o1686*o259*o298*o299*o304*o81-o259*o263*o298*o304*o3117*o335*o84-2.0*o1841*o259*o263*o269*o298*o3117*o8*o84+o259*o299*o304*(2.0*o14*(-2.0*o108*o11*o273*o3117+4.0*o263*o274*o3117+2.0*o108*o140*o3123-2.0*o11*o263*o273*o3123)+2.0*(2.0*o108*o273*o3117+2.0*o263*o292*o3117-2.0*o108*o11*o3123+2.0*o263*o273*o3123+o3184+o3187)+o263*o287*o299*o3117*o8+o266*(8.0*o108*o273*o3117-6.0*o108*o11*o3123+8.0*o263*o273*o3123+o3184+o3187-6.0*o263*o3117*o72)*o8)*o84-2.0*o121*o2375*o259*o3131*o719*o811*o817*o842-o2227*o259*o716*o842*o843*o848+o259*o719*o843*(2.0*(o3210+o3213-2.0*o3137*o36*o734+2.0*o292*o3131*o811+2.0*o3131*o734*o821+2.0*o3137*o811*o821)+o121*o814*(o3210+o3213-6.0*o3137*o36*o734-6.0*o3131*o72*o811+8.0*o3131*o734*o821+8.0*o3137*o811*o821)+2.0*o37*(2.0*o209*o3137*o734-2.0*o3131*o36*o734*o821-2.0*o3137*o36*o811*o821+4.0*o3131*o811*o822)+o121*o3131*o811*o835*o843)*o848-o259*o3131*o719*o811*o842*o848*o879+o121*o708*o883*o887*(2.0*(o3263+o3264+2.0*o155*o3162*o741+2.0*o3168*o741*o821-2.0*o3168*o72*o892+2.0*o3162*o821*o892)+o259*o884*(o3263+o3264-6.0*o3162*o36*o741+8.0*o3168*o741*o821-6.0*o3168*o72*o892+8.0*o3162*o821*o892)+2.0*o73*(-2.0*o3168*o72*o741*o821+4.0*o3162*o741*o822+2.0*o3168*o345*o892-2.0*o3162*o72*o821*o892)+o259*o3162*o741*o883*o930)-2.0*o121*o1379*o2400*o259*o3162*o708*o741*o932-o121*o1381*o3162*o708*o741*o887*o932+o121*o2225*o705*o883*o887*o932)
 	u[19]=o10+o22+o59+0.25*G*(o1692*o33+o1723*o51+o1727*o70+o2263*o708+o2294*o719+o1758*o84)-0.5*G*(o10*o22*o33*o39+o10*o22*o39*o51+o22*o59*o708*o710+o22*o59*o710*o719+o10*o59*o70*o75+o10*o59*o75*o84)-0.25*G*(o121*o161*o162*o168*o51+o203*o207*o257*o33*o8+o339*o343*o389*o70*o8+o259*o298*o299*o304*o84+o259*o719*o842*o843*o848+o121*o708*o883*o887*o932)
 end
-end
+
+end # module

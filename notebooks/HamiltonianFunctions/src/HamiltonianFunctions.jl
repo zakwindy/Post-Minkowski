@@ -15,7 +15,7 @@ end
 
 function pmnbody(q, p, params, tspan)
 	paramsCopy = copy(params)
-	G = paramsCopy[length(params)]
+	G = paramsCopy[end]
 	m = deleteat!(paramsCopy, length(params))
 
 	n = length(m)
