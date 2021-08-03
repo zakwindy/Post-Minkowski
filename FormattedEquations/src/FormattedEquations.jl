@@ -1,6 +1,6 @@
 module julia_app
 using DifferentialEquations
-using DelimitedFiled
+using DelimitedFiles
 
 Base.@ccallable function julia_main()::Cint
 	try
