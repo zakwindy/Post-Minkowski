@@ -18,7 +18,10 @@ function real_main()::Cint
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	nbody = size(arr)[1]
-	data = arr[1:end,2:end]
+	data = arr[1,2:end]
+	for i in 2:nbody
+		append!(data, arr[i,2:end])
+	end
 	c0 = arr[1:end,1]
 
 	schwarz = 2 * c0 #Calculates the Schwarzchild radius of each body with c = 1.0 and G = 1.0
@@ -41,7 +44,10 @@ function real_main()::Cint
 			ifactor = (i - 1) * 6
 			for j in i+1:nbody
 				jfactor = (j - 1) * 6
-				if schwarz[i] + schwarz[j] >= sqrt((u[ifactor + 1] - u[jfactor + 1])^2 + (u[ifactor + 2] - u[jfactor + 2])^2 + (u[ifactor + 3] - u[jfactor + 3])^2)
+				schwarzRadius = schwarz[i] + schwarz[j]
+				distance = sqrt((u[ifactor + 1] - u[jfactor + 1])^2 + (u[ifactor + 2] - u[jfactor + 2])^2 + (u[ifactor + 3] - u[jfactor + 3])^2)
+				if schwarzRadius >= distance
+					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance, ".")
 					return true
 				end
 			end
