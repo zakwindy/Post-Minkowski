@@ -24,22 +24,27 @@ function real_main()::Cint
 	end
 	c0 = arr[1:end,1]
 
-	schwarz = 2 * c0 #Calculates the Schwarzchild radius of each body with c = 1.0 and G = 1.0
+	schwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.
+
+	distances = zeros(Float64, nbody, nbody)
+
+	for i in 1:nbody #calculate the starting distance between each body
+		for j in i+1:nbody
+			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
+		end
+	end
+
+	dist100 = 100 * distances #the distance at which the object will be considered to have left the system
 
 	append!(c0,G)
 
-	m1, x1, y1, z1, px1, py1, pz1 = arr[1,:]
-	m2, x2, y2, z2, px2, py2, pz2 = arr[2,:]
-
     tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
-	xi, yi, zi = x1 - x2, y1 - y2, z1 - z2
-	D = sqrt(xi^2 + yi^2 + zi^2)
 
 	h01 = [0.0]
 
 	#TAYDEN WUZ HERE
 
-	function condition_collision(u,t,integrator)
+	function condition(u,t,integrator)
 		for i in 1:nbody
 			ifactor = (i - 1) * 6
 			for j in i+1:nbody
@@ -50,74 +55,26 @@ function real_main()::Cint
 					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance, ".")
 					return true
 				end
+				if distance >= dist100[i,j]
+					println("Body ", i, " or ", j, " has exited the system.")
+					return true
+				end
 			end
 		end
 		return false
 	end
 
-	function affect_collision!(integrator)
+	function affect!(integrator)
 		terminate!(integrator)
-		println("A collision has occurred.")
 	end
 
-	cb_collision = DiscreteCallback(condition_collision, affect_collision!, save_positions=(true,true))
+	cb = DiscreteCallback(condition, affect!, save_positions=(true,true))
 
-
-	#=
-	condition_collision(u,t,integrator) = schwarz[1] + schwarz[2] >= sqrt((u[1] - u[5])^2 + (u[2] - u[6])^2)
-	affect_collision!(integrator) = terminate!(integrator)
-
-	cb_collision = DiscreteCallback(condition_collision, affect_collision!, save_positions=(true,true))
-	=# #FIXME Make this section with collision detection n-body compatible.
-
-	#u0 = collect(Base.Iterators.flatten([q01, p01, q02, p02, h01]));
 	u0 = collect(Base.Iterators.flatten([data, h01]));
 
     prob = ODEProblem(PM, u0, tspan, c0);
 
-    sol = solve(prob, Vern9(), callback=cb_collision, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
-
-    #=
-
-    xlist1 = sol[1,:]
-    ylist1 = sol[2,:]
-    zlist1 = sol[3,:]
-    xlist2 = sol[7,:]
-    ylist2 = sol[8,:]
-    zlist2 = sol[9,:]
-
-    momentumx1 = sol[4,:]
-    momentumy1 = sol[5,:]
-    momentumz1 = sol[6,:]
-    momentumx2 = sol[10,:]
-    momentumy2 = sol[11,:]
-    momentumz2 = sol[12,:]
-
-    hamilArr = sol[(nbody * 6) + 1,:];
-
-    deleteat!(hamilArr, 1);
-    originalHamiltonian = copy(hamilArr[1])
-    lenHamil = size(hamilArr)
-    originalArr = ones(lenHamil) * originalHamiltonian
-    hamilVariance = hamilArr - originalArr
-
-    xdis, ydis, zdis = xlist1 - xlist2, ylist1 - ylist2, zlist1 - zlist2
-    distArr = (xdis.^2 + ydis.^2 + zdis.^2).^0.5
-    distVar = distArr - ( ones(size(distArr)) * D )
-
-    linear_momentum1 = ((copy(momentumx1) .*= momentumx1) + (copy(momentumy1) .*= momentumy1) + (copy(momentumz1) .*= momentumz1)).^0.5
-    linear_momentum2 = ((copy(momentumx2) .*= momentumx2) + (copy(momentumy2) .*= momentumy2) + (copy(momentumz2) .*= momentumz2)).^0.5
-
-    angular_momentum1 = copy(distArr) .*= linear_momentum1
-    angular_momentum2 = copy(distArr) .*= linear_momentum2
-
-    xf, yf, zf = xlist1[end] - xlist2[end], ylist1[end] - ylist2[end], zlist1[end] - zlist2[end]
-    Df = sqrt(xf^2 + yf^2 + zf^2)
-    println("Final distance between objects = ", Df)
-	#println("Schwarzchild distance is ", schwarz[1] + schwarz[2])
-    println()
-
-	=#
+    sol = solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
 	open("PMdata.csv", "w+") do io
 		writedlm(io, sol, ',')
