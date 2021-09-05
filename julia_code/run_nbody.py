@@ -220,14 +220,14 @@ px3 = px3-CPX
 py3 = py3-CPY
 pz3 = pz3-CPZ
 
-filename = 'ICfile' + str(args.run_number) + '.txt'
+filename = 'ICfile' + str(args.run_number)
 #returning the outputs
 f = open(filename,'w')
 l1 = [m1, x1, y1, z1, px1, py1, pz1]
 
-s1 = str(m1) + "   " + str(x1) + "   " + str(y1) + "   " + str(z1) + "   " + str(px1) + "   " +  str(py1) + "   " + str(pz1) + "\n"
-s2 = str(m2) + "   " + str(x2) + "   " + str(y2) + "   " + str(z2) + "   " + str(px2) + "   " +  str(py2) + "   " + str(pz2) + "\n"
-s3 = str(m3) + "   " + str(x3) + "   " + str(y3) + "   " + str(z3) + "   " + str(px3) + "   " +  str(py3) + "   " + str(pz3) + "\n"
+s1 = str(m1) + " " + str(x1) + " " + str(y1) + " " + str(z1) + " " + str(px1) + " " +  str(py1) + " " + str(pz1) + "\n"
+s2 = str(m2) + " " + str(x2) + " " + str(y2) + " " + str(z2) + " " + str(px2) + " " +  str(py2) + " " + str(pz2) + "\n"
+s3 = str(m3) + " " + str(x3) + " " + str(y3) + " " + str(z3) + " " + str(px3) + " " +  str(py3) + " " + str(pz3) + "\n"
 
 f.write(s1)
 f.write(s2)
