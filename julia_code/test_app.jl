@@ -28,9 +28,10 @@ function real_main()::Cint
 
 	distances = zeros(Float64, nbody, nbody)
 
-	for i in 1:nbody #calculate the starting distance between each body
+	Threads.@threads for i in 1:nbody #calculate the starting distance between each body
 		for j in i+1:nbody
 			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
+			println(Threads.threadid())
 		end
 	end
 
@@ -52,11 +53,11 @@ function real_main()::Cint
 				schwarzRadius = schwarz[i] + schwarz[j]
 				distance = sqrt((u[ifactor + 1] - u[jfactor + 1])^2 + (u[ifactor + 2] - u[jfactor + 2])^2 + (u[ifactor + 3] - u[jfactor + 3])^2)
 				if schwarzRadius >= distance
-					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance, ".")
+					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance, ". On thread ", Threads.threadid())
 					return true
 				end
 				if distance >= dist100[i,j]
-					println("Body ", i, " or ", j, " has exited the system.")
+					println("Body ", i, " or ", j, " has exited the system. On thread ", Threads.threadid())
 					return true
 				end
 			end
