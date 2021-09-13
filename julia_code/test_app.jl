@@ -1,6 +1,5 @@
 using DifferentialEquations
 using DelimitedFiles
-import Base.Threads.@spawn
 
 Base.@ccallable function julia_main()::Cint
 	try
@@ -29,10 +28,9 @@ function real_main()::Cint
 
 	distances = zeros(Float64, nbody, nbody)
 
-	Threads.@threads for i in 1:nbody #calculate the starting distance between each body
+	for i in 1:nbody #calculate the starting distance between each body
 		for j in i+1:nbody
 			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
-			println(Threads.threadid())
 		end
 	end
 
