@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     33793,        871]
-NotebookOptionsPosition[     32577,        841]
-NotebookOutlinePosition[     33039,        858]
-CellTagsIndexPosition[     32996,        855]
+NotebookDataLength[     38847,       1074]
+NotebookOptionsPosition[     37405,       1040]
+NotebookOutlinePosition[     37867,       1057]
+CellTagsIndexPosition[     37824,       1054]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -836,6 +836,205 @@ Cell[BoxData["\<\"ndata.txt\"\>"], "Output",
  CellChangeTimes->{3.840531136215869*^9, 3.840531364912633*^9, 
   3.840531480098198*^9, 3.840531598110223*^9},
  CellLabel->"Out[78]=",ExpressionUUID->"ad3b9ed4-0e25-4ba4-ab72-81c7beeb9b98"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["equationsNewton"], "Input",
+ CellChangeTimes->{{3.840532440363104*^9, 3.840532443731468*^9}},
+ CellLabel->"In[79]:=",ExpressionUUID->"920c4801-bbfc-43d2-85e3-6fa11bab1b48"],
+
+Cell[OutputFormData["\<\
+\"o3=1/m1;\"
+\"o7=1/m2;\"
+\"o11=1/m3;\"
+\"o15=-qx2;\"
+\"o16=o15+qx1;\"
+\"o27=-qx1;\"
+\"o28=o27+qx2;\"
+\"o39=-qx3;\"
+\"o40=o39+qx1;\"
+\"o51=o27+qx3;\"
+\"o30=-qy1;\"
+\"o33=-qz1;\"
+\"o18=-qy2;\"
+\"o19=o18+qy1;\"
+\"o17=o16*o16;\"
+\"o20=o19*o19;\"
+\"o21=-qz2;\"
+\"o22=o21+qz1;\"
+\"o23=o22*o22;\"
+\"o24=o17+o20+o23;\"
+\"o25=pow(o24,-1.5);\"
+\"o31=o30+qy2;\"
+\"o29=o28*o28;\"
+\"o32=o31*o31;\"
+\"o34=o33+qz2;\"
+\"o35=o34*o34;\"
+\"o36=o29+o32+o35;\"
+\"o37=pow(o36,-1.5);\"
+\"o42=-qy3;\"
+\"o43=o42+qy1;\"
+\"o41=o40*o40;\"
+\"o44=o43*o43;\"
+\"o45=-qz3;\"
+\"o46=o45+qz1;\"
+\"o47=o46*o46;\"
+\"o48=o41+o44+o47;\"
+\"o49=pow(o48,-1.5);\"
+\"o53=o30+qy3;\"
+\"o52=o51*o51;\"
+\"o54=o53*o53;\"
+\"o55=o33+qz3;\"
+\"o56=o55*o55;\"
+\"o57=o52+o54+o56;\"
+\"o58=pow(o57,-1.5);\"
+\"o76=o39+qx2;\"
+\"o85=o15+qx3;\"
+\"o78=o42+qy2;\"
+\"o77=o76*o76;\"
+\"o79=o78*o78;\"
+\"o80=o45+qz2;\"
+\"o81=o80*o80;\"
+\"o82=o77+o79+o81;\"
+\"o83=pow(o82,-1.5);\"
+\"o87=o18+qy3;\"
+\"o86=o85*o85;\"
+\"o88=o87*o87;\"
+\"o89=o21+qz3;\"
+\"o90=o89*o89;\"
+\"o91=o86+o88+o90;\"
+\"o92=pow(o91,-1.5);\"
+\"dqdtNewton[0][0]=o3*px1;\"
+\"dqdtNewton[0][1]=o3*py1;\"
+\"dqdtNewton[0][2]=o3*pz1;\"
+\"dqdtNewton[1][0]=o7*px2;\"
+\"dqdtNewton[1][1]=o7*py2;\"
+\"dqdtNewton[1][2]=o7*pz2;\"
+\"dqdtNewton[2][0]=o11*px3;\"
+\"dqdtNewton[2][1]=o11*py3;\"
+\"dqdtNewton[2][2]=o11*pz3;\"
+\"dpdtNewton[0][0]=0.5*G*(-(m1*m2*o16*o25)+m1*m2*o28*o37-m1*m3*o40*o49+m1*m3*\
+o51*o58);\"
+\"dpdtNewton[0][1]=0.5*G*(-(m1*m2*o19*o25)+m1*m2*o31*o37-m1*m3*o43*o49+m1*m3*\
+o53*o58);\"
+\"dpdtNewton[0][2]=0.5*G*(-(m1*m2*o22*o25)+m1*m2*o34*o37-m1*m3*o46*o49+m1*m3*\
+o55*o58);\"
+\"dpdtNewton[1][0]=0.5*G*(m1*m2*o16*o25-m1*m2*o28*o37-m2*m3*o76*o83+m2*m3*o85*\
+o92);\"
+\"dpdtNewton[1][1]=0.5*G*(m1*m2*o19*o25-m1*m2*o31*o37-m2*m3*o78*o83+m2*m3*o87*\
+o92);\"
+\"dpdtNewton[1][2]=0.5*G*(m1*m2*o22*o25-m1*m2*o34*o37-m2*m3*o80*o83+m2*m3*o89*\
+o92);\"
+\"dpdtNewton[2][0]=0.5*G*(m1*m3*o40*o49-m1*m3*o51*o58+m2*m3*o76*o83-m2*m3*o85*\
+o92);\"
+\"dpdtNewton[2][1]=0.5*G*(m1*m3*o43*o49-m1*m3*o53*o58+m2*m3*o78*o83-m2*m3*o87*\
+o92);\"
+\"dpdtNewton[2][2]=0.5*G*(m1*m3*o46*o49-m1*m3*o55*o58+m2*m3*o80*o83-m2*m3*o89*\
+o92);\"
+\"newton=0.5*(o3*(px1*px1+py1*py1+pz1*pz1)+o7*(px2*px2+py2*py2+pz2*pz2)+o11*(\
+px3*px3+py3\\
+\\\\\\n*py3+pz3*pz3))-0.5*G*((1.*m1*m2)/sqrt(o24)+(1.*m1*m2)/sqrt(o36)+(1.*m1*\
+m3)/sqrt(o48\\
+)+\\\\\\n(1.*m1*m3)/sqrt(o57)+(1.*m2*m3)/sqrt(o82)+(1.*m2*m3)/sqrt(o91));\"\
+\>", "\<\
+o3=1/m1;
+o7=1/m2;
+o11=1/m3;
+o15=-qx2;
+o16=o15+qx1;
+o27=-qx1;
+o28=o27+qx2;
+o39=-qx3;
+o40=o39+qx1;
+o51=o27+qx3;
+o30=-qy1;
+o33=-qz1;
+o18=-qy2;
+o19=o18+qy1;
+o17=o16*o16;
+o20=o19*o19;
+o21=-qz2;
+o22=o21+qz1;
+o23=o22*o22;
+o24=o17+o20+o23;
+o25=pow(o24,-1.5);
+o31=o30+qy2;
+o29=o28*o28;
+o32=o31*o31;
+o34=o33+qz2;
+o35=o34*o34;
+o36=o29+o32+o35;
+o37=pow(o36,-1.5);
+o42=-qy3;
+o43=o42+qy1;
+o41=o40*o40;
+o44=o43*o43;
+o45=-qz3;
+o46=o45+qz1;
+o47=o46*o46;
+o48=o41+o44+o47;
+o49=pow(o48,-1.5);
+o53=o30+qy3;
+o52=o51*o51;
+o54=o53*o53;
+o55=o33+qz3;
+o56=o55*o55;
+o57=o52+o54+o56;
+o58=pow(o57,-1.5);
+o76=o39+qx2;
+o85=o15+qx3;
+o78=o42+qy2;
+o77=o76*o76;
+o79=o78*o78;
+o80=o45+qz2;
+o81=o80*o80;
+o82=o77+o79+o81;
+o83=pow(o82,-1.5);
+o87=o18+qy3;
+o86=o85*o85;
+o88=o87*o87;
+o89=o21+qz3;
+o90=o89*o89;
+o91=o86+o88+o90;
+o92=pow(o91,-1.5);
+dqdtNewton[0][0]=o3*px1;
+dqdtNewton[0][1]=o3*py1;
+dqdtNewton[0][2]=o3*pz1;
+dqdtNewton[1][0]=o7*px2;
+dqdtNewton[1][1]=o7*py2;
+dqdtNewton[1][2]=o7*pz2;
+dqdtNewton[2][0]=o11*px3;
+dqdtNewton[2][1]=o11*py3;
+dqdtNewton[2][2]=o11*pz3;
+dpdtNewton[0][0]=0.5*G*(-(m1*m2*o16*o25)+m1*m2*o28*o37-m1*m3*o40*o49+m1*m3*\
+o51*o58);
+dpdtNewton[0][1]=0.5*G*(-(m1*m2*o19*o25)+m1*m2*o31*o37-m1*m3*o43*o49+m1*m3*\
+o53*o58);
+dpdtNewton[0][2]=0.5*G*(-(m1*m2*o22*o25)+m1*m2*o34*o37-m1*m3*o46*o49+m1*m3*\
+o55*o58);
+dpdtNewton[1][0]=0.5*G*(m1*m2*o16*o25-m1*m2*o28*o37-m2*m3*o76*o83+m2*m3*o85*\
+o92);
+dpdtNewton[1][1]=0.5*G*(m1*m2*o19*o25-m1*m2*o31*o37-m2*m3*o78*o83+m2*m3*o87*\
+o92);
+dpdtNewton[1][2]=0.5*G*(m1*m2*o22*o25-m1*m2*o34*o37-m2*m3*o80*o83+m2*m3*o89*\
+o92);
+dpdtNewton[2][0]=0.5*G*(m1*m3*o40*o49-m1*m3*o51*o58+m2*m3*o76*o83-m2*m3*o85*\
+o92);
+dpdtNewton[2][1]=0.5*G*(m1*m3*o43*o49-m1*m3*o53*o58+m2*m3*o78*o83-m2*m3*o87*\
+o92);
+dpdtNewton[2][2]=0.5*G*(m1*m3*o46*o49-m1*m3*o55*o58+m2*m3*o80*o83-m2*m3*o89*\
+o92);
+newton=0.5*(o3*(px1*px1+py1*py1+pz1*pz1)+o7*(px2*px2+py2*py2+pz2*pz2)+o11*(\
+px3*px3+py3\\
+*py3+pz3*pz3))-0.5*G*((1.*m1*m2)/sqrt(o24)+(1.*m1*m2)/sqrt(o36)+(1.*m1*m3)/\
+sqrt(o48)+\\
+(1.*m1*m3)/sqrt(o57)+(1.*m2*m3)/sqrt(o82)+(1.*m2*m3)/sqrt(o91));\
+\>"], "Output",
+ CellChangeTimes->{3.840532445178398*^9},
+ CellLabel->
+  "Out[79]//OutputForm=",ExpressionUUID->"1610e044-9894-4c27-b360-\
+1331abe31cd3"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -871,6 +1070,10 @@ Cell[28370, 739, 3451, 83, 273, "Input",ExpressionUUID->"355d4cf8-cccb-4f40-b4e3
 Cell[31824, 824, 238, 3, 41, "Output",ExpressionUUID->"f416c619-2630-4d2f-a9c1-68b568063ac5"],
 Cell[32065, 829, 247, 3, 41, "Output",ExpressionUUID->"ab6653e7-d5c8-456d-8fc3-3fe28309912a"],
 Cell[32315, 834, 234, 3, 41, "Output",ExpressionUUID->"ad3b9ed4-0e25-4ba4-ab72-81c7beeb9b98"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32586, 842, 186, 2, 41, "Input",ExpressionUUID->"920c4801-bbfc-43d2-85e3-6fa11bab1b48"],
+Cell[32775, 846, 4602, 190, 922, "Output",ExpressionUUID->"1610e044-9894-4c27-b360-1331abe31cd3"]
 }, Open  ]]
 }, Open  ]]
 }
