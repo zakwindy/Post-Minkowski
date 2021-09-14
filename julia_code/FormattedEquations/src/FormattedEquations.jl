@@ -16,6 +16,15 @@ function real_main()::Cint
 	G = 1.0
 	C = 1.0
 	mSun = 1.0
+	PMorNEWTON = 0
+	try
+		f = open(ARGS[1])
+		close(f)
+		PMorNEWTON = parse(Int64, ARGS[2])
+	catch e
+		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively.")
+		return 1
+	end
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	nbody = size(arr)[1]
@@ -28,11 +37,53 @@ function real_main()::Cint
 	tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
 	h01 = [0.0]
 	#TAYDEN WUZ HERE
-	u0 = collect(Base.Iterators.flatten([data, h01]));
-	prob = ODEProblem(FormattedEquations.PM, u0, tspan, c0);
-	sol = DifferentialEquations.solve(prob, Vern9(), #=callback=cb_collision,=# reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
-	open("PMdata.csv", "w+") do io
+	schwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.
+	distances = zeros(Float64, nbody, nbody)
+	for i in 1:nbody #calculate the starting distance between each body
+		for j in i+1:nbody
+			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
+		end
+	end
+	dist100 = 100 * distances #the distance at which the object will be considered to have left the system
+
+	function condition(u,t,integrator)
+		for i in 1:nbody
+			ifactor = (i - 1) * 6
+			for j in i+1:nbody
+				jfactor = (j - 1) * 6
+				schwarzRadius = schwarz[i] + schwarz[j]
+				distance = sqrt((u[ifactor + 1] - u[jfactor + 1])^2 + (u[ifactor + 2] - u[jfactor + 2])^2 + (u[ifactor + 3] - u[jfactor + 3])^2)
+				if schwarzRadius >= distance
+					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance)
+					return true
+				end
+				if distance >= dist100[i,j]
+					println("Body ", i, " or ", j, " has exited the system.")
+					return true
+				end
+			end
+		end
+		return false
+	end
+
+	function affect!(integrator)
+		terminate!(integrator)
+	end
+
+	cb = DiscreteCallback(condition, affect!, save_positions=(true,true))
+
+	u0 = collect(Base.Iterators.flatten([data, h01]));
+	if PMorNEWTON == 1
+		prob = ODEProblem(PM, u0, tspan, c0);
+		name_string = "PM";
+	else
+		prob = ODEProblem(newton, u0, tspan, c0);
+		name_string = "newton";
+	end
+	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
+
+	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
 	end
 

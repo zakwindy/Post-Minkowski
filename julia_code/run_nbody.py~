@@ -9,92 +9,8 @@ import argparse
 import sys
 from math import *
 import subprocess
-from scipy import optimize
 
 LTRACE = True
-
-#----------------------------------------------------------------------
-#  Set up commandline arguments
-#----------------------------------------------------------------------
-parser = argparse.ArgumentParser()
-
-parser.add_argument('-t','--time', type=float, default=10.0,metavar='NUM',help="integration time")
-parser.add_argument('-d','--time_step', type=float, default=0.1,metavar='NUM',help="time step for integrator")
-parser.add_argument('-o','--order', type=str, default="2",
-     help='Post-Newtonian order of the equations',
-     choices=["0","1","2","2.5"])
-parser.add_argument('--m1', type=float, default=1.0,
-       help='Mass of star 1 (Default 1.0)', metavar='NUM')
-parser.add_argument('--m2', type=float, default=1.0,
-       help='Mass of star 2 (Default 1.0)', metavar='NUM')
-parser.add_argument('--m3', type=float, default=1.0,
-       help='Mass of star 3 (Default 1.0)', metavar='NUM')
-parser.add_argument('-e','--tolerance', type=float, default=1.0e-13,metavar='NUM',help="tolerance for LSODA integrator")
-parser.add_argument('-r', '--radius', type=float, default=20.0,
-     help='seperation of the binary star system(default 20.0)', metavar = 'NUM')
-parser.add_argument('-n','--run_number', type=int, default=0,metavar='INT',help="numerical tag for output files")
-parser.add_argument('-f', '--no_com_frame', action="store_true",
-     help='Do not use the center of mass frame.')
-parser.add_argument('--two_body', action="store_true", help='This a two-body system.')
-parser.add_argument('Phi', type=float, default=0.0, help='Phase angle of the binary star')
-parser.add_argument('Rho', type=float, default=0.0, help='Impact Parameter')
-parser.add_argument('--vc', type=float, default=0.5,metavar='NUM',help="the fraction of the critical velocity that we wish to give to the third object (default=0.5)")
-
-args = parser.parse_args()
-r = args.radius
-phi = args.Phi
-rho = args.Rho
-m1 = args.m1
-m2 = args.m2
-m3 = args.m3
-
-
-if (args.two_body or args.no_com_frame):
-    COM_frame = False
-else:
-    COM_frame = True
-
-#constants and initial conditions
-G = 1.0
-c = 1.0
-msun = 1.0
-
-m1 = m1*msun
-m2 = m2*msun
-
-if args.two_body:
-    m3 = 1.0e-15
-else:
-    m3 = m3*msun
-
-M = m1 + m2
-MT = m1 + m2 + m3
-mu = m1*m2/(m1+m2)
-MU = 2.0*m1*m3/(2.0*m1*m3)
-nu = mu/M
-pr = 0.0
-
-if args.two_body:
-    v3 = 0.0
-else:
-    v3 = sqrt(G*m1*m2*MT/(2.0*r*m3*(m1+m2)))
-
-
-#initial position for the object
-x1 = r*m2/(m1+m2)*cos(phi)
-y1 = r*m2/(m1+m2)*sin(phi)
-z1 = 0.0
-x2 = -r*m1/(m1+m2)*cos(phi)
-y2 = -r*m1/(m1+m2)*sin(phi)
-z2 = 0.0
-
-if args.two_body:
-    x3 = 1.0e40
-else:
-    x3 = 60*r
-
-y3 = rho
-z3 = 0.0
 
 #----------------------------------------------------------------------
 #  Routines to calculate circular binary initial data
@@ -152,6 +68,89 @@ def circular_orbit_pn2(r, mu, M):
         1.767e3*o2*o29+6.773333333333333e2*o29*o4-
         9.955555555555556e1*o29*o6+1.666666666666667e0*q)
     return pt2
+    
+#----------------------------------------------------------------------
+#  Set up commandline arguments
+#----------------------------------------------------------------------
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-t','--time', type=float, default=10.0,metavar='NUM',help="integration time")
+parser.add_argument('-d','--time_step', type=float, default=0.1,metavar='NUM',help="time step for integrator")
+parser.add_argument('-o','--order', type=str, default="2", 
+     help='Post-Newtonian order of the equations', 
+     choices=["0","1","2","2.5"])
+parser.add_argument('--m1', type=float, default=1.0, 
+       help='Mass of star 1 (Default 1.0)', metavar='NUM')
+parser.add_argument('--m2', type=float, default=1.0, 
+       help='Mass of star 2 (Default 1.0)', metavar='NUM')
+parser.add_argument('--m3', type=float, default=1.0, 
+       help='Mass of star 3 (Default 1.0)', metavar='NUM')
+parser.add_argument('-e','--tolerance', type=float, default=1.0e-13,metavar='NUM',help="tolerance for LSODA integrator")
+parser.add_argument('-r', '--radius', type=float, default=20.0, 
+     help='seperation of the binary star system(default 20.0)', metavar = 'NUM')
+parser.add_argument('-n','--run_number', type=int, default=0,metavar='INT',help="numerical tag for output files")
+parser.add_argument('-f', '--no_com_frame', action="store_true", 
+     help='Do not use the center of mass frame.')
+parser.add_argument('--two_body', action="store_true", help='This a two-body system.')
+parser.add_argument('Phi', type=float, default=0.0, help='Phase angle of the binary star')
+parser.add_argument('Rho', type=float, default=0.0, help='Impact Parameter')
+parser.add_argument('--vc', type=float, default=0.5,metavar='NUM',help="the fraction of the critical velocity that we wish to give to the third object (default=0.5)")
+
+args = parser.parse_args()
+r = args.radius
+phi = args.Phi
+rho = args.Rho
+m1 = args.m1
+m2 = args.m2
+m3 = args.m3
+
+
+if (args.two_body or args.no_com_frame):
+    COM_frame = False
+else:
+    COM_frame = True
+
+#constants and initial conditions
+G = 1.0
+c = 1.0
+msun = 1.0
+
+m1 = m1*msun
+m2 = m2*msun
+
+if args.two_body:
+    m3 = 1.0e-15
+else: 
+    m3 = m3*msun
+
+M = m1 + m2
+MT = m1 + m2 + m3
+mu = m1*m2/(m1+m2)
+MU = 2.0*m1*m3/(2.0*m1*m3)
+nu = mu/M
+pr = 0.0
+
+if args.two_body:
+    v3 = 0.0
+else:
+    v3 = sqrt(G*m1*m2*MT/(2.0*r*m3*(m1+m2)))
+
+
+#initial position for the object
+x1 = r*m2/(m1+m2)*cos(phi)
+y1 = r*m2/(m1+m2)*sin(phi)
+z1 = 0.0
+x2 = -r*m1/(m1+m2)*cos(phi)
+y2 = -r*m1/(m1+m2)*sin(phi)
+z2 = 0.0
+
+if args.two_body:
+    x3 = 1.0e40
+else:
+    x3 = 60*r
+
+y3 = rho
+z3 = 0.0
 
 if args.order == "0":
     pphi = circular_orbit_pn0(r, mu, M)
