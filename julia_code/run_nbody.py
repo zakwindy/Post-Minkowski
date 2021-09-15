@@ -20,9 +20,9 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-t','--time', type=float, default=10.0,metavar='NUM',help="integration time")
 parser.add_argument('-d','--time_step', type=float, default=0.1,metavar='NUM',help="time step for integrator")
-parser.add_argument('-o','--order', type=str, default="2",
-     help='Post-Newtonian order of the equations',
-     choices=["0","1","2","2.5"])
+parser.add_argument('-o','--order', type=str, default="1",
+     help='Post-Minkowskian order of the equations',
+     choices=["0","1"])
 parser.add_argument('--m1', type=float, default=1.0,
        help='Mass of star 1 (Default 1.0)', metavar='NUM')
 parser.add_argument('--m2', type=float, default=1.0,
@@ -101,72 +101,209 @@ z3 = 0.0
 #----------------------------------------------------------------------
 
 #----------------- 0th order-------------------------------------------
-def circular_orbit_pn0(r, mu, M):
-    q  = r/M
+def circular_orbit_pm0(r, mu, M):
+    q  = G * m1 * m2 * r * mu
     return sqrt(q)
 
 #----------------- 1st order-------------------------------------------
-def circular_orbit_pn1(r, mu, M):
-    nu = mu / M
-    q  = r/M
-    o2=q*q
-    pt1=7.071067811865475e-1*sqrt(8.e0*o2-3.9000000000000004e1*q-
-        q*sqrt(1.553e3+6.4e1*o2-6.5600000000000005e2*q))
-    return pt1
+def f(x):
+    o29=r*r
+    o46=x*x
+    o44=m1*m1
+    o53=m2*m2
+    o60=(r**-2)
+    o61=o46*o60
+    o45=o29*o44
+    o47=o45+o46
+    o54=o29*o53
+    o58=o46+o54
+    o62=o44+o61
+    o104=o53+o61
+    o108=sqrt(o62)
+    o109=sqrt(o104)
+    o113=(m1**4)
+    o132=(r**4)
+    o114=(m2**4)
+    
+    return (1*(r**-5)*(-((o108+o109)*o46*o47*o58*(o29**1.5))+G*(6*o44*o46*o53*(2*o108*o109+o44+o53)*(r**6)+o113*o114*(r**8)+(4*o113*o132+4*o114*o132+12*o108*o109*o132*o53+o44*(12*o108*o109*o132+27*o132*o53))*(x**4)+(12*o108*o109*o29+18*o29*o44+18*o29*o53)*(x**6)+12*(x**8))))/(o47*o58*sqrt(o104)*sqrt(o29)*sqrt(o62))
+    
+def fprime(x):
+    o29=r*r
+    o46=x*x
+    o44=m1*m1
+    o53=m2*m2
+    o60=(r**-2)
+    o61=o46*o60
+    o45=o29*o44
+    o47=o45+o46
+    o54=o29*o53
+    o58=o46+o54
+    o62=o44+o61
+    o103=1/sqrt(o62)
+    o104=o53+o61
+    o105=1/sqrt(o104)
+    o106=(o29**1.5)
+    o112=(x**3)
+    o113=sqrt(o62)
+    o114=sqrt(o104)
+    o115=o113+o114
+    o129=(r**6)
+    o165=(r**4)
+    o35=1/sqrt(o29)
+    o52=1/o47
+    o59=1/o58
+    o166=(m1**4)
+    o168=(m2**4)
+    o134=2*o113*o114
+    o135=o134+o44+o53
+    o122=(x**6)
+    o139=18*o29*o44
+    o147=18*o29*o53
+    o152=12*o113*o114*o29
+    o153=o139+o147+o152
+    o155=(x**4)
+    o167=4*o165*o166
+    o169=4*o165*o168
+    o170=12*o113*o114*o165*o53
+    o171=27*o165*o53
+    o172=12*o113*o114*o165
+    o195=o171+o172
+    o196=o195*o44
+    o197=o167+o169+o170+o196
+    o206=(r**-7)
+    o208=-(o106*o115*o46*o47*o58)
+    o210=(r**8)
+    o211=o166*o168*o210
+    o212=(x**8)
+    o213=12*o212
+    o214=6*o129*o135*o44*o46*o53
+    o215=o122*o153
+    o216=o155*o197
+    o217=o211+o213+o214+o215+o216
+    o218=G*o217
+    o219=o208+o218
+    o8=(r**-5)
+    
+    return -(o103*o206*o219*o35*o52*o59*x*(o104**-1.5))-2*o103*o105*o219*o35*o59*o8*x*(o47**-2)-2*o103*o105*o219*o35*o52*o8*x*(o58**-2)-o105*o206*o219*o35*o52*o59*x*(o62**-1.5)+o103*o105*o35*o52*o59*o8*(-2*o106*o112*o115*o47-2*o106*o112*o115*o58-2*o106*o115*o47*o58*x-o106*o46*o47*o58*(o103*o60*x+o105*o60*x)+G*(4*o112*o197+12*o129*o135*o44*o53*x+o122*(12*o105*o113*x+12*o103*o114*x)+6*o129*o44*o46*o53*(2*o105*o113*o60*x+2*o103*o114*o60*x)+o155*(12*o105*o113*o29*o53*x+12*o103*o114*o29*o53*x+o44*(12*o105*o113*o29*x+12*o103*o114*o29*x))+6*o153*(x**5)+96*(x**7)))
 
-
-#----------------- 2nd order-------------------------------------------
-def circular_orbit_pn2(r, mu, M):
-    nu = mu / M
-    q  = r/M
-
-    o2=q*q
-    o10=q**6
-    o4=q**3
-    o5=-3.39093e5*o4
-    o6=q**4
-    o7=-2.6546399999999997e5*o6
-    o8=q**5
-    o9=1.3593600000000001e5*o8
-    o11=-2.3552e4*o10
-    o12=2.128054929e9*o10
-    o13=q**7
-    o14=-2.286574152e9*o13
-    o15=q**8
-    o16=1.250522344e9*o15
-    o17=q**9
-    o18=-4.1353344e8*o17
-    o19=q**10
-    o20=8.7023616e7*o19
-    o21=q**11
-    o22=-1.0846208e7*o21
-    o23=q**12
-    o24=6.5536e5*o23
-    o25=o12+o14+o16+o18+o20+o22+o24
-    o26=sqrt(o25)
-    o27=4.409081537009721e1*o26
-    o28=o11+o27+o5+o7+o9
-    o29=o28**(-3.333333333333333e-1)
-    pt2=sqrt(1.7777777777777777e0*o2+
-        1.1111111111111112e-1*o28**3.333333333333333e-1-
-        1.767e3*o2*o29+6.773333333333333e2*o29*o4-
-        9.955555555555556e1*o29*o6+1.666666666666667e0*q)
-    return pt2
+    
+def fprime2(x):
+    o45=(r**-2)
+    o46=x*x
+    o47=o45*o46
+    o29=r*r
+    o44=m1*m1
+    o54=m2*m2
+    o103=o29*o54
+    o104=o103+o46
+    o60=o29*o44
+    o61=o46+o60
+    o62=(o61**-2)
+    o105=(o104**-2)
+    o52=o44+o47
+    o58=o47+o54
+    o123=sqrt(o52)
+    o124=sqrt(o58)
+    o130=(m1**4)
+    o158=(r**4)
+    o131=(m2**4)
+    o8=(r**-5)
+    o35=1/sqrt(o29)
+    o114=1/o61
+    o108=1/o104
+    o53=1/sqrt(o52)
+    o59=1/sqrt(o58)
+    o122=(o29**1.5)
+    o126=o123+o124
+    o205=(x**3)
+    o147=(x**6)
+    o135=(r**6)
+    o136=2*o123*o124
+    o137=o136+o44+o54
+    o152=18*o29*o44
+    o153=18*o29*o54
+    o154=12*o123*o124*o29
+    o155=o152+o153+o154
+    o157=(x**4)
+    o159=4*o130*o158
+    o160=4*o131*o158
+    o161=12*o123*o124*o158*o54
+    o163=27*o158*o54
+    o164=12*o123*o124*o158
+    o165=o163+o164
+    o166=o165*o44
+    o167=o159+o160+o161+o166
+    o127=-(o104*o122*o126*o46*o61)
+    o129=(r**8)
+    o132=o129*o130*o131
+    o133=(x**8)
+    o134=12*o133
+    o139=6*o135*o137*o44*o46*o54
+    o156=o147*o155
+    o168=o157*o167
+    o169=o132+o134+o139+o156+o168
+    o170=G*o169
+    o171=o127+o170
+    o237=(o58**-1.5)
+    o240=(o52**-1.5)
+    o198=o45*o53*x
+    o199=o45*o59*x
+    o203=o198+o199
+    o204=-(o104*o122*o203*o46*o61)
+    o206=-2*o122*o126*o205*o61
+    o207=-2*o104*o122*o126*o205
+    o208=-2*o104*o122*o126*o61*x
+    o210=(x**7)
+    o211=96*o210
+    o212=12*o123*o59*x
+    o213=12*o124*o53*x
+    o214=o212+o213
+    o215=o147*o214
+    o216=2*o123*o45*o59*x
+    o217=2*o124*o45*o53*x
+    o218=o216+o217
+    o219=6*o135*o218*o44*o46*o54
+    o220=12*o135*o137*o44*o54*x
+    o221=(x**5)
+    o222=6*o155*o221
+    o223=12*o123*o29*o54*o59*x
+    o224=12*o124*o29*o53*o54*x
+    o225=12*o123*o29*o59*x
+    o226=12*o124*o29*o53*x
+    o227=o225+o226
+    o228=o227*o44
+    o229=o223+o224+o228
+    o230=o157*o229
+    o231=4*o167*o205
+    o232=o211+o215+o219+o220+o222+o230+o231
+    o233=G*o232
+    o235=o204+o206+o207+o208+o233
+    o249=(r**-4)
+    o270=-(o240*o249*o46)
+    o271=o45*o53
+    o272=-(o237*o249*o46)
+    o273=o45*o59
+    o295=2*o249*o46*o53*o59
+    o296=o270+o271
+    o297=o124*o296
+    o298=o272+o273
+    o300=o123*o298
+    o301=o295+o297+o300
+    
+    return 2*(o235*o53*o59-o171*o237*o45*o53*x-o171*o240*o45*o59*x)*(-2*o105*o114*o35*o8*x-2*o108*o35*o62*o8*x)+o108*o114*o35*o8*(2*o235*(-(o237*o45*o53*x)-o240*o45*o59*x)+o53*o59*(-2*o104*o122*o126*o61-4*o122*x*(o104*o203*o61+2*o104*o126*x+2*o126*o61*x)+G*(672*o147+30*o155*o157+12*o214*o221+8*o205*o229+12*o147*o29*o301+12*o167*o46+o157*(12*o158*o301*o44+12*o158*o301*o54)+6*o44*o54*(2*o135*o137+o135*o46*(2*o124*o296+2*o123*o298+4*o249*o46*o53*o59)+4*o135*o218*x))-o122*o46*(o104*(o270+o271+o272+o273)*o61+o126*(2*o104+8*o46+2*o61)+2*o203*(2*o104*x+2*o61*x)))+o171*(2*o237*o240*o249*o46+o59*(-(o240*o45)+3*o249*o46*(o52**-2.5))+o53*(-(o237*o45)+3*o249*o46*(o58**-2.5))))+o171*o35*o53*o59*o8*(8*o105*o46*o62+o114*(-2*o105+8*o46*(o104**-3))+o108*(-2*o62+8*o46*(o61**-3)))
+    
+def circular_orbit_pm1(r, mu, M):
+    sol = optimize.root_scalar(f, x0=circular_orbit_pm0(r, mu, M), fprime=fprime, fprime2=fprime2, method='newton')
+    return sol.root
 
 if args.order == "0":
-    pphi = circular_orbit_pn0(r, mu, M)
+    pphi = circular_orbit_pm0(r, mu, M)
     order = 0
 elif args.order == "1":
-    pphi = circular_orbit_pn1(r, mu, M)
+    pphi = circular_orbit_pm1(r, mu, M)
     order = 1
-elif args.order == "2":
-    pphi = circular_orbit_pn2(r, mu, M)
-    order = 2
-elif args.order == "2.5":
-    pphi = circular_orbit_pn2(r, mu, M)
-    order = 25
 else:
-    print ("Unknown equation order = " + ags.order)
+    print ("Unknown equation order = " + args.order)
     sys.exit(2)
 
 # Initial momentums
@@ -240,7 +377,7 @@ f.close()
 #------------Now ready to run nbodyPN------
 
 if LTRACE:
-    print ("Commandline: nbodyPN " + str(args.time) + " " + str(args.time_step) + " " + str(order) + " " + str(args.run_number) + " " + str(args.tolerance) + " " +  str(G) + " " +  str(rho) + " " + str(phi))
+    print ("Commandline: nbodyPM " + str(args.time) + " " + str(args.time_step) + " " + str(order) + " " + str(args.run_number) + " " + str(args.tolerance) + " " +  str(G) + " " +  str(rho) + " " + str(phi))
 else:
     myinput = open(filename)
     myoutput = open('run_nbody.stdout','w')
