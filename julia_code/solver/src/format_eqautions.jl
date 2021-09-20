@@ -12,7 +12,7 @@ function write_equations()::Cint
 
     equations = open(ARGS[2], "r")
     newton = open(ARGS[3], "r")
-    output = open("FormattedEquations.jl", "w+")
+    output = open("solver.jl", "w+")
 
     write(output, "module julia_app\n")
 

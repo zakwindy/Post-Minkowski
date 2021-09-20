@@ -47,7 +47,7 @@ function real_main()::Cint
 
 	append!(c0,G)
 
-    tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
+    tspan = (0.0, .01 * 12000.0); # The amount of time for which the simulation runs
 
 	#This section of code sets aside an array to keep track of angular momentum values
 	larr = zeros(Float64, nbody * 3)
