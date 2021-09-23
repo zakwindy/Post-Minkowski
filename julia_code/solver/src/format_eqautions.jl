@@ -14,8 +14,6 @@ function write_equations()::Cint
     newton = open(ARGS[3], "r")
     output = open("solver.jl", "w+")
 
-    write(output, "module julia_app\n")
-
     write(output, "using DifferentialEquations\n")
     write(output, "using DelimitedFiles\n\n")
 
@@ -32,7 +30,7 @@ function write_equations()::Cint
     write(output, "function real_main()::Cint\n")
     write(output, "\tG = 1.0\n\tC = 1.0\n\tmSun = 1.0\n\tPMorNEWTON = 0\n")
     write(output, "\ttry\n\t\tf = open(ARGS[1])\n\t\tclose(f)\n\t\tPMorNEWTON = parse(Int64, ARGS[2])\n")
-    write(output, "\tcatch e\n\t\tprintln(\"Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively.\")\n\t\treturn 1\n\tend\n")
+    write(output, "\tcatch e\n\t\tprintln(\"Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.\")\n\t\treturn 1\n\tend\n")
     write(output, "\tfile = ARGS[1]\n")
     write(output, "\tarr = readdlm(file, ' ', Float64, '\\n')\n")
     write(output, "\tnbody = size(arr)[1]\n")
@@ -42,7 +40,7 @@ function write_equations()::Cint
     write(output, "\tend\n")
     write(output, "\tc0 = arr[1:end,1]\n")
     write(output, "\tappend!(c0,G)\n")
-    write(output, "\ttspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs\n")
+    write(output, "\ttspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs\n")
     write(output, "\th01 = [0.0]\n\t#TAYDEN WUZ HERE\n\n")
 
     #This section sets up callback functions
@@ -247,7 +245,7 @@ function write_equations()::Cint
 
     close(newton)
 
-    write(output, "end # module\n")
+    write(output, "julia_main()\n")
 
     close(output)
 

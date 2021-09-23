@@ -1,4 +1,3 @@
-module julia_app
 using DifferentialEquations
 using DelimitedFiles
 
@@ -22,7 +21,7 @@ function real_main()::Cint
 		close(f)
 		PMorNEWTON = parse(Int64, ARGS[2])
 	catch e
-		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively.")
+		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
 	file = ARGS[1]
@@ -34,7 +33,7 @@ function real_main()::Cint
 	end
 	c0 = arr[1:end,1]
 	append!(c0,G)
-	tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
+	tspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs
 	h01 = [0.0]
 	#TAYDEN WUZ HERE
 
@@ -1187,4 +1186,4 @@ function newton(du, u, p, t)
 	u[27] = qx3 * py3 - qy3 * px3
 end
 
-end # module
+julia_main()
