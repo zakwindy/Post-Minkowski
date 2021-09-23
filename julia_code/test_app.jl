@@ -47,7 +47,7 @@ function real_main()::Cint
 
 	append!(c0,G)
 
-    tspan = (0.0, 10 * 12000.0); # The amount of time for which the simulation runs
+    tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
 
 	#This section of code sets aside an array to keep track of angular momentum values
 	larr = zeros(Float64, nbody * 3)
@@ -101,7 +101,7 @@ function real_main()::Cint
 		name_string = "newton";
 	end
 
-    sol = solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
+    sol = solve(prob, AutoVern9(Rodas4()), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
