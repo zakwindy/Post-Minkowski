@@ -105,8 +105,8 @@ z3 = 0.0
 
 #----------------- 0th order-------------------------------------------
 def circular_orbit_pm0(r, mu, M):
-    q  = G * m1 * m2 * r * mu
-    return sqrt(q)
+    q  = mu * sqrt(a * G * M * (1 - e**2))
+    return q
 
 #----------------- 1st order-------------------------------------------
 def f(x):
@@ -612,11 +612,11 @@ else:
     sys.exit(2)
 
 # Initial momentums
-px1 = -pphi/(r)*sin(phi)
-py1 = pphi/(r)*cos(phi)
+px1 = -pphi/(a * (1 - e**2))*sin(phi)
+py1 = pphi/(a * (1 - e**2))*cos(phi)
 pz1 = 0
-px2 = pphi/(r)*sin(phi)
-py2 = -pphi/(r)*cos(phi)
+px2 = pphi/(a * (1 - e**2))*sin(phi)
+py2 = -pphi/(a * (1 - e**2))*cos(phi)
 pz2 = 0
 px3 = m3*v3*(-1.0*args.vc)
 py3 = 0

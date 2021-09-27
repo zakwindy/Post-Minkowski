@@ -101,7 +101,7 @@ function real_main()::Cint
 		name_string = "newton";
 	end
 
-    sol = solve(prob, AutoVern9(Rodas4()), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
+    sol = solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
