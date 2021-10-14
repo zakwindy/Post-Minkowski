@@ -72,7 +72,7 @@ else:
 
 M = m1 + m2
 MT = m1 + m2 + m3
-mu = m1*m2/(m1+m2)
+mu = m1*m2/(M)
 MU = 2.0*m1*m3/(2.0*m1*m3)
 nu = mu/M
 pr = 0.0
@@ -84,11 +84,11 @@ else:
 
 
 #initial position for the object
-x1 = r*m2/(m1+m2)*cos(phi)
-y1 = r*m2/(m1+m2)*sin(phi)
+x1 = a*(1-e)*m2/(M)*cos(phi)
+y1 = a*(1-e)*m2/(M)*sin(phi)
 z1 = 0.0
-x2 = -r*m1/(m1+m2)*cos(phi)
-y2 = -r*m1/(m1+m2)*sin(phi)
+x2 = -a*(1-e)*m1/(M)*cos(phi)
+y2 = -a*(1-e)*m1/(M)*sin(phi)
 z2 = 0.0
 
 if args.two_body:
@@ -105,8 +105,8 @@ z3 = 0.0
 
 #----------------- 0th order-------------------------------------------
 def circular_orbit_pm0(r, mu, M):
-    q  = mu * sqrt(a * G * M * (1 - e**2))
-    return q
+    l  = sqrt(a * G * m1 * m2 * mu * (1 - e**2))
+    return l
 
 #----------------- 1st order-------------------------------------------
 def f(x):
@@ -612,11 +612,11 @@ else:
     sys.exit(2)
 
 # Initial momentums
-px1 = -pphi/(a * (1 - e**2))*sin(phi)
-py1 = pphi/(a * (1 - e**2))*cos(phi)
+px1 = -pphi/(a * (1 - e))*sin(phi)
+py1 = pphi/(a * (1 - e))*cos(phi)
 pz1 = 0
-px2 = pphi/(a * (1 - e**2))*sin(phi)
-py2 = -pphi/(a * (1 - e**2))*cos(phi)
+px2 = pphi/(a * (1 - e))*sin(phi)
+py2 = -pphi/(a * (1 - e))*cos(phi)
 pz2 = 0
 px3 = m3*v3*(-1.0*args.vc)
 py3 = 0
