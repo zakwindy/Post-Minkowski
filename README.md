@@ -1,2 +1,4 @@
-# Post-Minowski
+# N-body Gravitating System Solver in the Post-Minkowskian Approximation
 A code to simulate gravitational interaction between N bodies, using perturbative corrections to special relativity to approximate the gravitational potential in general relativity. Kinetic energy is treated exactly. 
+
+Firstly, the equations of motion are derived from the N-body Hamiltonian derived in Ledvinka et al. (2008). These equations change based on how many bodies there are, so they must be rederived any time a different number of bodies must be used. A julia script takes these equations of motion and automatically creates another julia script which solves them. This solving script can then be ran for different initial conditions. The script takes in two arguments: an input file, with one row for each body. Each row contains 7 values, separated by spaces. The values are first, the mass of the body. Then, the x, y, and z coordinates of the body. And then, the x, y, and z momentum values for the body. 
