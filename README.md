@@ -1,5 +1,5 @@
 # *N*-body Gravitating System Solver in the Post-Minkowskian Approximation
-##Overview
+## Overview
 A code to simulate gravitational interaction between *N* bodies, using perturbative corrections to special relativity to approximate the gravitational potential in general relativity. Kinetic energy is treated exactly. 
 
 Firstly, the equations of motion are derived from the N-body Hamiltonian derived in [Ledvinka et al. (2008)](https://arxiv.org/abs/0807.0214). These equations change based on how many bodies there are, so they must be rederived any time a different number of bodies must be used. A julia script takes these equations of motion and automatically creates another julia script which solves them. This solving script can then be ran for different initial conditions. The script takes in two arguments: an input file, with one row for each body. Each row contains 7 values, separated by spaces. The values are first, the mass of the body. Then, the x, y, and z coordinates of the body. And then, the x, y, and z momentum values for the body. See an example of an initial conditions file for a 3 body system [here](https://github.com/zakwindy/Post-Minkowski/blob/master/julia_code/ICfile0_3body_sample).
@@ -14,13 +14,13 @@ One of the biggest roadblocks to writing this code was double checking by ensuri
 
 It is also important to note that as this is approximating the gravitational potential, the closer any two bodies get the less accurate the equations will be. In fact, if they get too close, unphysical repulsive forces are introduced that would be canceled out by higher order terms. This is something to keep in mind when studying results from solving systems. 
 
-##How to Use
+## How to Use
 Firstly, julia and Mathematica must be installed to fully use the code. Once you have created a local clone or fork of the repository, all relevent code will be under the folder [julia_code/](https://github.com/zakwindy/Post-Minkowski/tree/master/julia_code). Once there, go to [julia_code/solver/src/](https://github.com/zakwindy/Post-Minkowski/tree/master/julia_code/solver/src) and in there you will find the Mathematica notebook titled "[generateEquationsJulia.nb](https://github.com/zakwindy/Post-Minkowski/blob/master/julia_code/solver/src/generateEquationsJulia.nb)". Open this, and in the section "Export Code", change the variable "n" to be however many bodies you wish for your system. Then evaluate the notebook.
 
 The notebook will output 3 .txt files. From here, you will run the julia script "[format_equations.jl](https://github.com/zakwindy/Post-Minkowski/blob/master/julia_code/solver/src/format_eqautions.jl)", which requires 3 arguments. The first argument will be the "ndata.txt" file output by the Mathematica code. The second argument will be the "equations.txt" file output by the Mathematica code. And the third argument will be the "newtown_equations.txt" file output by the Mathematica code. After running this script, the file "[solver.jl](https://github.com/zakwindy/Post-Minkowski/blob/master/julia_code/solver/src/solver.jl)" will be modified for your desired system.
 
 Now all that's left to do is create your initial conditions as specificed in the second paragraph of the "Overview" section above. Once you have made this, run the julia script "[solver.jl](https://github.com/zakwindy/Post-Minkowski/blob/master/julia_code/solver/src/solver.jl)" with two arguments, first the initial conditions file, and second a 1 or a 0 for PM or Newtonian calculations, respectively. The code will then output a .csv file as specificed in the "Overview" section above. 
 
-##Credits
+## Credits
 This project was made as a collaboration between [zakwindy](https://github.com/zakwindy) and [jctackett](https://github.com/jctackett), under the advisement of [David Neilsen](https://github.com/davidneilsen)
 
