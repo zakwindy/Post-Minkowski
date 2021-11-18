@@ -15,6 +15,16 @@ function real_main()::Cint
 	C = 1.0			# set relativistic C
 	mSun = 1.0		# set the mass to be in solar mass units
 
+	C_SI = 3 * 10^8;
+	G_SI = 6.674 * 10^-11;
+	mSun_SI = 1.989 * 10^30;
+	AU = 1.496 * 10^11;
+
+	# Here the code units are defined in terms of SI units
+	M = 1/mSun_SI;		#units of mass
+	L = G * M * C_SI^2 / (C^2 * G_SI);		#units of length
+	T = L * C_SI / C		#units of time
+
 	try 			# make sure that a file has been included
 		f = open(ARGS[1])
 		close(f)
@@ -38,8 +48,29 @@ function real_main()::Cint
 	end
 
 	m1, m2, m3 = arr[1,1], arr[1,2], arr[1,3]		# set the masses
-	aIn, eIn, iIn, wIn, omegaIn, mIn = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
-	aOut, eOut, iOut, wOut, omegaOut, mOut = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
+	aInAU, eIn, iIn, wIn, omegaIn, MIn = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
+	aOutAU, eOut, iOut, wOut, omegaOut, MOut = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
+	tol0 = 10^-9;		# set tolerance level
+	mbi = m1 + m2;
+
+	aIn = aInAU * AU * L;		#convert from AU to code units
+	aOut = aOutAU * AU * L;
+
+	valuesIn=initialdata(m1,m2,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
+	valuesOut=initialdata(m3,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
+
+	r1 = valuesIn[1]+valuesOut[2]
+	r2 = valuesIn[2]+valuesOut[2]
+	r3 = valuesOut[1]
+	p1 = valuesIn[3]+valuesOut[4]
+	p2 = valuesIn[4]+valuesOut[4]
+	p3 = valuesOut[3]
+
+	output = open("ICfile0", "w+")
+
+	write(output, string(m1,' ',r1[1],' ',r1[2],' ',r1[3],' ',p1[1],' ',p1[2],' ',p1[3],'\n'))
+	write(output, string(m2,' ',r2[1],' ',r2[2],' ',r2[3],' ',p2[1],' ',p2[2],' ',p2[3],'\n'))
+	write(output, string(m3,' ',r3[1],' ',r3[2],' ',r3[3],' ',p3[1],' ',p3[2],' ',p3[3],'\n'))
 
 	return 0
 end
@@ -47,6 +78,7 @@ end
 function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
 
     mu=m1*m2/(m1+m2)
+	Mtot = m1+m2
 
     u0 = 10;        # initializing u0
     tol  = 1;      # Initalizing iterative tolerance
@@ -72,7 +104,7 @@ function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
     gtheta = (-1/sin(theta))*cos(w+f)*sin(i);
     gphi   = cos(phi-omega)^2*cos(i)/cos(w+f)^2;
 
-    fdot   = sqrt(userG*mbi*((2/r)-(1/a))*1/(gr^2 + (r*gtheta)^2 + (r*sin(theta)*gphi)^2))
+    fdot   = sqrt(userG*Mtot*((2/r)-(1/a))*1/(gr^2 + (r*gtheta)^2 + (r*sin(theta)*gphi)^2))
 
     # Setting up polar velocities
 

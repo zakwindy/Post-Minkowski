@@ -33,7 +33,7 @@ function real_main()::Cint
 	end
 	c0 = arr[1:end,1]
 	append!(c0,G)
-	tspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs
+	tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
 	h01 = [0.0]
 	#TAYDEN WUZ HERE
 
