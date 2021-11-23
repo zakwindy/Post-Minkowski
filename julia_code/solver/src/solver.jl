@@ -12,7 +12,6 @@ Base.@ccallable function julia_main()::Cint
 end
 
 function real_main()::Cint
-	G = 1.0
 	C = 1.0
 	mSun = 1.0
 	PMorNEWTON = 0
@@ -26,10 +25,11 @@ function real_main()::Cint
 	end
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
-	nbody = size(arr)[1]
-	data = arr[1,2:end]
+	G = arr[1,1];
+	nbody = size(arr)[1] - 1
+	data = arr[2,2:end]
 	for i in 2:nbody
-		append!(data, arr[i,2:end])
+		append!(data, arr[i+1,2:end])
 	end
 	c0 = arr[1:end,1]
 	append!(c0,G)

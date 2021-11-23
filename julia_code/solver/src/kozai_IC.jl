@@ -11,19 +11,40 @@ Base.@ccallable function julia_main()::Cint
 end
 
 function real_main()::Cint
-	G = 1.0			# set relativistic G
 	C = 1.0			# set relativistic C
 	mSun = 1.0		# set the mass to be in solar mass units
 
-	C_SI = 3 * 10^8;
-	G_SI = 6.674 * 10^-11;
-	mSun_SI = 1.989 * 10^30;
-	AU = 1.496 * 10^11;
+	C_CGS = 2.998e10;
+	G_CGS = 6.674e-8;
+	mSun_CGS = 1.989e33;
+	AU = 1.496e14; # 1 AU in cm
 
-	# Here the code units are defined in terms of SI units
-	M = 1/mSun_SI;		#units of mass
-	L = G * M * C_SI^2 / (C^2 * G_SI);		#units of length
-	T = L * C_SI / C		#units of time
+	## Here the code units are defined in terms of CGS units
+	#=
+	# Defined using C = G = 1
+	G = 1.0;
+	M = mSun_CGS;		#units of mass
+	L = M * (G_CGS / G) * ((C / C_CGS)^2);		#units of length
+	T = L * C / C_CGS;		#units of time
+	=#
+	#=
+	# Defined using T = 1 year
+	M = mSun_CGS;
+	T = 3600*24*365;
+	L = T * C_CGS / C;
+	G = M*G_CGS*((C/C_CGS)^2)/L;
+	=#
+
+	# Defined using L = 1 KM
+	M = mSun_CGS;
+	L = 1e5;
+	T = L * C / C_CGS;
+	G = M*G_CGS*((C/C_CGS)^2)/L;
+
+	println("M = ", M);
+	println("L = ", L);
+	println("T = ", T);
+	println("G = ", G);
 
 	try 			# make sure that a file has been included
 		f = open(ARGS[1])
@@ -53,8 +74,8 @@ function real_main()::Cint
 	tol0 = 10^-9;		# set tolerance level
 	mbi = m1 + m2;
 
-	aIn = aInAU * AU * L;		#convert from AU to code units
-	aOut = aOutAU * AU * L;
+	aIn = aInAU * AU / L;		#convert from AU to code units
+	aOut = aOutAU * AU / L;
 
 	valuesIn=initialdata(m1,m2,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
 	valuesOut=initialdata(m3,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
@@ -68,6 +89,7 @@ function real_main()::Cint
 
 	output = open("ICfile0", "w+")
 
+	write(output, string(G, " 0 0 0 0 0 0\n"));
 	write(output, string(m1,' ',r1[1],' ',r1[2],' ',r1[3],' ',p1[1],' ',p1[2],' ',p1[3],'\n'))
 	write(output, string(m2,' ',r2[1],' ',r2[2],' ',r2[3],' ',p2[1],' ',p2[2],' ',p2[3],'\n'))
 	write(output, string(m3,' ',r3[1],' ',r3[2],' ',r3[3],' ',p3[1],' ',p3[2],' ',p3[3],'\n'))
