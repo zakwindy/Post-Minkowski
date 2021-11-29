@@ -23,8 +23,8 @@ function real_main()::Cint
 		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
-	data_points = 100000;	#the number of data points to output
-	tfinal_CGS = 10*365*24*3600;		#the final time point in seconds
+	data_points = 95000;	#the number of data points to output
+	tfinal_CGS = 20*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
