@@ -13,7 +13,7 @@ end
 
 function real_main()::Cint
 	C = 1.0
-	mSun = 1.0
+	mSun_CGS = 1.989e33;
 	PMorNEWTON = 0
 	try
 		f = open(ARGS[1])
@@ -23,9 +23,14 @@ function real_main()::Cint
 		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
+	data_points = 100000;	#the number of data points to output
+	tfinal_CGS = 10*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
-	G = arr[1,1];
+	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
+	mSun = mSun_CGS / M;		#solar mass in code units
+	tfinal = tfinal_CGS / T;	#length of run time in code units
+	save_val = tfinal / data_points;
 	nbody = size(arr)[1] - 1
 	data = arr[2,2:end]
 	for i in 2:nbody
@@ -33,7 +38,7 @@ function real_main()::Cint
 	end
 	c0 = arr[1:end,1]
 	append!(c0,G)
-	tspan = (0.0, 1 * 12000.0); # The amount of time for which the simulation runs
+	tspan = (0.0, tfinal); # The amount of time for which the simulation runs
 	h01 = [0.0]
 	#TAYDEN WUZ HERE
 
@@ -91,7 +96,7 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
+	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = save_val);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')

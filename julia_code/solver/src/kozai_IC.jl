@@ -20,13 +20,13 @@ function real_main()::Cint
 	AU = 1.496e14; # 1 AU in cm
 
 	## Here the code units are defined in terms of CGS units
-	#=
+
 	# Defined using C = G = 1
 	G = 1.0;
 	M = mSun_CGS;		#units of mass
 	L = M * (G_CGS / G) * ((C / C_CGS)^2);		#units of length
 	T = L * C / C_CGS;		#units of time
-	=#
+
 	#=
 	# Defined using T = 1 year
 	M = mSun_CGS;
@@ -34,12 +34,13 @@ function real_main()::Cint
 	L = T * C_CGS / C;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
 	=#
-
+	#=
 	# Defined using L = 1 KM
 	M = mSun_CGS;
 	L = 1e5;
 	T = L * C / C_CGS;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
+	=#
 
 	println("M = ", M);
 	println("L = ", L);
@@ -69,13 +70,15 @@ function real_main()::Cint
 	end
 
 	m1, m2, m3 = arr[1,1], arr[1,2], arr[1,3]		# set the masses
-	aInAU, eIn, iIn, wIn, omegaIn, MIn = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
-	aOutAU, eOut, iOut, wOut, omegaOut, MOut = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
-	tol0 = 10^-9;		# set tolerance level
+	aInAU, eIn, iIn_degree, wIn, omegaIn, MIn = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
+	aOutAU, eOut, iOut_degree, wOut, omegaOut, MOut = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
+	tol0 = 10e-9;		# set tolerance level
 	mbi = m1 + m2;
 
 	aIn = aInAU * AU / L;		#convert from AU to code units
 	aOut = aOutAU * AU / L;
+	iIn = iIn_degree * pi / 180;	#convert from degrees to radians
+	iOut = iOut_degree * pi / 180;
 
 	valuesIn=initialdata(m1,m2,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
 	valuesOut=initialdata(m3,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
@@ -89,7 +92,7 @@ function real_main()::Cint
 
 	output = open("ICfile0", "w+")
 
-	write(output, string(G, " 0 0 0 0 0 0\n"));
+	write(output, string(G, ' ', M, ' ', L, ' ', T,  " 0 0 0\n"));
 	write(output, string(m1,' ',r1[1],' ',r1[2],' ',r1[3],' ',p1[1],' ',p1[2],' ',p1[3],'\n'))
 	write(output, string(m2,' ',r2[1],' ',r2[2],' ',r2[3],' ',p2[1],' ',p2[2],' ',p2[3],'\n'))
 	write(output, string(m3,' ',r3[1],' ',r3[2],' ',r3[3],' ',p3[1],' ',p3[2],' ',p3[3],'\n'))

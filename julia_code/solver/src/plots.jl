@@ -18,7 +18,7 @@ function real_main()::Cint
 
 	plot(arr[3,:], arr[1,:], arr[2,:], aspect_ratio = :equal)
 
-	for i in 2:nbody-1
+	for i in 2:nbody
 		ifactor = convert(Int64, (i - 1) * 6)
 		plt = plot!(arr[ifactor + 3,:], arr[ifactor + 1,:], arr[ifactor + 2,:], aspect_ratio = :equal)
 	end
