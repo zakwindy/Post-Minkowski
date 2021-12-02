@@ -20,13 +20,13 @@ function real_main()::Cint
 	AU = 1.496e14; # 1 AU in cm
 
 	## Here the code units are defined in terms of CGS units
-
+	#=
 	# Defined using C = G = 1
 	G = 1.0;
 	M = mSun_CGS;		#units of mass
 	L = M * (G_CGS / G) * ((C / C_CGS)^2);		#units of length
 	T = L * C / C_CGS;		#units of time
-
+	=#
 	#=
 	# Defined using T = 1 year
 	M = mSun_CGS;
@@ -34,13 +34,14 @@ function real_main()::Cint
 	L = T * C_CGS / C;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
 	=#
-	#=
-	# Defined using L = 1 KM
+
+	# Defined using L = 0.5 AU
 	M = mSun_CGS;
-	L = 1e5;
+	L = .001 * AU;
 	T = L * C / C_CGS;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
-	=#
+
+
 
 	println("M = ", M);
 	println("L = ", L);
