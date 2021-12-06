@@ -20,13 +20,13 @@ function real_main()::Cint
 	AU = 1.496e14; # 1 AU in cm
 
 	## Here the code units are defined in terms of CGS units
-	#=
+
 	# Defined using C = G = 1
 	G = 1.0;
 	M = mSun_CGS;		#units of mass
 	L = M * (G_CGS / G) * ((C / C_CGS)^2);		#units of length
 	T = L * C / C_CGS;		#units of time
-	=#
+	
 	#=
 	# Defined using T = 1 year
 	M = mSun_CGS;
@@ -34,13 +34,13 @@ function real_main()::Cint
 	L = T * C_CGS / C;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
 	=#
-
-	# Defined using L = 0.5 AU
+	#=
+	# Defined using L
 	M = mSun_CGS;
 	L = .001 * AU;
 	T = L * C / C_CGS;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
-
+	=#
 
 
 	println("M = ", M);
@@ -87,9 +87,13 @@ function real_main()::Cint
 	r1 = valuesIn[1]+valuesOut[2]
 	r2 = valuesIn[2]+valuesOut[2]
 	r3 = valuesOut[1]
-	p1 = valuesIn[3]+valuesOut[4]
-	p2 = valuesIn[4]+valuesOut[4]
-	p3 = valuesOut[3]
+	rdot1 = valuesIn[3]+valuesOut[4]
+	rdot2 = valuesIn[4]+valuesOut[4]
+	rdot3 = valuesOut[3]
+
+	p1 = m1*rdot1
+	p2 = m2*rdot2
+	p3 = m3*rdot3
 
 	output = open("ICfile0", "w+")
 
@@ -155,6 +159,10 @@ function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
     ydot = rdot*sin(theta)*sin(phi) + r*thetadot*cos(theta)*sin(phi) + r*phidot*sin(theta)*cos(phi)
     zdot = rdot*cos(theta) - r*thetadot*sin(theta)
 
+	Lx = mu*(y*zdot - z*ydot);
+	Ly = mu*(x*zdot - z*xdot);
+	Lz = mu*(x*ydot - y*xdot);
+
     x1 = m2*x/(m1+m2)
     y1 = m2*y/(m1+m2)
     z1 = m2*z/(m1+m2)
@@ -171,7 +179,15 @@ function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
     py2 = -mu*ydot
     pz2 = -mu*zdot
 
-    [[x1,y1,z1],[x2,y2,z2],[px1,py1,pz1],[px2,py2,pz2]]
+	x1dot = px1/m1
+	y1dot = py1/m1
+	z1dot = pz1/m1
+
+	x2dot = px2/m2
+	y2dot = py2/m2
+	z2dot = pz2/m2
+
+    [[x1,y1,z1],[x2,y2,z2],[x1dot,y1dot,z1dot],[x2dot,y2dot,z2dot]]
 
 
 
