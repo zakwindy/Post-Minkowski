@@ -1,5 +1,6 @@
 using DifferentialEquations
 using DelimitedFiles
+using IRKGaussLegendre
 
 Base.@ccallable function julia_main()::Cint
 	try
@@ -23,14 +24,21 @@ function real_main()::Cint
 		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
-	data_points = 95000;	#the number of data points to output
-	tfinal_CGS = 100*365*24*3600;		#the final time point in seconds
+	data_points = 95000.0;	#the number of data points to output
+	tfinal_CGS = 10*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
 	mSun = mSun_CGS / M;		#solar mass in code units
 	tfinal = tfinal_CGS / T;	#length of run time in code units
 	save_val = tfinal / data_points;
+	#=
+	if save_val < 1
+		save_val = 1;
+	else
+		save_val = Int64(round(save_val));	#For IRKGL16, the save_val must be an integer value
+	end
+	=#
 	nbody = size(arr)[1] - 1
 	data = arr[2,2:end]
 	for i in 2:nbody
@@ -96,7 +104,7 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = save_val);
+	sol = solve(prob, Vern9(), callback=cb, reltol = 1e-16, abstol = 1e-16, saveat = save_val);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
@@ -105,9 +113,9 @@ function real_main()::Cint
 	return 0
 end
 
-CSI = 3.00e8;
-GSI = 6.647e-11;
-MSUN = 1.989e30;
+C_CGS = 3.00e10;
+G_CGS = 6.647e-8;
+MSUN_CGS = 1.989e33;
 
 function PM(du, u, p, t)
 	qx1 = u[1]
@@ -1074,6 +1082,13 @@ function PM(du, u, p, t)
 	u[25] = qy3 * pz3 - qz3 * py3
 	u[26] = qz3 * px3 - qx3 * pz3
 	u[27] = qx3 * py3 - qy3 * px3
+
+	rin = sqrt((qx1 - qx2)^2 + (qy1-qy2)^2 + (qz1-qz2)^2);
+	COMx, COMy, COMz = (qx1*m1 + qx2*m2)/(m1+m2), (qy1*m1 + qy2*m2)/(m1+m2), (qz1*m1 + qz2*m2)/(m1+m2);
+	rout = sqrt((qx3 - COMx)^2 + (qy3-COMy)^2 + (qz3-COMz)^2);
+	v1 = sqrt(px1^2 + py1^2 + pz1^2) / m1;
+	v2 = sqrt(px2^2 + py2^2 + pz2^2) / m2;
+	v3 = sqrt(px3^2 + py3^2 + pz3^2) / m3;
 end
 
 function newton(du, u, p, t)

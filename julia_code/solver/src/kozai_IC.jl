@@ -26,7 +26,6 @@ function real_main()::Cint
 	M = mSun_CGS;		#units of mass
 	L = M * (G_CGS / G) * ((C / C_CGS)^2);		#units of length
 	T = L * C / C_CGS;		#units of time
-	
 	#=
 	# Defined using T = 1 year
 	M = mSun_CGS;
@@ -37,10 +36,11 @@ function real_main()::Cint
 	#=
 	# Defined using L
 	M = mSun_CGS;
-	L = .001 * AU;
+	L = .1 * AU;
 	T = L * C / C_CGS;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
 	=#
+
 
 
 	println("M = ", M);
@@ -171,13 +171,13 @@ function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
     y2 = -m1*y/(m1+m2)
     z2 = -m1*z/(m1+m2)
 
-    px1 = mu*xdot
-    py1 = mu*ydot
-    pz1 = mu*zdot
+    px1 = 1*mu*xdot
+    py1 = 1*mu*ydot
+    pz1 = 1*mu*zdot
 
-    px2 = -mu*xdot
-    py2 = -mu*ydot
-    pz2 = -mu*zdot
+    px2 = -px1
+    py2 = -py1
+    pz2 = -pz1
 
 	x1dot = px1/m1
 	y1dot = py1/m1
