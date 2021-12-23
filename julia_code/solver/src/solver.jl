@@ -1083,12 +1083,70 @@ function PM(du, u, p, t)
 	u[26] = qz3 * px3 - qx3 * pz3
 	u[27] = qx3 * py3 - qy3 * px3
 
-	rin = sqrt((qx1 - qx2)^2 + (qy1-qy2)^2 + (qz1-qz2)^2);
-	COMx, COMy, COMz = (qx1*m1 + qx2*m2)/(m1+m2), (qy1*m1 + qy2*m2)/(m1+m2), (qz1*m1 + qz2*m2)/(m1+m2);
-	rout = sqrt((qx3 - COMx)^2 + (qy3-COMy)^2 + (qz3-COMz)^2);
-	v1 = sqrt(px1^2 + py1^2 + pz1^2) / m1;
-	v2 = sqrt(px2^2 + py2^2 + pz2^2) / m2;
-	v3 = sqrt(px3^2 + py3^2 + pz3^2) / m3;
+	M_in = m1 + m2;
+	M_out = M_in + m3;
+	mu_in = m1*m2/M_in;
+	mu_out = M_in*m3/M_out;
+
+	rdot1 = [px1,py1,pz1]/m1;
+	rdot2 = [px2,py2,pz2]/m2;
+	rdot3 = [px3,py3,pz3]/m3;
+
+	[x1dot,y1dot,z1dot] = rdot1 + rdot3*m3/M_in;
+	[x2dot,y2dot,z2dot] = rdot2 + rdot3*m3/M_in;
+	[x3dot, y3dot, z3dot] = rdot3;
+
+	r_in_vec = [qx1-qx2, qy1-qy2, qz1-qz2];
+	COMx, COMy, COMz = (qx1*m1 + qx2*m2)/(M_in), (qy1*m1 + qy2*m2)/(M_in), (qz1*m1 + qz2*m2)/(M_in);
+	r_out_vec = [qx3 - COMx, qy3-COMy, qz3-COMz];
+
+	r_in = sqrt(r_in_vec[1]^2 + r_in_vec[2]^2 + r_in_vec[3]^2);
+	r_out = sqrt(r_out_vec[1]^2 + r_out_vec[2]^2 + r_out_vec[3]^2);
+
+	p_in = m1*[x1dot,y1dot,z1dot];
+	p_out = m3*[x3dot,y3dot,z3dot];
+
+	rdot_in = p_in / mu_in;
+	rdot_out = p_out / mu_out;
+
+	v_in = sqrt(rdot_in[1]^2 + rdot_in[2]^2 + rdot_in[3]^2)
+	v_out = sqrt(rdot_out[1]^2 + rdot_out[2]^2 + rdot_out[3]^2)
+
+	E_in = 0.5*(v_in^2) - G*M_in/r_in;
+	E_out = 0.5*(v_out^2) - G*M_out/r_out;
+
+	a_in = -0.5*G*M_in/E_in;
+	a_out = -0.5*G*M_out/E_out;
+
+	rv_in_vec = [r_in_vec[2]*rdot_in[3]-r_in_vec[3]*rdot_in[2], r_in_vec[3]*rdot_in[1]-r_in_vec[1]*rdot_in[3], r_in_vec[1]*rdot_in[2]-r_in_vec[2]*rdot_in[1]];
+	rv_out_vec = [r_out_vec[2]*rdot_out[3]-r_out_vec[3]*rdot_out[2], r_out_vec[3]*rdot_out[1]-r_out_vec[1]*rdot_out[3], r_out_vec[1]*rdot_out[2]-r_out_vec[2]*rdot_out[1]];
+
+	rv_in = sqrt(rv_in_vec[1]^2 + rv_in_vec[2]^2 + rv_in_vec[3]^2)
+	rv_out = sqrt(rv_out_vec[1]^2 + rv_out_vec[2]^2 + rv_out_vec[3]^2)
+
+	i_in = acos(rv_in_vec[3]/rv_in) * 180/pi;
+	i_out = acos(rv_out_vec[3]/rv_out) * 180/pi;
+
+	e_in = sqrt(1 - rv_in^2/(a_in*G*M_in));
+	e_out = sqrt(1 - rv_out^2/(a_out*G*M_out));
+
+	nrv_in_vec = [-rv_in_vec[2], rv_in_vec[1], 0];
+	nrv_out_vec = [-rv_out_vec[2], rv_out_vec[1], 0];
+
+	nrv_in = sqrt(nrv_in_vec[1]^2 + nrv_in_vec[2]^2 + nrv_in_vec[3]^2)
+	nrv_out = sqrt(nrv_out_vec[1]^2 + nrv_out_vec[2]^2 + nrv_out_vec[3]^2)
+
+	Omega_in = acos(nrv_in_vec[1]/nrv_in) * 180/pi;
+	Omega_out = acos(nrv_out_vec[1]/nrv_out) * 180/pi;
+
+	f_in = acos((a_in*(1-e_in^2)-r_in)/(e_in*r_in)) * 180/pi;
+	f_out = acos((a_out*(1-e_out^2)-r_out)/(e_out*r_out)) * 180/pi;
+
+	theta_in = acos((r_in_vec[1]*cos(Omega_in*pi/180) + r_in_vec[2]*sin(Omega_in*pi/180))/r_in) * 180/pi;
+	theta_out = acos((r_out_vec[1]*cos(Omega_out*pi/180) + r_out_vec[2]*sin(Omega_out*pi/180))/r_out) * 180/pi;
+
+	w_in = theta_in - f_in;
+	w_out = theta_out - f_out;
 end
 
 function newton(du, u, p, t)
