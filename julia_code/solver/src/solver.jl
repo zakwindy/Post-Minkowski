@@ -43,8 +43,8 @@ function real_main()::Cint
 		return 2
 	end
 
-	aInAU, eIn, iIn_degree, wIn, omegaIn, MIn = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
-	aOutAU, eOut, iOut_degree, wOut, omegaOut, MOut = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
+	aInAU, eIn, iIn_degree, wIn_degree, omegaIn, MIn_degree = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
+	aOutAU, eOut, iOut_degree, wOut_degree, omegaOut, MOut_degree = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
 
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
 	AU = 1.496e14; # 1 AU in cm
@@ -56,6 +56,10 @@ function real_main()::Cint
 	aOut = aOutAU * AU / L;
 	iIn = iIn_degree * pi / 180;	#convert from degrees to radians
 	iOut = iOut_degree * pi / 180;
+	wIn = wIn_degree * pi / 180;
+	wOut = wOut_degree * pi / 180;
+	MIn = MIn_degree * pi / 180;
+	MOut = MOut_degree * pi / 180;
 
 	orbit_in = [aIn, eIn, iIn, wIn, omegaIn];
 	orbit_out = [aOut, eOut, iOut, wOut, omegaOut];
@@ -1147,8 +1151,8 @@ function PM(du, u, p, t)
 	rv_in = sqrt(rv_in_vec[1]^2 + rv_in_vec[2]^2 + rv_in_vec[3]^2)
 	rv_out = sqrt(rv_out_vec[1]^2 + rv_out_vec[2]^2 + rv_out_vec[3]^2)
 
-	i_in = acos(rv_in_vec[3]/rv_in) * 180/pi;
-	i_out = acos(rv_out_vec[3]/rv_out) * 180/pi;
+	i_in = acos(rv_in_vec[3]/rv_in);
+	i_out = acos(rv_out_vec[3]/rv_out);
 
 	e_in = sqrt(1 - rv_in^2/(a_in*G*M_in));
 	e_out = sqrt(1 - rv_out^2/(a_out*G*M_out));
@@ -1168,8 +1172,8 @@ function PM(du, u, p, t)
 		arg1_out = round(arg1_out);
 	end
 
-	Omega_in = acos(arg1_in) * 180/pi;
-	Omega_out = acos(arg1_out) * 180/pi;
+	Omega_in = acos(arg1_in);
+	Omega_out = acos(arg1_out);
 
 	arg2_in = (a_in*(1-e_in^2)-r_in)/(e_in*r_in);
 	arg2_out = (a_out*(1-e_out^2)-r_out)/(e_out*r_out);
@@ -1180,11 +1184,11 @@ function PM(du, u, p, t)
 		arg2_out = round(arg2_out);
 	end
 
-	f_in = acos(arg2_in) * 180/pi;
-	f_out = acos(arg2_out) * 180/pi;
+	f_in = acos(arg2_in);
+	f_out = acos(arg2_out);
 
-	arg3_in = (r_in_vec[1]*cos(Omega_in*pi/180) + r_in_vec[2]*sin(Omega_in*pi/180))/r_in;
-	arg3_out = (r_out_vec[1]*cos(Omega_out*pi/180) + r_out_vec[2]*sin(Omega_out*pi/180))/r_out;
+	arg3_in = (r_in_vec[1]*cos(Omega_in) + r_in_vec[2]*sin(Omega_in))/r_in;
+	arg3_out = (r_out_vec[1]*cos(Omega_out) + r_out_vec[2]*sin(Omega_out))/r_out;
 	if abs(arg3_in) > 1.0
 		arg3_in = round(arg3_in);
 	end
@@ -1192,8 +1196,8 @@ function PM(du, u, p, t)
 		arg3_out = round(arg3_out);
 	end
 
-	theta_in = acos(arg3_in) * 180/pi;
-	theta_out = acos(arg3_out) * 180/pi;
+	theta_in = acos(arg3_in);
+	theta_out = acos(arg3_out);
 
 	w_in = theta_in - f_in;
 	w_out = theta_out - f_out;
@@ -1359,8 +1363,8 @@ function newton(du, u, p, t)
 	rv_in = sqrt(rv_in_vec[1]^2 + rv_in_vec[2]^2 + rv_in_vec[3]^2)
 	rv_out = sqrt(rv_out_vec[1]^2 + rv_out_vec[2]^2 + rv_out_vec[3]^2)
 
-	i_in = acos(rv_in_vec[3]/rv_in) * 180/pi;
-	i_out = acos(rv_out_vec[3]/rv_out) * 180/pi;
+	i_in = acos(rv_in_vec[3]/rv_in);
+	i_out = acos(rv_out_vec[3]/rv_out);
 
 	e_in = sqrt(1 - rv_in^2/(a_in*G*M_in));
 	e_out = sqrt(1 - rv_out^2/(a_out*G*M_out));
@@ -1380,8 +1384,8 @@ function newton(du, u, p, t)
 		arg1_out = round(arg1_out);
 	end
 
-	Omega_in = acos(arg1_in) * 180/pi;
-	Omega_out = acos(arg1_out) * 180/pi;
+	Omega_in = acos(arg1_in);
+	Omega_out = acos(arg1_out);
 
 	arg2_in = (a_in*(1-e_in^2)-r_in)/(e_in*r_in);
 	arg2_out = (a_out*(1-e_out^2)-r_out)/(e_out*r_out);
@@ -1392,11 +1396,11 @@ function newton(du, u, p, t)
 		arg2_out = round(arg2_out);
 	end
 
-	f_in = acos(arg2_in) * 180/pi;
-	f_out = acos(arg2_out) * 180/pi;
+	f_in = acos(arg2_in);
+	f_out = acos(arg2_out);
 
-	arg3_in = (r_in_vec[1]*cos(Omega_in*pi/180) + r_in_vec[2]*sin(Omega_in*pi/180))/r_in;
-	arg3_out = (r_out_vec[1]*cos(Omega_out*pi/180) + r_out_vec[2]*sin(Omega_out*pi/180))/r_out;
+	arg3_in = (r_in_vec[1]*cos(Omega_in) + r_in_vec[2]*sin(Omega_in))/r_in;
+	arg3_out = (r_out_vec[1]*cos(Omega_out) + r_out_vec[2]*sin(Omega_out))/r_out;
 	if abs(arg3_in) > 1.0
 		arg3_in = round(arg3_in);
 	end
@@ -1404,8 +1408,8 @@ function newton(du, u, p, t)
 		arg3_out = round(arg3_out);
 	end
 
-	theta_in = acos(arg3_in) * 180/pi;
-	theta_out = acos(arg3_out) * 180/pi;
+	theta_in = acos(arg3_in);
+	theta_out = acos(arg3_out);
 
 	w_in = theta_in - f_in;
 	w_out = theta_out - f_out;

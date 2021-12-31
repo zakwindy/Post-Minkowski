@@ -36,6 +36,8 @@ Omega_in = data(32,:);
 
 a_in = a_in * L / AU;
 a_in = a_in(find(abs(a_in) < 0.05));
+e_in = e_in(find(e_in <= 1.0));
+e_in = e_in(find(e_in >= 0.0));
 
 a_out = data(33,:);
 e_out = data(34,:);

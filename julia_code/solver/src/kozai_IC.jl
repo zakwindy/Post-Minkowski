@@ -71,8 +71,8 @@ function real_main()::Cint
 	end
 
 	m1, m2, m3 = arr[1,1], arr[1,2], arr[1,3]		# set the masses
-	aInAU, eIn, iIn_degree, wIn, omegaIn, MIn = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
-	aOutAU, eOut, iOut_degree, wOut, omegaOut, MOut = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
+	aInAU, eIn, iIn_degree, wIn_degree, omegaIn, MIn_degree = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
+	aOutAU, eOut, iOut_degree, wOut_degree, omegaOut, MOut_degree = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
 	tol0 = 10e-9;		# set tolerance level
 	mbi = m1 + m2;
 
@@ -80,6 +80,10 @@ function real_main()::Cint
 	aOut = aOutAU * AU / L;
 	iIn = iIn_degree * pi / 180;	#convert from degrees to radians
 	iOut = iOut_degree * pi / 180;
+	wIn = wIn_degree * pi / 180;
+	wOut = wOut_degree * pi / 180;
+	MIn = MIn_degree * pi / 180;
+	MOut = MOut_degree * pi / 180;
 
 	valuesIn=initialdata(m1,m2,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
 	valuesOut=initialdata(m3,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
