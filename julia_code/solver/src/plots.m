@@ -1,6 +1,10 @@
 clear;
 close all;
 
+m1 = 1.4;
+m2 = 1.4;
+m3 = 1.4;
+
 C = 1.0;		% set relativistic C
 mSun = 1.0; 	% set the mass to be in solar mass units
 
@@ -16,44 +20,139 @@ T = L * C / C_CGS;		%units of time
 
 data = importdata('PMdata.csv');
 
-x1 = data(1,:);
-y1 = data(2,:);
-z1 = data(3,:);
+qx1 = data(1,:);
+qy1 = data(2,:);
+qz1 = data(3,:);
+px1 = data(4,:);
+py1 = data(5,:);
+pz1 = data(6,:);
 
-x2 = data(7,:);
-y2 = data(8,:);
-z2 = data(9,:);
+qx2 = data(7,:);
+qy2 = data(8,:);
+qz2 = data(9,:);
+px2 = data(10,:);
+py2 = data(11,:);
+pz2 = data(12,:);
 
-x3 = data(13,:);
-y3 = data(14,:);
-z3 = data(15,:);
+qx3 = data(13,:);
+qy3 = data(14,:);
+qz3 = data(15,:);
+px3 = data(16,:);
+py3 = data(17,:);
+pz3 = data(18,:);
 
-a_in = data(28,:);
-e_in = data(29,:);
-i_in = data(30,:);
-w_in = data(31,:);
-Omega_in = data(32,:);
+% Post process
+len = length(qx1);
 
-a_in = a_in * L / AU;
-a_in = a_in(find(abs(a_in) < 0.05));
-e_in = e_in(find(e_in <= 1.0));
-e_in = e_in(find(e_in >= 0.0));
+M_in = m1 + m2;
+M_out = M_in + m3;
+mu_in = m1*m2/M_in;
+mu_out = M_in*m3/M_out;
 
-a_out = data(33,:);
-e_out = data(34,:);
-i_out = data(35,:);
-w_out = data(36,:);
-Omega_out = data(37,:);
+x1dot = px1/m1 + px3/M_in;
+y1dot = py1/m1 + py3/M_in;
+z1dot = pz1/m1 + pz3/M_in;
+x2dot = px2/m2 + px3/M_in;
+y2dot = py2/m2 + py3/M_in;
+z2dot = pz2/m2 + pz3/M_in;
+x3dot = px3/m3;
+y3dot = py3/m3;
+z3dot = pz3/m3;
 
-a_out = a_out * L / AU;
-a_out = a_out(find(abs(a_out) < 1));
+r_in_vec = zeros(3,len);
+r_out_vec = zeros(3,len);
 
-x_mins = [min(x1),min(x2),min(x3)];
-x_maxes = [max(x1),max(x2),max(x3)];
-y_mins = [min(y1),min(y2),min(y3)];
-y_maxes = [max(y1),max(y2),max(y3)];
-z_mins = [min(z1),min(z2),min(z3)];
-z_maxes = [max(z1),max(z2),max(z3)];
+r_in_vec(1,:) = qx1-qx2;
+r_in_vec(2,:) = qy1-qy2;
+r_in_vec(3,:) = qz1-qz2;
+COMx = (qx1*m1 + qx2*m2)/(M_in);
+COMy = (qy1*m1 + qy2*m2)/(M_in);
+COMz = (qz1*m1 + qz2*m2)/(M_in);
+r_out_vec(1,:) = qx3 - COMx; 
+r_out_vec(2,:) = qy3-COMy;
+r_out_vec(3,:) = qz3-COMz;
+
+r_in = sqrt(r_in_vec(1,:).^2 + r_in_vec(2,:).^2 + r_in_vec(3,:).^2);
+r_out = sqrt(r_out_vec(1,:).^2 + r_out_vec(2,:).^2 + r_out_vec(3,:).^2);
+
+p_in = zeros(3,len);
+p_out = zeros(3,len);
+
+p_in(1,:) = m1*x1dot;
+p_in(2,:) = m1*y1dot;
+p_in(3,:) = m1*z1dot;
+p_out(1,:) = m3*x3dot;
+p_out(2,:) = m3*y3dot;
+p_out(3,:) = m3*z3dot;
+
+rdot_in = p_in / mu_in;
+rdot_out = p_out / mu_out;
+
+v_in = sqrt(rdot_in(1,:).^2 + rdot_in(2,:).^2 + rdot_in(3,:).^2);
+v_out = sqrt(rdot_out(1,:).^2 + rdot_out(2,:).^2 + rdot_out(3,:).^2);
+
+E_in = 0.5*(v_in.^2) - G*M_in./r_in;
+E_out = 0.5*(v_out.^2) - G*M_out./r_out;
+
+a_in = -0.5*G*M_in./E_in;
+a_out = -0.5*G*M_out./E_out;
+
+rv_in_vec = zeros(3,len);
+rv_out_vec = zeros(3,len);
+
+rv_in_vec(1,:) = r_in_vec(2,:).*rdot_in(3,:)-r_in_vec(3,:).*rdot_in(2,:);
+rv_in_vec(2,:) = r_in_vec(3,:).*rdot_in(1,:)-r_in_vec(1,:).*rdot_in(3,:);
+rv_in_vec(3,:) = r_in_vec(1,:).*rdot_in(2,:)-r_in_vec(2,:).*rdot_in(1,:);
+rv_out_vec(1,:) = r_out_vec(2,:).*rdot_out(3,:)-r_out_vec(3,:).*rdot_out(2,:);
+rv_out_vec(2,:) = r_out_vec(3,:).*rdot_out(1,:)-r_out_vec(1,:).*rdot_out(3,:);
+rv_out_vec(3,:) = r_out_vec(1,:).*rdot_out(2,:)-r_out_vec(2,:).*rdot_out(1,:);
+
+rv_in = sqrt(rv_in_vec(1,:).^2 + rv_in_vec(2,:).^2 + rv_in_vec(3,:).^2);
+rv_out = sqrt(rv_out_vec(1,:).^2 + rv_out_vec(2,:).^2 + rv_out_vec(3,:).^2);
+
+i_in = acos(rv_in_vec(3,:)./rv_in);
+i_out = acos(rv_out_vec(3,:)./rv_out);
+
+e_in = sqrt(1 - rv_in.^2./(a_in*G*M_in));
+e_out = sqrt(1 - rv_out.^2./(a_out*G*M_out));
+
+nrv_in_vec = zeros(3,len);
+nrv_out_vec = zeros(3,len);
+
+nrv_in_vec(1,:) = -rv_in_vec(2,:);
+nrv_in_vec(2,:) = rv_in_vec(1,:);
+nrv_out_vec(1,:) = -rv_out_vec(2,:);
+nrv_out_vec(2,:) = rv_out_vec(1,:);
+
+nrv_in = sqrt(nrv_in_vec(1,:).^2 + nrv_in_vec(2,:).^2 + nrv_in_vec(3,:).^2);
+nrv_out = sqrt(nrv_out_vec(1,:).^2 + nrv_out_vec(2,:).^2 + nrv_out_vec(3,:).^2);
+
+arg1_in = nrv_in_vec(1,:)./nrv_in;
+arg1_out = nrv_out_vec(1,:)./nrv_out;
+Omega_in = acos(arg1_in);
+Omega_out = acos(arg1_out);
+
+arg2_in = (a_in.*(1-e_in.^2)-r_in)./(e_in.*r_in);
+arg2_out = (a_out.*(1-e_out.^2)-r_out)./(e_out.*r_out);
+f_in = acos(arg2_in);
+f_out = acos(arg2_out);
+
+arg3_in = (r_in_vec(1,:).*cos(Omega_in) + r_in_vec(2,:).*sin(Omega_in))./r_in;
+arg3_out = (r_out_vec(1,:).*cos(Omega_out) + r_out_vec(2,:).*sin(Omega_out))./r_out;
+theta_in = acos(arg3_in);
+theta_out = acos(arg3_out);
+
+w_in = theta_in - f_in;
+w_out = theta_out - f_out;
+
+% Graphing results
+
+x_mins = [min(qx1),min(qx2),min(qx3)];
+x_maxes = [max(qx1),max(qx2),max(qx3)];
+y_mins = [min(qy1),min(qy2),min(qy3)];
+y_maxes = [max(qy1),max(qy2),max(qy3)];
+z_mins = [min(qz1),min(qz2),min(qz3)];
+z_maxes = [max(qz1),max(qz2),max(qz3)];
 
 mins = [min(x_mins),min(y_mins),min(z_mins)];
 maxes = [max(x_maxes),max(y_maxes),max(z_maxes)];
@@ -62,14 +161,14 @@ min = min(mins);
 max = max(maxes);
 
 figure;
-plot3(x1,y1,z1)
+plot3(qx1,qy1,qz1)
 hold on;
 grid on;
 xlabel('x')
 ylabel('y')
 zlabel('z')
-plot3(x2,y2,z2)
-plot3(x3,y3,z3)
+plot3(qx2,qy2,qz2)
+plot3(qx3,qy3,qz3)
 xlim([min max])
 ylim([min max])
 zlim([min max])
