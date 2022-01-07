@@ -147,6 +147,17 @@ w_out = theta_out - f_out;
 
 % Graphing results
 
+%transform to AU units
+qx1 = qx1 * L / AU;
+qy1 = qy1 * L / AU;
+qz1 = qz1 * L / AU;
+qx2 = qx2 * L / AU;
+qy2 = qy2 * L / AU;
+qz2 = qz2 * L / AU;
+qx3 = qx3 * L / AU;
+qy3 = qy3 * L / AU;
+qz3 = qz3 * L / AU;
+
 x_mins = [min(qx1),min(qx2),min(qx3)];
 x_maxes = [max(qx1),max(qx2),max(qx3)];
 y_mins = [min(qy1),min(qy2),min(qy3)];

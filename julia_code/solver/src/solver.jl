@@ -26,7 +26,7 @@ function real_main()::Cint
 		return 1
 	end
 	data_points = 95000.0;	#the number of data points to output
-	tfinal_CGS = 10*365*24*3600;		#the final time point in seconds
+	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	orbit_params = ARGS[2]
 	arr = readdlm(file, ' ', Float64, '\n')
@@ -106,10 +106,12 @@ function real_main()::Cint
 					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance)
 					return true
 				end
+				#=
 				if distance >= dist100[i,j]
 					println("Body ", i, " or ", j, " has exited the system.")
 					return true
 				end
+				=#
 			end
 		end
 		return false
