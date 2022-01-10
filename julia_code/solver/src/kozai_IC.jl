@@ -21,20 +21,20 @@ function real_main()::Cint
 
 	## Here the code units are defined in terms of CGS units
 
-	#=
+	
 	# Defined using C = G = 1
 	G = 1.0;
 	M = mSun_CGS;		#units of mass
 	L = M * (G_CGS / G) * ((C / C_CGS)^2);		#units of length
 	T = L * C / C_CGS;		#units of time
-	=#
-	
+
+	#=
 	# Defined using T = 1 year
 	M = mSun_CGS;
 	T = 3600*24*365;
 	L = T * C_CGS / C;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
-
+	=#
 	#=
 	# Defined using L
 	M = mSun_CGS;

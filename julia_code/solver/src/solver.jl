@@ -91,7 +91,7 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = solve(prob, lsoda(), #=callback=cb,=# reltol = 1e-16, abstol = 1e-16, saveat = save_val);
+	sol = solve(prob, Feagin14(), #=callback=cb,=# reltol = 1e-24, abstol = 1e-24, saveat = save_val);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
