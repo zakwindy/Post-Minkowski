@@ -6,4 +6,5 @@ version = "0.1.0"
 [deps]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+LSODA = "7f56f5a3-f504-529b-bc02-0b1fe5e64312"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

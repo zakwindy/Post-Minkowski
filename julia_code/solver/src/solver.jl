@@ -1,4 +1,5 @@
 using DifferentialEquations
+using LSODA
 using DelimitedFiles
 
 Base.@ccallable function julia_main()::Cint
@@ -18,51 +19,21 @@ function real_main()::Cint
 	try
 		f = open(ARGS[1])
 		close(f)
-		f2 = open(ARGS[2])
-		close(f2)
-		PMorNEWTON = parse(Int64, ARGS[3])
+		PMorNEWTON = parse(Int64, ARGS[2])
 	catch e
-		println("Please include a file with initial parameters as the first argument, a second file with initial orbital parameters, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
+		println("Please include a file with initial parameters as the first argument and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
-	data_points = 95000.0;	#the number of data points to output
+	data_points = 950.0;	#the number of data points to output
 	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
-	orbit_params = ARGS[2]
 	arr = readdlm(file, ' ', Float64, '\n')
-	orbit_arr = readdlm(orbit_params, ' ', Float64, '\n')
-
-	rows = size(orbit_arr)[1]			#make sure the dimensions of the file are correct
-	columns = size(orbit_arr)[2]
-	if rows != 3
-		println("Incorrect dimensions in initial file, needs 3 rows.")
-		return 2
-	end
-	if columns != 6
-		println("Incorrect dimensions in initial file, needs 6 columns.")
-		return 2
-	end
-
-	aInAU, eIn, iIn_degree, wIn_degree, omegaIn, MIn_degree = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
-	aOutAU, eOut, iOut_degree, wOut_degree, omegaOut, MOut_degree = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
 
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
 	AU = 1.496e14; # 1 AU in cm
 	mSun = mSun_CGS / M;		#solar mass in code units
 	tfinal = tfinal_CGS / T;	#length of run time in code units
 	save_val = tfinal / data_points;
-
-	aIn = aInAU * AU / L;		#convert from AU to code units
-	aOut = aOutAU * AU / L;
-	iIn = iIn_degree * pi / 180;	#convert from degrees to radians
-	iOut = iOut_degree * pi / 180;
-	wIn = wIn_degree * pi / 180;
-	wOut = wOut_degree * pi / 180;
-	MIn = MIn_degree * pi / 180;
-	MOut = MOut_degree * pi / 180;
-
-	orbit_in = [aIn, eIn, iIn, wIn, omegaIn];
-	orbit_out = [aOut, eOut, iOut, wOut, omegaOut];
 
 	nbody = size(arr)[1] - 1
 	data = arr[2,2:end]
@@ -83,17 +54,6 @@ function real_main()::Cint
 		end
 	end
 	dist100 = 100 * distances #the distance at which the object will be considered to have left the system
-
-	#This section of code sets aside an array to keep track of angular momentum values
-	larr = zeros(Float64, nbody * 3)
-	for i in 1:nbody
-		ifactor = (i - 1) * 3
-		rx, ry, rz = arr[i,2], arr[i,3], arr[i,4]
-		px, py, pz = arr[i,5], arr[i,6], arr[i,7]
-		larr[ifactor + 1] = ry*pz - rz*py
-		larr[ifactor + 2] = rz*px - rx*pz
-		larr[ifactor + 3] = rx*py - ry*px
-	end
 
 	function condition(u,t,integrator)
 		for i in 1:nbody
@@ -131,7 +91,7 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = solve(prob, Vern9(), callback=cb, reltol = 1e-16, abstol = 1e-16, saveat = save_val);
+	sol = solve(prob, lsoda(), #=callback=cb,=# reltol = 1e-16, abstol = 1e-16, saveat = save_val);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
@@ -1205,113 +1165,7 @@ function newton(du, u, p, t)
 	du[16]=0.5*G*(m1*m3*o40*o49-m1*m3*o51*o58+m2*m3*o76*o83-m2*m3*o85*o92)
 	du[17]=0.5*G*(m1*m3*o43*o49-m1*m3*o53*o58+m2*m3*o78*o83-m2*m3*o87*o92)
 	du[18]=0.5*G*(m1*m3*o46*o49-m1*m3*o55*o58+m2*m3*o80*o83-m2*m3*o89*o92)
-	u[38]=0.5*(o3*(px1*px1+py1*py1+pz1*pz1)+o7*(px2*px2+py2*py2+pz2*pz2)+o11*(px3*px3+py3*py3+pz3*pz3))-0.5*G*((1.0*m1*m2)/sqrt(o24)+(1.0*m1*m2)/sqrt(o36)+(1.0*m1*m3)/sqrt(o48)+(1.0*m1*m3)/sqrt(o57)+(1.0*m2*m3)/sqrt(o82)+(1.0*m2*m3)/sqrt(o91))
-	u[19] = qy1 * pz1 - qz1 * py1
-	u[20] = qz1 * px1 - qx1 * pz1
-	u[21] = qx1 * py1 - qy1 * px1
-	u[22] = qy2 * pz2 - qz2 * py2
-	u[23] = qz2 * px2 - qx2 * pz2
-	u[24] = qx2 * py2 - qy2 * px2
-	u[25] = qy3 * pz3 - qz3 * py3
-	u[26] = qz3 * px3 - qx3 * pz3
-	u[27] = qx3 * py3 - qy3 * px3
-
-	## Post process
-
-	M_in = m1 + m2;
-	M_out = M_in + m3;
-	mu_in = m1*m2/M_in;
-	mu_out = M_in*m3/M_out;
-
-	rdot1 = [px1,py1,pz1]/m1;
-	rdot2 = [px2,py2,pz2]/m2;
-	rdot3 = [px3,py3,pz3]/m3;
-
-	x1dot,y1dot,z1dot = rdot1 + rdot3*m3/M_in;
-	x2dot,y2dot,z2dot = rdot2 + rdot3*m3/M_in;
-	x3dot, y3dot, z3dot = rdot3;
-
-	r_in_vec = [qx1-qx2, qy1-qy2, qz1-qz2];
-	COMx, COMy, COMz = (qx1*m1 + qx2*m2)/(M_in), (qy1*m1 + qy2*m2)/(M_in), (qz1*m1 + qz2*m2)/(M_in);
-	r_out_vec = [qx3 - COMx, qy3-COMy, qz3-COMz];
-
-	r_in = sqrt(r_in_vec[1]^2 + r_in_vec[2]^2 + r_in_vec[3]^2);
-	r_out = sqrt(r_out_vec[1]^2 + r_out_vec[2]^2 + r_out_vec[3]^2);
-
-	p_in = m1*[x1dot,y1dot,z1dot];
-	p_out = m3*[x3dot,y3dot,z3dot];
-
-	rdot_in = p_in / mu_in;
-	rdot_out = p_out / mu_out;
-
-	v_in = sqrt(rdot_in[1]^2 + rdot_in[2]^2 + rdot_in[3]^2)
-	v_out = sqrt(rdot_out[1]^2 + rdot_out[2]^2 + rdot_out[3]^2)
-
-	E_in = 0.5*(v_in^2) - G*M_in/r_in;
-	E_out = 0.5*(v_out^2) - G*M_out/r_out;
-
-	a_in = -0.5*G*M_in/E_in;
-	a_out = -0.5*G*M_out/E_out;
-
-	rv_in_vec = [r_in_vec[2]*rdot_in[3]-r_in_vec[3]*rdot_in[2], r_in_vec[3]*rdot_in[1]-r_in_vec[1]*rdot_in[3], r_in_vec[1]*rdot_in[2]-r_in_vec[2]*rdot_in[1]];
-	rv_out_vec = [r_out_vec[2]*rdot_out[3]-r_out_vec[3]*rdot_out[2], r_out_vec[3]*rdot_out[1]-r_out_vec[1]*rdot_out[3], r_out_vec[1]*rdot_out[2]-r_out_vec[2]*rdot_out[1]];
-
-	rv_in = sqrt(rv_in_vec[1]^2 + rv_in_vec[2]^2 + rv_in_vec[3]^2)
-	rv_out = sqrt(rv_out_vec[1]^2 + rv_out_vec[2]^2 + rv_out_vec[3]^2)
-
-	i_in = acos(rv_in_vec[3]/rv_in);
-	i_out = acos(rv_out_vec[3]/rv_out);
-
-	e_in = sqrt(1 - rv_in^2/(a_in*G*M_in));
-	e_out = sqrt(1 - rv_out^2/(a_out*G*M_out));
-
-	nrv_in_vec = [-rv_in_vec[2], rv_in_vec[1], 0];
-	nrv_out_vec = [-rv_out_vec[2], rv_out_vec[1], 0];
-
-	nrv_in = sqrt(nrv_in_vec[1]^2 + nrv_in_vec[2]^2 + nrv_in_vec[3]^2)
-	nrv_out = sqrt(nrv_out_vec[1]^2 + nrv_out_vec[2]^2 + nrv_out_vec[3]^2)
-
-	arg1_in = nrv_in_vec[1]/nrv_in;
-	arg1_out = nrv_out_vec[1]/nrv_out;
-	if abs(arg1_in) > 1.0
-		arg1_in = round(arg1_in);
-	end
-	if abs(arg1_out) > 1.0
-		arg1_out = round(arg1_out);
-	end
-
-	Omega_in = acos(arg1_in);
-	Omega_out = acos(arg1_out);
-
-	arg2_in = (a_in*(1-e_in^2)-r_in)/(e_in*r_in);
-	arg2_out = (a_out*(1-e_out^2)-r_out)/(e_out*r_out);
-	if abs(arg2_in) > 1.0
-		arg2_in = round(arg2_in);
-	end
-	if abs(arg2_out) > 1.0
-		arg2_out = round(arg2_out);
-	end
-
-	f_in = acos(arg2_in);
-	f_out = acos(arg2_out);
-
-	arg3_in = (r_in_vec[1]*cos(Omega_in) + r_in_vec[2]*sin(Omega_in))/r_in;
-	arg3_out = (r_out_vec[1]*cos(Omega_out) + r_out_vec[2]*sin(Omega_out))/r_out;
-	if abs(arg3_in) > 1.0
-		arg3_in = round(arg3_in);
-	end
-	if abs(arg3_out) > 1.0
-		arg3_out = round(arg3_out);
-	end
-
-	theta_in = acos(arg3_in);
-	theta_out = acos(arg3_out);
-
-	w_in = theta_in - f_in;
-	w_out = theta_out - f_out;
-
-	u[28], u[29], u[30], u[31], u[32] = a_in, e_in, i_in, w_in, Omega_in;
-	u[33], u[34], u[35], u[36], u[37] = a_out, e_out, i_out, w_out, Omega_out;
+	u[19]=0.5*(o3*(px1*px1+py1*py1+pz1*pz1)+o7*(px2*px2+py2*py2+pz2*pz2)+o11*(px3*px3+py3*py3+pz3*pz3))-0.5*G*((1.0*m1*m2)/sqrt(o24)+(1.0*m1*m2)/sqrt(o36)+(1.0*m1*m3)/sqrt(o48)+(1.0*m1*m3)/sqrt(o57)+(1.0*m2*m3)/sqrt(o82)+(1.0*m2*m3)/sqrt(o91))
 end
 
 julia_main()
