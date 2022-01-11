@@ -18,8 +18,8 @@ M = mSun_CGS;		%units of mass
 L = M * (G_CGS / G) * ((C / C_CGS)^2);		%units of length
 T = L * C / C_CGS;		%units of time
 
-%data = importdata('PMdata.csv');
-data = importdata('newtondata.csv');
+data = importdata('PMdata.csv');
+%data = importdata('newtondata.csv');
 
 qx1 = data(1,:);
 qy1 = data(2,:);

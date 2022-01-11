@@ -21,7 +21,7 @@ function real_main()::Cint
 
 	## Here the code units are defined in terms of CGS units
 
-	
+
 	# Defined using C = G = 1
 	G = 1.0;
 	M = mSun_CGS;		#units of mass
@@ -38,7 +38,7 @@ function real_main()::Cint
 	#=
 	# Defined using L
 	M = mSun_CGS;
-	L = .1 * AU;
+	L = 1 * AU;
 	T = L * C / C_CGS;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
 	=#
@@ -75,7 +75,7 @@ function real_main()::Cint
 	m1, m2, m3 = arr[1,1], arr[1,2], arr[1,3]		# set the masses
 	aInAU, eIn, iIn_degree, wIn_degree, omegaIn, MIn_degree = arr[2,1], arr[2,2], arr[2,3], arr[2,4], arr[2,5], arr[2,6]		# set the inner orbit parameters
 	aOutAU, eOut, iOut_degree, wOut_degree, omegaOut, MOut_degree = arr[3,1], arr[3,2], arr[3,3], arr[3,4], arr[3,5], arr[3,6]		# set the outer orbit parameters
-	tol0 = 10e-9;		# set tolerance level
+	tol0 = 1e-30;		# set tolerance level
 	mbi = m1 + m2;
 
 	aIn = aInAU * AU / L;		#convert from AU to code units
@@ -114,7 +114,7 @@ end
 function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
 
     mu=m1*m2/(m1+m2)
-	Mtot = m1+m2
+		Mtot = m1+m2
 
     u0 = 10;        # initializing u0
     tol  = 1;      # Initalizing iterative tolerance

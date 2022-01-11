@@ -24,8 +24,8 @@ function real_main()::Cint
 		println("Please include a file with initial parameters as the first argument and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
-	data_points = 950.0;	#the number of data points to output
-	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
+	data_points = 9500.0;	#the number of data points to output
+	tfinal_CGS = 5*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 
@@ -53,7 +53,7 @@ function real_main()::Cint
 			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
 		end
 	end
-	dist100 = 100 * distances #the distance at which the object will be considered to have left the system
+	dist100 = 1000 * distances #the distance at which the object will be considered to have left the system
 
 	function condition(u,t,integrator)
 		for i in 1:nbody
@@ -66,12 +66,10 @@ function real_main()::Cint
 					println("Bodies ", i, " and ", j, " collided. Schwarzchild distance of ", schwarzRadius, ". Distance of ", distance)
 					return true
 				end
-				#=
 				if distance >= dist100[i,j]
 					println("Body ", i, " or ", j, " has exited the system.")
 					return true
 				end
-				=#
 			end
 		end
 		return false
@@ -91,7 +89,7 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = solve(prob, Feagin14(), #=callback=cb,=# reltol = 1e-24, abstol = 1e-24, saveat = save_val);
+	sol = solve(prob, Feagin14(), callback=cb, reltol = 1e-30, abstol = 1e-30, saveat = save_val, maxiters = 1e7);
 
 	open(string(name_string, "data.csv"), "w+") do io
 		writedlm(io, sol, ',')
