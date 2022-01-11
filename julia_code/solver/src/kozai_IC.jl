@@ -87,8 +87,8 @@ function real_main()::Cint
 	MIn = MIn_degree * pi / 180;
 	MOut = MOut_degree * pi / 180;
 
-	valuesIn=initialdata(m1,m2,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
-	valuesOut=initialdata(m3,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
+	valuesIn=initialdata(m1,m2,mbi,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
+	valuesOut=initialdata(m3,mbi,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
 
 	r1 = valuesIn[1]+valuesOut[2]
 	r2 = valuesIn[2]+valuesOut[2]
@@ -111,7 +111,7 @@ function real_main()::Cint
 	return 0
 end
 
-function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
+function initialdata(m1,m2,mBin,userG,a,e,i,w,omega,M,tol0)
 
     mu=m1*m2/(m1+m2)
 		Mtot = m1+m2
@@ -136,11 +136,11 @@ function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
 
     # Some useful quantities in determining velocities
 
-    gr     = a*(1-e^2)*e*sin(f)/(1+e*cos(f))^2;
+    gr     = a*(1-e^2)*e*sin(f)/((1+e*cos(f))^2);
     gtheta = (-1/sin(theta))*cos(w+f)*sin(i);
-    gphi   = cos(phi-omega)^2*cos(i)/cos(w+f)^2;
+    gphi   = cos(phi-omega)^2*cos(i)/(cos(w+f)^2);
 
-    fdot   = sqrt(userG*Mtot*((2/r)-(1/a))*1/(gr^2 + (r*gtheta)^2 + (r*sin(theta)*gphi)^2))
+    fdot   = sqrt(userG*mBin*((2/r)-(1/a))*1/(gr^2 + (r*gtheta)^2 + (r*sin(theta)*gphi)^2))
 
     # Setting up polar velocities
 

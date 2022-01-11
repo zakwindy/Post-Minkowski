@@ -25,7 +25,7 @@ function real_main()::Cint
 		return 1
 	end
 	data_points = 9500.0;	#the number of data points to output
-	tfinal_CGS = 5*365*24*3600;		#the final time point in seconds
+	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 
