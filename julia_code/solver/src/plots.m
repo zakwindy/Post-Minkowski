@@ -3,7 +3,7 @@ close all;
 
 m1 = 1.4;
 m2 = 1.4;
-m3 = 30;
+m3 = 1.4;
 
 C = 1.0;		% set relativistic C
 mSun = 1.0; 	% set the mass to be in solar mass units
