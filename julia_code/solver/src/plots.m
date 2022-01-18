@@ -20,8 +20,8 @@ T = L * C / C_CGS;		%units of time
 
 tfinal = 30;        %full runtime in years
 
-%data = importdata('PMdata.csv');
-data = importdata('newtondata.csv');
+data = importdata('PMdata.csv');
+%data = importdata('newtondata.csv');
 
 t = data.data(:,1);
 qx1 = data.data(:,2);
@@ -37,7 +37,6 @@ qz2 = data.data(:,10);
 px2 = data.data(:,11);
 py2 = data.data(:,12);
 pz2 = data.data(:,13);
-
 qx3 = data.data(:,14);
 qy3 = data.data(:,15);
 qz3 = data.data(:,16);
