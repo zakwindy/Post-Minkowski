@@ -44,7 +44,7 @@ function real_main()::Cint
 	for i in 2:nbody
 		append!(data, arr[i+1,2:end])
 	end
-	c0 = arr[2:end,1]
+	c0 = arr[1:end,1]
 	append!(c0,G)
 	tspan = (0.0, tfinal); # The amount of time for which the simulation runs
 	h01 = [0.0]

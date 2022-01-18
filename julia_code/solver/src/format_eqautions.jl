@@ -15,7 +15,8 @@ function write_equations()::Cint
     output = open("solver.jl", "w+")
 
     write(output, "using DifferentialEquations\n")
-    write(output, "using DelimitedFiles\n\n")
+    write(output, "using DelimitedFiles\n")
+    write(output, "using DataFrames\nusing CSV\n\n")
 
     write(output, "Base.@ccallable function julia_main()::Cint\n")
     write(output, "\ttry\n")
@@ -27,18 +28,24 @@ function write_equations()::Cint
     write(output, "\treturn 0\n")
     write(output, "end\n\n")
 
+    write(output, "C_CGS = 3.00e10;\nG_CGS = 6.647e-8;\nmSun_CGS = 1.989e33;\nAU_CGS = 1.496e14; # 1 AU in cm\n\n")
+
     write(output, "function real_main()::Cint\n")
-    write(output, "\tG = 1.0\n\tC = 1.0\n\tmSun = 1.0\n\tPMorNEWTON = 0\n")
+    write(output, "\tC = 1.0\n\tPMorNEWTON = 0\n")
     write(output, "\ttry\n\t\tf = open(ARGS[1])\n\t\tclose(f)\n\t\tPMorNEWTON = parse(Int64, ARGS[2])\n")
     write(output, "\tcatch e\n\t\tprintln(\"Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.\")\n\t\treturn 1\n\tend\n")
+    write(output, "data_points = 9500.0;	#the number of data points to output\ntfinal_CGS = 30*365*24*3600;		#the final time point in seconds\n")
     write(output, "\tfile = ARGS[1]\n")
     write(output, "\tarr = readdlm(file, ' ', Float64, '\\n')\n")
-    write(output, "\tnbody = size(arr)[1]\n")
-    write(output, "\tdata = arr[1,2:end]\n")
+
+    write(output, "G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];\nmSun = mSun_CGS / M;		#solar mass in code units\ntfinal = tfinal_CGS / T;	#length of run time in code units\nsave_val = tfinal / data_points;\n")
+
+    write(output, "\tnbody = size(arr)[1] - 1\n")
+    write(output, "\tdata = arr[2,2:end]\n")
     write(output, "\tfor i in 2:nbody\n")
-    write(output, "\t\tappend!(data, arr[i,2:end])\n")
+    write(output, "\t\tappend!(data, arr[i+1,2:end])\n")
     write(output, "\tend\n")
-    write(output, "\tc0 = arr[1:end,1]\n")
+    write(output, "\tc0 = arr[2:end,1]\n")
     write(output, "\tappend!(c0,G)\n")
     write(output, "\ttspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs\n")
     write(output, "\th01 = [0.0]\n\t#TAYDEN WUZ HERE\n\n")

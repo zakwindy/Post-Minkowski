@@ -87,8 +87,8 @@ function real_main()::Cint
 	MIn = MIn_degree * pi / 180;
 	MOut = MOut_degree * pi / 180;
 
-	valuesIn=initialdata(m1,m2,mbi,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
-	valuesOut=initialdata(m3,mbi,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
+	valuesIn=initialdata(m1,m2,G,aIn,eIn,iIn,wIn,omegaIn,MIn,tol0);
+	valuesOut=initialdata(m3,mbi,G,aOut,eOut,iOut,wOut,omegaOut,MOut,tol0);
 
 	r1 = valuesIn[1]+valuesOut[2]
 	r2 = valuesIn[2]+valuesOut[2]
@@ -101,6 +101,12 @@ function real_main()::Cint
 	p2 = m2*rdot2
 	p3 = m3*rdot3
 
+	p3newton = sqrt(G*m3*mbi*(m3*mbi)*aOut/(m3+mbi))/aOut;
+	p3code = sqrt(p3[1]^2 + p3[2]^2 + p3[3]^2);
+	pbi = sqrt((p1[1] + p2[1])^2 + (p1[2] + p2[2])^2 + (p1[3] + p2[3])^2);
+	println("Paper momentum/Newtonian - ", p3code/p3newton);
+	println("p3/pbinary - ", p3code/pbi);
+
 	output = open("ICfile0", "w+")
 
 	write(output, string(G, ' ', M, ' ', L, ' ', T,  " 0 0 0\n"));
@@ -111,10 +117,10 @@ function real_main()::Cint
 	return 0
 end
 
-function initialdata(m1,m2,mBin,userG,a,e,i,w,omega,M,tol0)
+function initialdata(m1,m2,userG,a,e,i,w,omega,M,tol0)
 
     mu=m1*m2/(m1+m2)
-		Mtot = m1+m2
+	Mtot = m1+m2
 
     u0 = 10;        # initializing u0
     tol  = 1;      # Initalizing iterative tolerance
@@ -140,7 +146,7 @@ function initialdata(m1,m2,mBin,userG,a,e,i,w,omega,M,tol0)
     gtheta = (-1/sin(theta))*cos(w+f)*sin(i);
     gphi   = cos(phi-omega)^2*cos(i)/(cos(w+f)^2);
 
-    fdot   = sqrt(userG*mBin*((2/r)-(1/a))*1/(gr^2 + (r*gtheta)^2 + (r*sin(theta)*gphi)^2))
+    fdot   = sqrt(userG*Mtot*((2/r)-(1/a))*1/(gr^2 + (r*gtheta)^2 + (r*sin(theta)*gphi)^2))
 
     # Setting up polar velocities
 

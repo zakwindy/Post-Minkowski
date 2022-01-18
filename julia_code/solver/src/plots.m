@@ -20,34 +20,33 @@ T = L * C / C_CGS;		%units of time
 
 tfinal = 30;        %full runtime in years
 
-data = importdata('PMdata.csv');
-%data = importdata('newtondata.csv');
+%data = importdata('PMdata.csv');
+data = importdata('newtondata.csv');
 
-qx1 = data(1,:);
-qy1 = data(2,:);
-qz1 = data(3,:);
-px1 = data(4,:);
-py1 = data(5,:);
-pz1 = data(6,:);
+t = data.data(:,1);
+qx1 = data.data(:,2);
+qy1 = data.data(:,3);
+qz1 = data.data(:,4);
+px1 = data.data(:,5);
+py1 = data.data(:,6);
+pz1 = data.data(:,7);
 
-qx2 = data(7,:);
-qy2 = data(8,:);
-qz2 = data(9,:);
-px2 = data(10,:);
-py2 = data(11,:);
-pz2 = data(12,:);
+qx2 = data.data(:,8);
+qy2 = data.data(:,9);
+qz2 = data.data(:,10);
+px2 = data.data(:,11);
+py2 = data.data(:,12);
+pz2 = data.data(:,13);
 
-qx3 = data(13,:);
-qy3 = data(14,:);
-qz3 = data(15,:);
-px3 = data(16,:);
-py3 = data(17,:);
-pz3 = data(18,:);
+qx3 = data.data(:,14);
+qy3 = data.data(:,15);
+qz3 = data.data(:,16);
+px3 = data.data(:,17);
+py3 = data.data(:,18);
+pz3 = data.data(:,19);
 
 % Post process
 len = length(qx1);
-dt = tfinal / (len-1);       %time step between data points
-t = 0:dt:tfinal;        %array of time steps, units of years
 
 M_in = m1 + m2;
 M_out = M_in + m3;
@@ -190,6 +189,7 @@ ylim([min_val max_val])
 zlim([min_val max_val])
 hold off;
 
+%%
 % Fourier analysis to find orbital period
 g = fft(qx1);
 P = abs(g).^2;

@@ -76,6 +76,3 @@ dpdtNewton[1][2]=0.5*G*(m1*m2*o22*o25-m1*m2*o34*o37-m2*m3*o80*o83+m2*m3*o89*o92)
 dpdtNewton[2][0]=0.5*G*(m1*m3*o40*o49-m1*m3*o51*o58+m2*m3*o76*o83-m2*m3*o85*o92);
 dpdtNewton[2][1]=0.5*G*(m1*m3*o43*o49-m1*m3*o53*o58+m2*m3*o78*o83-m2*m3*o87*o92);
 dpdtNewton[2][2]=0.5*G*(m1*m3*o46*o49-m1*m3*o55*o58+m2*m3*o80*o83-m2*m3*o89*o92);
-newton=0.5*(o3*(px1*px1+py1*py1+pz1*pz1)+o7*(px2*px2+py2*py2+pz2*pz2)+o11*(px3*px3+py3\
-*py3+pz3*pz3))-0.5*G*((1.*m1*m2)/sqrt(o24)+(1.*m1*m2)/sqrt(o36)+(1.*m1*m3)/sqrt(o48)+\
-(1.*m1*m3)/sqrt(o57)+(1.*m2*m3)/sqrt(o82)+(1.*m2*m3)/sqrt(o91));
