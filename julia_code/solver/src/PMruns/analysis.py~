@@ -110,3 +110,6 @@ a_out = -0.5*G*M_out/E_out
 
 rv_in_vec = [r_in_vec[1]*rdot_in[2] - r_in_vec[2]*rdot_in[1], r_in_vec[2]*rdot_in[0] - r_in_vec[0]*rdot_in[2], r_in_vec[0]*rdot_in[1] - r_in_vec[1]*rdot_in[0]]
 rv_out_vec = [r_out_vec[1]*rdot_out[2] - r_out_vec[2]*rdot_out[1], r_out_vec[2]*rdot_out[0] - r_out_vec[0]*rdot_out[2], r_out_vec[0]*rdot_out[1] - r_out_vec[1]*rdot_out[0]]
+
+rv_in = (rv_in_vec[0]**2 + rv_in_vec[1]**2 + rv_in_vec[2]**2)**0.5
+rv_out = (rv_out_vec[0]**2 + rv_out_vec[1]**2 + rv_out_vec[2]**2)**0.5
