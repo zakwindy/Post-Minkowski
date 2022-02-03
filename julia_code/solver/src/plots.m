@@ -188,29 +188,3 @@ ylim([min_val max_val])
 zlim([min_val max_val])
 hold off;
 
-%%
-% Fourier analysis to find orbital period
-g = fft(qx1);
-P = abs(g).^2;
-dw = 2*pi/(len*dt);
-w=-(len/2)*dw:dw:dw*(len/2-1);
-figure;
-semilogy(w,P);
-xlabel('\omega');
-ylabel('P(\omega)');
-title('Power Spectrum');
-xlim([0 inf]);
-
-zeropoint = (len+1)/2;
-[val300, point300] = min(abs(w-300));
-
-[power,index] = max(P(zeropoint:point300));     %cuts off the frequency spectrum to get the lowest frequency
-angfreq = w(index+zeropoint);
-period = 2*pi/angfreq;
-figure;
-plot(t,e_in);
-xlim([period 2*period]);
-orbits_in = tfinal/period;
-
-% Take the average to get rid of artificial oscillations
-
