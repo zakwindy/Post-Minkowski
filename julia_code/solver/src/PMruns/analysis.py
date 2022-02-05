@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------
 
 from math import *
-from numpy import array
+from numpy import *
 import argparse
 import sys
 import pandas
@@ -15,10 +15,17 @@ import pandas
 #--------------------------------------------------
 #   Read in the file to get data
 #--------------------------------------------------
-with open(sys.argv[1], newline='') as f:
-    data = pandas.read_csv(f) 
-
 parser = argparse.ArgumentParser()
+parser.add_argument('File', help='The file that the script reads.')
+parser.add_argument('Bodies', default='PNN', help='This describes what the three bodies are. Valid options are PNN (Pulsar and two neutron stars), PNB (a black hole for the third body), PNIB (an intermediate mass black hole for the third body), PNSB (a supermassive black hole for the third body), PBB, PBIB, PBSB, PIBIB, and PIBSB.')
+parser.add_argument('Conditions', default='ICL', help='This describes initial conditions. Valid options are ICL (initially circular libration), ICR (rotation), IEL (initially eccentric libration), and IER.')
+
+args = parser.parse_args()
+bodies = args.Bodies
+conditions = args.Conditions
+
+with open(sys.argv[1], newline='') as f:
+    data = pandas.read_csv(f)
 
 #--------------------------------------------------
 #   these variables are always constant
@@ -37,26 +44,85 @@ M = mSun_CGS        #units of mass
 L = M*(G_CGS/G)*((C/C_CGS)**2)  #units of length
 T = L*C/C_CGS       #units of time
 #define the outer eccentricity to always be 0
-e_out = 0.0
+e_out_initial = 0.0
 M_anom_in = 0
 M_anom_out = 20*pi/180
-i_out = 0
+i_out_initial = 0
 
-m2 = 1.4    #this is constant every loop
+m2 = 1.4    #this mass is always a pulsar
 
 #--------------------------------------------------
 #   these variables change for each run
 #--------------------------------------------------
 
-m1 = 1.4
-m3 = 1.4
-
-a_in = 0.01*AU_CGS/L
-a_out = 0.2*AU_CGS/L
-
-e_in = 0.01
-i_in = 60*pi/180
-w_in = 60*pi/180
+if bodies == 'PNN':
+    m1 = 1.4
+    m3 = 1.4
+    a_in_initial = 0.01*AU_CGS/L
+    a_out_initial = 0.2*AU_CGS/L
+elif bodies == 'PNB':
+    m1 = 1.4
+    m3 = 30
+    a_in_initial = 0.01*AU_CGS/L
+    a_out_initial = 0.5*AU_CGS/L
+elif bodies == 'PNIB':
+    m1 = 1.4
+    m3 = 1e3
+    a_in_initial = 0.01*AU_CGS/L
+    a_out_initial = 2.5*AU_CGS/L
+elif bodies == 'PNSB':
+    m1 = 1.4
+    m3 = 1e6
+    a_in_initial = 0.01*AU_CGS/L
+    a_out_initial = 10.0*AU_CGS/L
+elif bodies == 'PBB':
+    m1 = 30
+    m3 = 30
+    a_in_initial = 0.1*AU_CGS/L
+    a_out_initial = 1.0*AU_CGS/L
+elif bodies == 'PBIB':
+    m1 = 30
+    m3 = 1e3
+    a_in_initial = 0.1*AU_CGS/L
+    a_out_initial = 7.0*AU_CGS/L
+elif bodies == 'PBSB':
+    m1 = 30
+    m3 = 1e6
+    a_in_initial = 0.1*AU_CGS/L
+    a_out_initial = 40.0*AU_CGS/L
+elif bodies == 'PIBIB':
+    m1 = 1e3
+    m3 = 1e3
+    a_in_initial = 0.1*AU_CGS/L
+    a_out_initial = 1.2*AU_CGS/L
+elif bodies == 'PIBSB':
+    m1 = 1e3
+    m3 = 1e6
+    a_in_initial = 0.1*AU_CGS/L
+    a_out_initial = 10.0*AU_CGS/L
+else:
+    print("Invalid options for Bodies argument. Code did not run.")
+    exit()
+    
+if conditions == 'ICL':
+    e_in_initial = 0.01
+    i_in_initial = 60*pi/180
+    w_in_initial = 60*pi/180
+elif conditions == 'ICR':
+    e_in_initial = 0.01
+    i_in_initial = 60*pi/180
+    w_in_initial = 30*pi/180
+elif conditions == 'IEL':
+    e_in_initial = 0.6
+    i_in_initial = 53*pi/180
+    w_in_initial = 90*pi/180
+elif conditions == 'IER':
+    e_in_initial = 0.6
+    i_in_initial = 45*pi/180
+    w_in_initial = 60*pi/180
+else:
+    print("Invalid options for Conditions argument. Code did not run.")
+    exit()
 
 #--------------------------------------------------
 #   derive the period of the orbits
@@ -64,8 +130,8 @@ w_in = 60*pi/180
 M_in = m1+m2
 M_out = M_in+m3
 
-T_in = 2*pi*sqrt((a_in**3)/(G*M_in))
-T_out = 2*pi*sqrt((a_out**3)/(G*M_out))
+T_in = 2*pi*sqrt((a_in_initial**3)/(G*M_in))
+T_out = 2*pi*sqrt((a_out_initial**3)/(G*M_out))
 
 #--------------------------------------------------
 #   perform the post-process analysis
@@ -113,3 +179,49 @@ rv_out_vec = [r_out_vec[1]*rdot_out[2] - r_out_vec[2]*rdot_out[1], r_out_vec[2]*
 
 rv_in = (rv_in_vec[0]**2 + rv_in_vec[1]**2 + rv_in_vec[2]**2)**0.5
 rv_out = (rv_out_vec[0]**2 + rv_out_vec[1]**2 + rv_out_vec[2]**2)**0.5
+
+i_in = arccos(rv_in_vec[2]/rv_in)
+i_out = arccos(rv_out_vec[2]/rv_out)
+
+e_in = sqrt(1 - (rv_in**2)/(a_in*G*M_in))
+e_out = sqrt(1 - (rv_out**2)/(a_out*G*M_out))
+
+nrv_in_vec = [-rv_in_vec[1], rv_in_vec[0], 0]
+nrv_out_vec = [-rv_out_vec[1], rv_out_vec[0], 0]
+nrv_in = sqrt(nrv_in_vec[0]**2 + nrv_in_vec[1]**2 + nrv_in_vec[2]**2)
+nrv_out = sqrt(nrv_out_vec[0]**2 + nrv_out_vec[1]**2 + nrv_out_vec[2]**2)
+
+arg1_in = nrv_in_vec[0]/nrv_in
+arg1_out = nrv_out_vec[0]/nrv_out
+arg2_in = (a_in*(1 - e_in**2)-r_in)/(e_in*r_in)
+arg2_out = (a_out*(1 - e_out**2)-r_out)/(e_out*r_out)
+for i in range(length):
+    if abs(arg1_in[i]) > 1.0:
+        arg1_in[i] = arg1_in[i]/abs(arg1_in[i])
+    if abs(arg1_out[i]) > 1.0:
+        arg1_out[i] = arg1_out[i]/abs(arg1_out[i])
+    if abs(arg2_in[i]) > 1.0:
+        arg2_in[i] = arg2_in[i]/abs(arg2_in[i])
+    if abs(arg2_out[i]) > 1.0:
+        arg2_out[i] = arg2_out[i]/abs(arg2_out[i])
+        
+Omega_in = arccos(arg1_in)
+Omega_out = arccos(arg1_out)
+
+arg3_in = (r_in_vec[0]*cos(Omega_in) + r_in_vec[1]*sin(Omega_in))/r_in
+arg3_out = (r_out_vec[0]*cos(Omega_out) + r_out_vec[1]*sin(Omega_out))/r_out
+
+for i in range(length):
+    if abs(arg3_in[i]) > 1.0:
+        arg3_in[i] = arg3_in[i]/abs(arg3_in[i])
+    if abs(arg3_out[i]) > 1.0:
+        arg3_out[i] = arg3_out[i]/abs(arg3_out[i])
+
+f_in = arccos(arg2_in)
+f_out = arccos(arg2_out)
+
+theta_in = arccos(arg3_in)
+theta_out = arccos(arg3_out)
+
+w_in = theta_in - f_in
+w_out = theta_out - f_out

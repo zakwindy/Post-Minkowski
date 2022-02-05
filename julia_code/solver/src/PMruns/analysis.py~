@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------
 
 from math import *
-from numpy import array
+from numpy import *
 import argparse
 import sys
 import pandas
@@ -113,3 +113,35 @@ rv_out_vec = [r_out_vec[1]*rdot_out[2] - r_out_vec[2]*rdot_out[1], r_out_vec[2]*
 
 rv_in = (rv_in_vec[0]**2 + rv_in_vec[1]**2 + rv_in_vec[2]**2)**0.5
 rv_out = (rv_out_vec[0]**2 + rv_out_vec[1]**2 + rv_out_vec[2]**2)**0.5
+
+i_in = arccos(rv_in_vec[2]/rv_in)
+i_out = arccos(rv_out_vec[2]/rv_out)
+
+e_in = sqrt(1 - (rv_in**2)/(a_in*G*M_in))
+e_out = sqrt(1 - (rv_out**2)/(a_out*G*M_out))
+
+nrv_in_vec = [-rv_in_vec[1], rv_in_vec[0], 0]
+nrv_out_vec = [-rv_out_vec[1], rv_out_vec[0], 0]
+nrv_in = sqrt(nrv_in_vec[0]**2 + nrv_in_vec[1]**2 + nrv_in_vec[2]**2)
+nrv_out = sqrt(nrv_out_vec[0]**2 + nrv_out_vec[1]**2 + nrv_out_vec[2]**2)
+
+arg1_in = nrv_in_vec[0]/nrv_in
+arg1_out = nrv_out_vec[0]/nrv_out
+for i in length:
+    print(abs(arg1_in[i]))
+Omega_in = arccos(arg1_in)
+Omega_out = arccos(arg1_out)
+"""
+arg2_in = (a_in*(1 - e_in**2)-r_in)/(e_in*r_in)
+arg2_out = (a_out*(1 - e_out**2)-r_out)/(e_out*r_out)
+f_in = arccos(arg2_in)
+f_out = arccos(arg2_out)
+
+arg3_in = (r_in_vec[0]*cos(Omega_in) + r_in_vec[1]*sin(Omega_in))/r_in
+arg3_out = (r_out_vec[0]*cos(Omega_out) + r_out_vec[1]*sin(Omega_out))/r_out
+theta_in = arccos(arg3_in)
+theta_out = arccos(arg3_out)
+
+w_in = theta_in - f_in
+w_out = theta_out - f_out
+"""
