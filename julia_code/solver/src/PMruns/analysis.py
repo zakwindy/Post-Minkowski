@@ -12,6 +12,7 @@ import argparse
 import sys
 import pandas
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 
 #--------------------------------------------------
 #   Read in the file to get data
@@ -38,7 +39,7 @@ mSun = 1.0  # set mass to be in solar mass units
 C_CGS = 2.998e10
 G_CGS = 6.674e-8
 mSun_CGS = 1.989e33
-AU_CGS = 1.496e14
+AU_CGS = 1.496e13
     #all runs must use G = 1.0
 G = 1.0
 M = mSun_CGS        #units of mass
@@ -153,9 +154,8 @@ y3dot = data['py3']/m3
 z3dot = data['pz3']/m3
 
 r_in_vec = [data['qx1']-data['qx2'], data['qy1']-data['qy2'], data['qz1']-data['qz2']]
-COM = [data['qx1']*m1+data['qx2']*m2/M_in, data['qy1']*m1+data['qy2']*m2/M_in, data['qz1']*m1+data['qz2']*m2/M_in]
-data['qx3']-COM[1]
-r_out_vec = [data['qx3']-COM[0], data['qy3']-COM[2], data['qz3']-COM[2]]
+COM = [(data['qx1']*m1+data['qx2']*m2)/M_in, (data['qy1']*m1+data['qy2']*m2)/M_in, (data['qz1']*m1+data['qz2']*m2)/M_in]
+r_out_vec = [data['qx3']-COM[0], data['qy3']-COM[1], data['qz3']-COM[2]]
 
 r_in = (r_in_vec[0]**2 + r_in_vec[1]**2 + r_in_vec[2]**2)**0.5
 r_out = (r_out_vec[0]**2 + r_out_vec[1]**2 + r_out_vec[2]**2)**0.5
@@ -184,8 +184,16 @@ rv_out = (rv_out_vec[0]**2 + rv_out_vec[1]**2 + rv_out_vec[2]**2)**0.5
 i_in = arccos(rv_in_vec[2]/rv_in)
 i_out = arccos(rv_out_vec[2]/rv_out)
 
-e_in = sqrt(1 - (rv_in**2)/(a_in*G*M_in))
-e_out = sqrt(1 - (rv_out**2)/(a_out*G*M_out))
+e_arg_in = (rv_in**2)/(a_in*G*M_in)
+e_arg_out = (rv_out**2)/(a_out*G*M_out)
+for i in range(length):
+    if e_arg_in[i] > 1.0:
+        e_arg_in[i] = 1.0
+    if e_arg_out[i] > 1.0:
+        e_arg_out[i] = 1.0
+
+e_in = sqrt(1 - e_arg_in)
+e_out = sqrt(1 - e_arg_out)
 
 nrv_in_vec = [-rv_in_vec[1], rv_in_vec[0], 0]
 nrv_out_vec = [-rv_out_vec[1], rv_out_vec[0], 0]
@@ -273,10 +281,12 @@ plt.figure()
 plt.plot(t, a_in_AU)
 plt.xlabel('Time (years)')
 plt.ylabel('Inner Orbit Semimajor Axis (AU)')
+plt.gca().yaxis.set_major_formatter(mtick.FormatStrFormatter('%.6f'))
 plt.savefig('a_in_' + bodies + '_' + conditions + '.png')
 
 plt.figure()
 plt.plot(t, a_out_AU)
 plt.xlabel('Time (years)')
 plt.ylabel('Outer Orbit Semimajor Axis (AU)')
+plt.gca().yaxis.set_major_formatter(mtick.FormatStrFormatter('%.6f'))
 plt.savefig('a_out_' + bodies + '_' + conditions + '.png')
