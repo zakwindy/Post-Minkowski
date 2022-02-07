@@ -11,6 +11,7 @@ from numpy import *
 import argparse
 import sys
 import pandas
+import matplotlib.pyplot as plt
 
 #--------------------------------------------------
 #   Read in the file to get data
@@ -225,3 +226,57 @@ theta_out = arccos(arg3_out)
 
 w_in = theta_in - f_in
 w_out = theta_out - f_out
+
+#--------------------------------------------------
+#   integrate to get rid of artificial oscillations
+#--------------------------------------------------
+dt = data['timestep'][1] - data['timestep'][0]
+t_end = data['timestep'][length-1]
+steps_per_orbit = int(floor(T_out/dt))
+num_orbit = int(floor(length / steps_per_orbit))
+#FIXME get this to work
+'''
+for i in range(num_orbit):
+    begin = steps_per_orbit*i
+    end = steps_per_orbit*(i+1)
+    x = data['timestep'][begin:end]
+    period = x[end-1] - x[begin]
+    y1 = e_in[begin:end]
+    sum1 = sum(y1*dt)/period
+    e_in[begin:end] = sum1
+'''
+
+
+#--------------------------------------------------
+#   transform data to physical units
+#--------------------------------------------------
+t = data['timestep']*T/(3600*24*365)    #put time data in units of years
+a_in_AU = a_in * L / AU_CGS             #put semi-major axes in AU
+a_out_AU = a_out * L / AU_CGS
+
+#--------------------------------------------------
+#   create plots
+#--------------------------------------------------
+plt.figure()
+plt.plot(t, e_in)
+plt.xlabel('Time (years)')
+plt.ylabel('Inner Orbit Eccentricity')
+plt.savefig('e_in_' + bodies + '_' + conditions + '.png')
+
+plt.figure()
+plt.plot(t, e_out)
+plt.xlabel('Time (years)')
+plt.ylabel('Outer Orbit Eccentricity')
+plt.savefig('e_out_' + bodies + '_' + conditions + '.png')
+
+plt.figure()
+plt.plot(t, a_in_AU)
+plt.xlabel('Time (years)')
+plt.ylabel('Inner Orbit Semimajor Axis (AU)')
+plt.savefig('a_in_' + bodies + '_' + conditions + '.png')
+
+plt.figure()
+plt.plot(t, a_out_AU)
+plt.xlabel('Time (years)')
+plt.ylabel('Outer Orbit Semimajor Axis (AU)')
+plt.savefig('a_out_' + bodies + '_' + conditions + '.png')
