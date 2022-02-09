@@ -17,7 +17,7 @@ function real_main()::Cint
 	C_CGS = 2.998e10;
 	G_CGS = 6.674e-8;
 	mSun_CGS = 1.989e33;
-	AU = 1.496e14; # 1 AU in cm
+	AU_CGS = 1.496e14; # 1 AU in cm
 
 	## Here the code units are defined in terms of CGS units
 
@@ -38,12 +38,10 @@ function real_main()::Cint
 	#=
 	# Defined using L
 	M = mSun_CGS;
-	L = 1 * AU;
+	L = 1 * AU_CGS;
 	T = L * C / C_CGS;
 	G = M*G_CGS*((C/C_CGS)^2)/L;
 	=#
-
-
 
 	println("M = ", M);
 	println("L = ", L);
@@ -78,8 +76,8 @@ function real_main()::Cint
 	tol0 = 1e-30;		# set tolerance level
 	mbi = m1 + m2;
 
-	aIn = aInAU * AU / L;		#convert from AU to code units
-	aOut = aOutAU * AU / L;
+	aIn = aInAU * AU_CGS / L;		#convert from AU to code units
+	aOut = aOutAU * AU_CGS / L;
 	iIn = iIn_degree * pi / 180;	#convert from degrees to radians
 	iOut = iOut_degree * pi / 180;
 	wIn = wIn_degree * pi / 180;
