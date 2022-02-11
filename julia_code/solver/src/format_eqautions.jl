@@ -34,11 +34,11 @@ function write_equations()::Cint
     write(output, "\tC = 1.0\n\tPMorNEWTON = 0\n")
     write(output, "\ttry\n\t\tf = open(ARGS[1])\n\t\tclose(f)\n\t\tPMorNEWTON = parse(Int64, ARGS[2])\n")
     write(output, "\tcatch e\n\t\tprintln(\"Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.\")\n\t\treturn 1\n\tend\n")
-    write(output, "data_points = 9500.0;	#the number of data points to output\ntfinal_CGS = 30*365*24*3600;		#the final time point in seconds\n")
+    write(output, "\tdata_points = 9500.0;	  #the number of data points to output\n\ttfinal_CGS = 30*365*24*3600;		#the final time point in seconds\n")
     write(output, "\tfile = ARGS[1]\n")
     write(output, "\tarr = readdlm(file, ' ', Float64, '\\n')\n")
 
-    write(output, "G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];\nmSun = mSun_CGS / M;		#solar mass in code units\ntfinal = tfinal_CGS / T;	#length of run time in code units\nsave_val = tfinal / data_points;\n")
+    write(output, "\tG, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];\n\tmSun = mSun_CGS / M;		#solar mass in code units\n\ttfinal = tfinal_CGS / T;	#length of run time in code units\n\tsave_val = tfinal / data_points;\n")
 
     write(output, "\tnbody = size(arr)[1] - 1\n")
     write(output, "\tdata = arr[2,2:end]\n")
@@ -47,8 +47,8 @@ function write_equations()::Cint
     write(output, "\tend\n")
     write(output, "\tc0 = arr[2:end,1]\n")
     write(output, "\tappend!(c0,G)\n")
-    write(output, "\ttspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs\n")
-    write(output, "\th01 = [0.0]\n\t#TAYDEN WUZ HERE\n\n")
+    write(output, "\ttspan = (0.0, tfinal); # The amount of time for which the simulation runs\n")
+    write(output, "\t#TAYDEN WUZ HERE\n\n")
 
     #This section sets up callback functions
     write(output, "\tschwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.\n")
@@ -59,16 +59,6 @@ function write_equations()::Cint
     write(output, "\t\tend\n")
     write(output, "\tend\n")
     write(output, "\tdist100 = 100 * distances #the distance at which the object will be considered to have left the system\n\n")
-    write(output, "\t#This section of code sets aside an array to keep track of angular momentum values\n")
-    write(output, "\tlarr = zeros(Float64, nbody * 3)\n")
-    write(output, "\tfor i in 1:nbody\n")
-    write(output, "\t\tifactor = (i - 1) * 3\n")
-    write(output, "\t\trx, ry, rz = arr[i,2], arr[i,3], arr[i,4]\n")
-    write(output, "\t\tpx, py, pz = arr[i,5], arr[i,6], arr[i,7]\n")
-    write(output, "\t\tlarr[ifactor + 1] = ry*pz - rz*py\n")
-    write(output, "\t\tlarr[ifactor + 2] = rz*px - rx*pz\n")
-    write(output, "\t\tlarr[ifactor + 3] = rx*py - ry*px\n")
-    write(output, "\tend\n\n")
 
     write(output, "\tfunction condition(u,t,integrator)\n")
     write(output, "\t\tfor i in 1:nbody\n")
@@ -94,22 +84,30 @@ function write_equations()::Cint
     write(output, "\tend\n\n")
     write(output, "\tcb = DiscreteCallback(condition, affect!, save_positions=(true,true))\n\n")
 
-    write(output, "\tu0 = collect(Base.Iterators.flatten([data, larr, h01]));\n")
+    write(output, "\tu0 = collect(Base.Iterators.flatten([data]));\n")
     write(output, "\tif PMorNEWTON == 1\n\t\tprob = ODEProblem(PM, u0, tspan, c0);\n\t\tname_string = \"PM\";\n")
     write(output, "\telse\n\t\tprob = ODEProblem(newton, u0, tspan, c0);\n\t\tname_string = \"newton\";\n\tend\n")
 
-    write(output, "\tsol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);\n\n")
+    write(output, "\tsol = DifferentialEquations.solve(prob, Feagin14(), callback=cb, reltol = 1.0e-30, abstol = 1.0e-30, saveat=save_val, maxiters=1e7);\n\n")
+
+    write(output, "\tdf = DataFrame();		#Create a data frame with the data\n")
+    write(output, "\tdf.timestep = sol.t;\n\n")
+
+    for i in 1:nbody
+        ifactor = (i-1)*6
+        write(output, "\tdf.qx", string(i), " = sol[", string(ifactor+1), ",:]\n")
+        write(output, "\tdf.qy", string(i), " = sol[", string(ifactor+2), ",:]\n")
+        write(output, "\tdf.qz", string(i), " = sol[", string(ifactor+3), ",:]\n")
+        write(output, "\tdf.px", string(i), " = sol[", string(ifactor+4), ",:]\n")
+        write(output, "\tdf.py", string(i), " = sol[", string(ifactor+5), ",:]\n")
+        write(output, "\tdf.pz", string(i), " = sol[", string(ifactor+6), ",:]\n")
+    end
 
     write(output, "\topen(string(name_string, \"data.csv\"), \"w+\") do io\n")
-    write(output, "\t\twritedlm(io, sol, ',')\n")
-    write(output, "\tend\n\n")
+    write(output, "\t\tCSV.write(io, df)\n\tend\n\n")
 
     write(output, "\treturn 0\n")
     write(output, "end\n\n")
-
-    write(output, "CSI = 3.00e8;\n")
-    write(output, "GSI = 6.647e-11;\n")
-    write(output, "MSUN = 1.989e30;\n\n")
 
     ## This section writes out the Post-Minkowskian n-body function
 
@@ -158,8 +156,6 @@ function write_equations()::Cint
                         idim = ndim + 1
                     end
                 end
-            else
-                lastline = string("u[", (3 * nbody * ndim) + 1, ']', lastline)
             end
 
             write(output, '\t', lastline, "\n")
@@ -168,14 +164,6 @@ function write_equations()::Cint
             line = fix_dot(line)
             write(output, '\t', line, "\n")
         end
-    end
-
-    nfactor = 2 * nbody * ndim
-    for i in 1:nbody
-        u_index = nfactor + (3 * (i - 1))
-        write(output, string("\tu[", u_index + 1, "] = qy", i, " * pz", i, " - qz", i, " * py", i, "\n"))
-        write(output, string("\tu[", u_index + 2, "] = qz", i, " * px", i, " - qx", i, " * pz", i, "\n"))
-        write(output, string("\tu[", u_index + 3, "] = qx", i, " * py", i, " - qy", i, " * px", i, "\n"))
     end
 
     write(output, "end\n\n")
@@ -229,8 +217,6 @@ function write_equations()::Cint
                         idim = ndim + 1
                     end
                 end
-            else
-                lastline = string("u[", (3 * nbody * ndim) + 1, ']', lastline)
             end
 
             write(output, '\t', lastline, "\n")
@@ -239,13 +225,6 @@ function write_equations()::Cint
             line = fix_dot(line)
             write(output, '\t', line, "\n")
         end
-    end
-
-    for i in 1:nbody
-        u_index = nfactor + (3 * (i - 1))
-        write(output, string("\tu[", u_index + 1, "] = qy", i, " * pz", i, " - qz", i, " * py", i, "\n"))
-        write(output, string("\tu[", u_index + 2, "] = qz", i, " * px", i, " - qx", i, " * pz", i, "\n"))
-        write(output, string("\tu[", u_index + 3, "] = qx", i, " * py", i, " - qy", i, " * px", i, "\n"))
     end
 
     write(output, "end\n\n")

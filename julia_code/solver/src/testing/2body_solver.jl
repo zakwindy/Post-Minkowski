@@ -1,4 +1,5 @@
 using DifferentialEquations
+using GeometricIntegrators
 using DelimitedFiles
 using DataFrames
 using CSV
@@ -30,7 +31,7 @@ function real_main()::Cint
 		return 1
 	end
 	data_points = 9500.0;	  #the number of data points to output
-	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
+	tfinal_CGS = 1*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
@@ -44,7 +45,7 @@ function real_main()::Cint
 	end
 	c0 = arr[2:end,1]
 	append!(c0,G)
-	tspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs
+	tspan = (0.0, tfinal); # The amount of time for which the simulation runs
 	#TAYDEN WUZ HERE
 
 	schwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.
@@ -83,6 +84,7 @@ function real_main()::Cint
 	cb = DiscreteCallback(condition, affect!, save_positions=(true,true))
 
 	u0 = collect(Base.Iterators.flatten([data]));
+
 	if PMorNEWTON == 1
 		prob = ODEProblem(PM, u0, tspan, c0);
 		name_string = "PM";
@@ -90,7 +92,8 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = DifferentialEquations.solve(prob, Feagin14(), callback=cb, reltol = 1.0e-30, abstol = 1.0e-30, saveat = 10, save_at=save_val, maxiters=1e7);
+
+	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = save_val, maxiters=1e10);
 
 	df = DataFrame();		#Create a data frame with the data
 	df.timestep = sol.t;

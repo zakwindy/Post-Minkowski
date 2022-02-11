@@ -1,4 +1,5 @@
 using DifferentialEquations
+using GeometricIntegrators
 using DelimitedFiles
 using DataFrames
 using CSV
@@ -30,7 +31,7 @@ function real_main()::Cint
 		return 1
 	end
 	data_points = 9500.0;	  #the number of data points to output
-	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
+	tfinal_CGS = 1*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
 	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
@@ -44,7 +45,7 @@ function real_main()::Cint
 	end
 	c0 = arr[2:end,1]
 	append!(c0,G)
-	tspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs
+	tspan = (0.0, tfinal); # The amount of time for which the simulation runs
 	#TAYDEN WUZ HERE
 
 	schwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.
@@ -82,7 +83,12 @@ function real_main()::Cint
 
 	cb = DiscreteCallback(condition, affect!, save_positions=(true,true))
 
-	u0 = collect(Base.Iterators.flatten([data]));
+	u0 = collect(Base.Iterators.flatten([data, c0]));
+
+	ode = GeometricIntegrators.ODE(PM, u0)
+	int = Integrator(ode, TableauExplicitEuler(), 0.1);
+	sol = integrate(ode, int, 10);
+
 	if PMorNEWTON == 1
 		prob = ODEProblem(PM, u0, tspan, c0);
 		name_string = "PM";
@@ -90,23 +96,25 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = DifferentialEquations.solve(prob, Feagin14(), callback=cb, reltol = 1.0e-30, abstol = 1.0e-30, saveat = 10, save_at=save_val, maxiters=1e7);
+
+	#sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = save_val, maxiters=1e10);
 
 	df = DataFrame();		#Create a data frame with the data
-	df.timestep = sol.t;
+	df.timestep = collect(Base.Iterators.flatten([sol.t]));
 
-	df.qx1 = sol[1,:]
-	df.qy1 = sol[2,:]
-	df.qz1 = sol[3,:]
-	df.px1 = sol[4,:]
-	df.py1 = sol[5,:]
-	df.pz1 = sol[6,:]
-	df.qx2 = sol[7,:]
-	df.qy2 = sol[8,:]
-	df.qz2 = sol[9,:]
-	df.px2 = sol[10,:]
-	df.py2 = sol[11,:]
-	df.pz2 = sol[12,:]
+	df.qx1 = collect(Base.Iterators.flatten([sol.q[1,:]]))
+	df.qy1 = collect(Base.Iterators.flatten([sol.q[2,:]]))
+	df.qz1 = collect(Base.Iterators.flatten([sol.q[3,:]]))
+	df.px1 = collect(Base.Iterators.flatten([sol.q[4,:]]))
+	df.py1 = collect(Base.Iterators.flatten([sol.q[5,:]]))
+	df.pz1 = collect(Base.Iterators.flatten([sol.q[6,:]]))
+	df.qx2 = collect(Base.Iterators.flatten([sol.q[7,:]]))
+	df.qy2 = collect(Base.Iterators.flatten([sol.q[8,:]]))
+	df.qz2 = collect(Base.Iterators.flatten([sol.q[9,:]]))
+	df.px2 = collect(Base.Iterators.flatten([sol.q[10,:]]))
+	df.py2 = collect(Base.Iterators.flatten([sol.q[11,:]]))
+	df.pz2 = collect(Base.Iterators.flatten([sol.q[12,:]]))
+
 	open(string(name_string, "data.csv"), "w+") do io
 		CSV.write(io, df)
 	end
@@ -114,7 +122,7 @@ function real_main()::Cint
 	return 0
 end
 
-function PM(du, u, p, t)
+function PM(t, u, du)
 	qx1 = u[1]
 	qy1 = u[2]
 	qz1 = u[3]
@@ -128,9 +136,9 @@ function PM(du, u, p, t)
 	py2 = u[11]
 	pz2 = u[12]
 
-	m1 = p[1]
-	m2 = p[2]
-	G = p[3]
+	m1 = u[13]
+	m2 = u[14]
+	G = u[15]
 
 	o3=m1*m1;
 	o4=px1*px1;
