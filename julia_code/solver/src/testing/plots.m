@@ -21,7 +21,7 @@ T = L * C / C_CGS;		%units of time
 tfinal = 30;        %full runtime in years
 
 %data = importdata('PMdata.csv');
-data = importdata('newtondata.csv');
+data = importdata('newton_Verndata.csv');
 
 t = data.data(:,1);
 qx1 = data.data(:,2);
@@ -62,15 +62,13 @@ min_val = min(mins);
 max_val = max(maxes);
 
 figure;
-plot3(qx1,qy1,qz1)
+plot(qx1,qy1)
 hold on;
 grid on;
 xlabel('x')
 ylabel('y')
-zlabel('z')
-plot3(qx2,qy2,qz2)
+plot(qx2,qy2)
 xlim([min_val max_val])
 ylim([min_val max_val])
-zlim([min_val max_val])
 hold off;
 

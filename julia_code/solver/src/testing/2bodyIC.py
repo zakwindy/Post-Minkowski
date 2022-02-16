@@ -73,6 +73,8 @@ w = w_degree*pi/180
 omega = omega_degree*pi/180
 Manom = Manom_degree*pi/180
 
+T_period = 2*pi*sqrt((a**3)/(G*Mtot))
+
 #----------------------------------------------------------------------
 #   Calculate initial conditions in Cartesian coordinates
 #----------------------------------------------------------------------
@@ -669,12 +671,14 @@ pz2 = pz2-CPZ
 filename = '2_body_ICfile' + str(args.run_number)
 f = open(filename,'w')
 
-s0 = str(G) + " " + str(M) + " " + str(L) + " " + str(T) + " 0 0 0\n"
+s0 = str(G) + " " + str(M) + " " + str(L) + " " + str(T) + " " + str(T_period) + " 0 0\n"
 s1 = str(m1) + " " + str(x1) + " " + str(y1) + " " + str(z1) + " " + str(px1) + " " +  str(py1) + " " + str(pz1) + "\n"
 s2 = str(m2) + " " + str(x2) + " " + str(y2) + " " + str(z2) + " " + str(px2) + " " +  str(py2) + " " + str(pz2) + "\n"
 
 f.write(s0)
 f.write(s1)
 f.write(s2)
+
+print("period = ", str(T_period*T/(365*24*3600)), " years.")
 
 f.close()

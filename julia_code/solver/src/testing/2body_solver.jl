@@ -30,13 +30,16 @@ function real_main()::Cint
 		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
-	data_points = 9500.0;	  #the number of data points to output
-	tfinal_CGS = 1*365*24*3600;		#the final time point in seconds
+	data_points = 30000.0;	  #the number of data points to output
+	tfinal_CGS = 10*365*24*3600;		#the final time point in seconds, use this OR nOrbits
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
-	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
+	G, M, L, T, period = arr[1,1], arr[1,2], arr[1,3], arr[1,4], arr[1,5];
 	mSun = mSun_CGS / M;		#solar mass in code units
-	tfinal = tfinal_CGS / T;	#length of run time in code units
+
+	nOrbits = 1000;				#the number of orbits to run
+	#tfinal = tfinal_CGS / T;
+	tfinal = nOrbits*period;	#length of run time in code units
 	save_val = tfinal / data_points;
 	nbody = size(arr)[1] - 1
 	data = arr[2,2:end]
@@ -110,7 +113,7 @@ function real_main()::Cint
 	df.px2 = sol[10,:]
 	df.py2 = sol[11,:]
 	df.pz2 = sol[12,:]
-	open(string(name_string, "data.csv"), "w+") do io
+	open(string(name_string, "_Verndata.csv"), "w+") do io
 		CSV.write(io, df)
 	end
 
