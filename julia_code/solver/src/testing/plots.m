@@ -21,7 +21,7 @@ T = L * C / C_CGS;		%units of time
 tfinal = 30;        %full runtime in years
 
 %data = importdata('PMdata.csv');
-data = importdata('newton_Verndata.csv');
+data = importdata('newtondata.csv');
 
 t = data.data(:,1);
 qx1 = data.data(:,2);

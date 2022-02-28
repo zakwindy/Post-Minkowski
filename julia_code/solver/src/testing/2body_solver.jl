@@ -37,7 +37,7 @@ function real_main()::Cint
 	G, M, L, T, period = arr[1,1], arr[1,2], arr[1,3], arr[1,4], arr[1,5];
 	mSun = mSun_CGS / M;		#solar mass in code units
 
-	nOrbits = 1000;				#the number of orbits to run
+	nOrbits = 50;				#the number of orbits to run
 	#tfinal = tfinal_CGS / T;
 	tfinal = nOrbits*period;	#length of run time in code units
 	save_val = tfinal / data_points;
@@ -53,9 +53,9 @@ function real_main()::Cint
 
 	schwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.
 	distances = zeros(Float64, nbody, nbody)
-	for i in 1:nbody #calculate the starting distance between each body
-		for j in i+1:nbody
-			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
+	for i in 2:nbody+1 #calculate the starting distance between each body
+		for j in 2:nbody+1
+			distances[i-1,j-1] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
 		end
 	end
 	dist100 = 100 * distances #the distance at which the object will be considered to have left the system
@@ -96,7 +96,7 @@ function real_main()::Cint
 		name_string = "newton";
 	end
 
-	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = save_val, maxiters=1e10);
+	sol = DifferentialEquations.solve(prob, Feagin14(), callback=cb, reltol = 1.0e-30, abstol = 1.0e-30, saveat = save_val, maxiters=1e10);
 
 	df = DataFrame();		#Create a data frame with the data
 	df.timestep = sol.t;
@@ -113,7 +113,7 @@ function real_main()::Cint
 	df.px2 = sol[10,:]
 	df.py2 = sol[11,:]
 	df.pz2 = sol[12,:]
-	open(string(name_string, "_Verndata.csv"), "w+") do io
+	open(string(name_string, "data.csv"), "w+") do io
 		CSV.write(io, df)
 	end
 

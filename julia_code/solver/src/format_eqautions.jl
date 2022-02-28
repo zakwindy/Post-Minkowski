@@ -53,9 +53,9 @@ function write_equations()::Cint
     #This section sets up callback functions
     write(output, "\tschwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.\n")
     write(output, "\tdistances = zeros(Float64, nbody, nbody)\n")
-    write(output, "\tfor i in 1:nbody #calculate the starting distance between each body\n")
-    write(output, "\t\tfor j in i+1:nbody\n")
-    write(output, "\t\t\tdistances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)\n")
+    write(output, "\tfor i in 2:nbody+1 #calculate the starting distance between each body\n")
+    write(output, "\t\tfor j in 2:nbody+1\n")
+    write(output, "\t\t\tdistances[i-1,j-1] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)\n")
     write(output, "\t\tend\n")
     write(output, "\tend\n")
     write(output, "\tdist100 = 100 * distances #the distance at which the object will be considered to have left the system\n\n")
