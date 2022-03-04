@@ -10,7 +10,7 @@ from math import *
 from numpy import *
 import argparse
 import sys
-import pandas
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 from mpl_toolkits.mplot3d import Axes3D
@@ -22,13 +22,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument('File', help='The file that the script reads.')
 parser.add_argument('Bodies', default='PNN', help='This describes what the three bodies are. Valid options are PNN (Pulsar and two neutron stars), PNB (a black hole for the third body), PNIB (an intermediate mass black hole for the third body), PNSB (a supermassive black hole for the third body), PBB, PBIB, PBSB, PIBIB, and PIBSB.')
 parser.add_argument('Conditions', default='ICL', help='This describes initial conditions. Valid options are ICL (initially circular libration), ICR (rotation), IEL (initially eccentric libration), and IER.')
+parser.add_argument('Half', type=int, default='0', help='This is the amount of times the semimajor axes are halved')
 
 args = parser.parse_args()
 bodies = args.Bodies
 conditions = args.Conditions
+half = args.Half
 
 with open(sys.argv[1], newline='') as f:
-    data = pandas.read_csv(f)
+    data = pd.read_csv(f)
 
 #--------------------------------------------------
 #   these variables are always constant
@@ -63,50 +65,63 @@ if bodies == 'PNN':
     m1 = 1.4
     m3 = 1.4
     a_in_initial = 0.01*AU_CGS/L
-    a_out_initial = 0.2*AU_CGS/L
+    #a_out_initial = 0.2*AU_CGS/L
+    a_out_initial = 0.0164651*2*AU_CGS/L
 elif bodies == 'PNB':
     m1 = 1.4
     m3 = 30
     a_in_initial = 0.01*AU_CGS/L
-    a_out_initial = 0.5*AU_CGS/L
+    #a_out_initial = 0.5*AU_CGS/L
+    a_out_initial = 0.037464*2*AU_CGS/L
 elif bodies == 'PNIB':
     m1 = 1.4
     m3 = 1e3
     a_in_initial = 0.01*AU_CGS/L
-    a_out_initial = 2.5*AU_CGS/L
+    #a_out_initial = 2.5*AU_CGS/L
+    a_out_initial = 0.147147*2*AU_CGS/L
 elif bodies == 'PNSB':
     m1 = 1.4
     m3 = 1e6
     a_in_initial = 0.01*AU_CGS/L
-    a_out_initial = 10.0*AU_CGS/L
+    #a_out_initial = 10.0*AU_CGS/L
+    a_out_initial = 2.32951*2*AU_CGS/L
 elif bodies == 'PBB':
     m1 = 30
     m3 = 30
     a_in_initial = 0.1*AU_CGS/L
-    a_out_initial = 1.0*AU_CGS/L
+    #a_out_initial = 1.0*AU_CGS/L
+    a_out_initial = 0.183073*2*AU_CGS/L
 elif bodies == 'PBIB':
     m1 = 30
     m3 = 1e3
     a_in_initial = 0.1*AU_CGS/L
-    a_out_initial = 7.0*AU_CGS/L
+    #a_out_initial = 7.0*AU_CGS/L
+    a_out_initial = 0.565883*2*AU_CGS/L
 elif bodies == 'PBSB':
     m1 = 30
     m3 = 1e6
     a_in_initial = 0.1*AU_CGS/L
-    a_out_initial = 40.0*AU_CGS/L
+    #a_out_initial = 40.0*AU_CGS/L
+    a_out_initial = 8.85853*2*AU_CGS/L
 elif bodies == 'PIBIB':
     m1 = 1e3
     m3 = 1e3
     a_in_initial = 0.1*AU_CGS/L
-    a_out_initial = 1.2*AU_CGS/L
+    #a_out_initial = 1.2*AU_CGS/L
+    a_out_initial = 0.184679*2*AU_CGS/L
 elif bodies == 'PIBSB':
     m1 = 1e3
     m3 = 1e6
     a_in_initial = 0.1*AU_CGS/L
-    a_out_initial = 10.0*AU_CGS/L
+    #a_out_initial = 10.0*AU_CGS/L
+    a_out_initial = 2.2185*2*AU_CGS/L
 else:
     print("Invalid options for Bodies argument. Code did not run.")
     exit()
+    
+half2 = 2**half
+a_in_initial = a_in_initial / half2
+a_out_initial = a_out_initial / half2
     
 if conditions == 'ICL':
     e_in_initial = 0.01
@@ -237,12 +252,15 @@ theta_out = arccos(arg3_out)
 w_in = theta_in - f_in
 w_out = theta_out - f_out
 
+mutual_i = i_in - i_out
+mutual_i_degree = mutual_i * 180/pi
+
 #--------------------------------------------------
 #   integrate to get rid of artificial oscillations
 #--------------------------------------------------
 dt = data['timestep'][1] - data['timestep'][0]
 t_end = data['timestep'][length-1]
-steps_per_orbit = int(floor(T_out/dt))
+steps_per_orbit = int(floor(T_in/dt))
 num_orbit = int(floor(length / steps_per_orbit))
 #FIXME get this to work
 '''
@@ -256,6 +274,15 @@ for i in range(num_orbit):
     e_in[begin:end] = sum1
 '''
 
+#--------------------------------------------------
+#   output orbital elements
+#--------------------------------------------------
+
+dfa_in = pd.DataFrame({'time':data['timestep'],'a_in':a_in})
+dfa_out = pd.DataFrame({'time':data['timestep'],'a_out':a_out})
+dfe_in = pd.DataFrame({'time':data['timestep'],'e_in':e_in})
+dfe_out = pd.DataFrame({'time':data['timestep'],'e_out':e_out})
+dfi = pd.DataFrame({'time':data['timestep'],'i':mutual_i_degree})
 
 #--------------------------------------------------
 #   transform data to physical units
@@ -267,6 +294,7 @@ a_out_KM = a_out * L / KM_CGS
 #--------------------------------------------------
 #   create plots
 #--------------------------------------------------
+"""
 plt.figure()
 plt.plot(t, e_in)
 plt.xlabel('Time (years)')
@@ -302,3 +330,4 @@ ax.set_xlabel('x(KM)')
 ax.set_ylabel('y(KM)')
 ax.set_zlabel('z(KM)')
 fig.savefig('orbits' + bodies + '_' + conditions + '.png')
+"""
