@@ -1,5 +1,7 @@
 using DifferentialEquations
 using DelimitedFiles
+using DataFrames
+using CSV
 
 Base.@ccallable function julia_main()::Cint
 	try
@@ -11,10 +13,13 @@ Base.@ccallable function julia_main()::Cint
 	return 0
 end
 
+C_CGS = 3.00e10;
+G_CGS = 6.647e-8;
+mSun_CGS = 1.989e33;
+AU_CGS = 1.496e14; # 1 AU in cm
+
 function real_main()::Cint
-	G = 1.0
 	C = 1.0
-	mSun = 1.0
 	PMorNEWTON = 0
 	try
 		f = open(ARGS[1])
@@ -24,38 +29,32 @@ function real_main()::Cint
 		println("Please include a file with initial parameters as the first argument, and a 1 or a 0 for Post-Minkowskian or Newtonian equations, respectively, as the second argument.")
 		return 1
 	end
+	data_points = 9500.0;	  #the number of data points to output
+	tfinal_CGS = 30*365*24*3600;		#the final time point in seconds
 	file = ARGS[1]
 	arr = readdlm(file, ' ', Float64, '\n')
-	nbody = size(arr)[1]
-	data = arr[1,2:end]
+	G, M, L, T = arr[1,1], arr[1,2], arr[1,3], arr[1,4];
+	mSun = mSun_CGS / M;		#solar mass in code units
+	tfinal = tfinal_CGS / T;	#length of run time in code units
+	save_val = tfinal / data_points;
+	nbody = size(arr)[1] - 1
+	data = arr[2,2:end]
 	for i in 2:nbody
-		append!(data, arr[i,2:end])
+		append!(data, arr[i+1,2:end])
 	end
-	c0 = arr[1:end,1]
+	c0 = arr[2:end,1]
 	append!(c0,G)
-	tspan = (0.0, .1 * 12000.0); # The amount of time for which the simulation runs
-	h01 = [0.0]
+	tspan = (0.0, tfinal); # The amount of time for which the simulation runs
 	#TAYDEN WUZ HERE
 
 	schwarz = 2 * c0 * G / (C ^ 2)#Calculates the Schwarzchild radius of each body.
 	distances = zeros(Float64, nbody, nbody)
-	for i in 1:nbody #calculate the starting distance between each body
-		for j in i+1:nbody
-			distances[i,j] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
+	for i in 2:nbody+1 #calculate the starting distance between each body
+		for j in 2:nbody+1
+			distances[i-1,j-1] = sqrt((arr[i, 2] - arr[j, 2])^2 + (arr[i, 3] - arr[j, 3])^2 + (arr[i, 4] - arr[j, 4])^2)
 		end
 	end
 	dist100 = 100 * distances #the distance at which the object will be considered to have left the system
-
-	#This section of code sets aside an array to keep track of angular momentum values
-	larr = zeros(Float64, nbody * 3)
-	for i in 1:nbody
-		ifactor = (i - 1) * 3
-		rx, ry, rz = arr[i,2], arr[i,3], arr[i,4]
-		px, py, pz = arr[i,5], arr[i,6], arr[i,7]
-		larr[ifactor + 1] = ry*pz - rz*py
-		larr[ifactor + 2] = rz*px - rx*pz
-		larr[ifactor + 3] = rx*py - ry*px
-	end
 
 	function condition(u,t,integrator)
 		for i in 1:nbody
@@ -83,7 +82,7 @@ function real_main()::Cint
 
 	cb = DiscreteCallback(condition, affect!, save_positions=(true,true))
 
-	u0 = collect(Base.Iterators.flatten([data, larr, h01]));
+	u0 = collect(Base.Iterators.flatten([data]));
 	if PMorNEWTON == 1
 		prob = ODEProblem(PM, u0, tspan, c0);
 		name_string = "PM";
@@ -91,18 +90,35 @@ function real_main()::Cint
 		prob = ODEProblem(newton, u0, tspan, c0);
 		name_string = "newton";
 	end
-	sol = DifferentialEquations.solve(prob, Vern9(), callback=cb, reltol = 1.0e-9, abstol = 1.0e-9, saveat = 10);
+	sol = DifferentialEquations.solve(prob, Feagin14(), callback=cb, reltol = 1.0e-30, abstol = 1.0e-30, saveat=save_val, maxiters=1e7);
 
+	df = DataFrame();		#Create a data frame with the data
+	df.timestep = sol.t;
+
+	df.qx1 = sol[1,:]
+	df.qy1 = sol[2,:]
+	df.qz1 = sol[3,:]
+	df.px1 = sol[4,:]
+	df.py1 = sol[5,:]
+	df.pz1 = sol[6,:]
+	df.qx2 = sol[7,:]
+	df.qy2 = sol[8,:]
+	df.qz2 = sol[9,:]
+	df.px2 = sol[10,:]
+	df.py2 = sol[11,:]
+	df.pz2 = sol[12,:]
+	df.qx3 = sol[13,:]
+	df.qy3 = sol[14,:]
+	df.qz3 = sol[15,:]
+	df.px3 = sol[16,:]
+	df.py3 = sol[17,:]
+	df.pz3 = sol[18,:]
 	open(string(name_string, "data.csv"), "w+") do io
-		writedlm(io, sol, ',')
+		CSV.write(io, df)
 	end
 
 	return 0
 end
-
-CSI = 3.00e8;
-GSI = 6.647e-11;
-MSUN = 1.989e30;
 
 function PM(du, u, p, t)
 	qx1 = u[1]
@@ -1059,16 +1075,6 @@ function PM(du, u, p, t)
 	du[16]=0.5*G*(o22*o2225*o59*o701*o710-o22*o2227*o59*o710*o712+o10*o1684*o59*o61*o75-o10*o1686*o59*o75*o77)-0.25*G*(o1684*o1727*o61+(o263*o2768+o108*o2774)*o70+o2225*o2263*o701-o2227*o2294*o712-o1686*o1758*o77+o708*(o2789*o734+o2783*o811)+(o115*o2803+o2797*o349)*o84+o719*(o2818*o741+o2812*o892))+0.25*G*(-(o1686*o259*o298*o299*o304*o77)+o1684*o339*o343*o389*o61*o8-2.0*o115*o1344*o1866*o259*o2797*o389*o70*o8-o115*o1346*o2797*o343*o389*o70*o8+o339*o343*o70*(o115*o259*o2797*o339*o387+o259*o340*(-6.0*o11*o115*o2797+8.0*o115*o273*o2803+o2887+o2888+8.0*o273*o2797*o349-6.0*o2803*o349*o72)+2.0*(2.0*o115*o247*o2797+2.0*o115*o273*o2803+o2887+o2888+2.0*o273*o2797*o349-2.0*o2803*o349*o72)+2.0*(4.0*o115*o274*o2797+2.0*o2803*o345*o349-2.0*o115*o273*o2803*o72-2.0*o273*o2797*o349*o72)*o73)*o8-o259*o263*o2774*o298*o304*o335*o84-2.0*o1841*o259*o263*o269*o2774*o298*o8*o84+o259*o299*o304*(2.0*o14*(2.0*o108*o140*o2768-2.0*o11*o263*o273*o2768-2.0*o108*o11*o273*o2774+4.0*o263*o274*o2774)+2.0*(-2.0*o108*o11*o2768+2.0*o263*o273*o2768+2.0*o108*o273*o2774+o2836+o2837+2.0*o263*o2774*o292)+o263*o2774*o287*o299*o8+o266*(-6.0*o108*o11*o2768+8.0*o263*o273*o2768+8.0*o108*o273*o2774+o2836+o2837-6.0*o263*o2774*o72)*o8)*o84-2.0*o121*o2375*o259*o2789*o719*o811*o817*o842-o2227*o259*o712*o842*o843*o848+o259*o719*o843*(2.0*(o2862+o2863-2.0*o2783*o36*o734+2.0*o2789*o292*o811+2.0*o2789*o734*o821+2.0*o2783*o811*o821)+o121*o814*(o2862+o2863-6.0*o2783*o36*o734-6.0*o2789*o72*o811+8.0*o2789*o734*o821+8.0*o2783*o811*o821)+2.0*o37*(2.0*o209*o2783*o734-2.0*o2789*o36*o734*o821-2.0*o2783*o36*o811*o821+4.0*o2789*o811*o822)+o121*o2789*o811*o835*o843)*o848-o259*o2789*o719*o811*o842*o848*o879+o121*o708*o883*o887*(2.0*(o2913+o2914+2.0*o155*o2812*o741+2.0*o2818*o741*o821-2.0*o2818*o72*o892+2.0*o2812*o821*o892)+o259*o884*(o2913+o2914-6.0*o2812*o36*o741+8.0*o2818*o741*o821-6.0*o2818*o72*o892+8.0*o2812*o821*o892)+2.0*o73*(-2.0*o2818*o72*o741*o821+4.0*o2812*o741*o822+2.0*o2818*o345*o892-2.0*o2812*o72*o821*o892)+o259*o2812*o741*o883*o930)-2.0*o121*o1379*o2400*o259*o2812*o708*o741*o932-o121*o1381*o2812*o708*o741*o887*o932+o121*o2225*o701*o883*o887*o932)
 	du[17]=0.5*G*(o22*o2225*o59*o703*o710-o22*o2227*o59*o710*o714+o10*o1684*o59*o64*o75-o10*o1686*o59*o75*o79)-0.25*G*(o1684*o1727*o64+(o263*o2943+o108*o2949)*o70+o2225*o2263*o703-o2227*o2294*o714-o1686*o1758*o79+o708*(o2964*o734+o2958*o811)+(o115*o2978+o2972*o349)*o84+o719*(o2993*o741+o2987*o892))+0.25*G*(-(o1686*o259*o298*o299*o304*o79)+o1684*o339*o343*o389*o64*o8-2.0*o115*o1344*o1866*o259*o2972*o389*o70*o8-o115*o1346*o2972*o343*o389*o70*o8+o339*o343*o70*(o115*o259*o2972*o339*o387+o259*o340*(-6.0*o11*o115*o2972+8.0*o115*o273*o2978+o3062+o3063+8.0*o273*o2972*o349-6.0*o2978*o349*o72)+2.0*(2.0*o115*o247*o2972+2.0*o115*o273*o2978+o3062+o3063+2.0*o273*o2972*o349-2.0*o2978*o349*o72)+2.0*(4.0*o115*o274*o2972+2.0*o2978*o345*o349-2.0*o115*o273*o2978*o72-2.0*o273*o2972*o349*o72)*o73)*o8-o259*o263*o2949*o298*o304*o335*o84-2.0*o1841*o259*o263*o269*o2949*o298*o8*o84+o259*o299*o304*(2.0*o14*(2.0*o108*o140*o2943-2.0*o11*o263*o273*o2943-2.0*o108*o11*o273*o2949+4.0*o263*o274*o2949)+2.0*(-2.0*o108*o11*o2943+2.0*o263*o273*o2943+2.0*o108*o273*o2949+2.0*o263*o292*o2949+o3011+o3012)+o263*o287*o2949*o299*o8+o266*(-6.0*o108*o11*o2943+8.0*o263*o273*o2943+8.0*o108*o273*o2949+o3011+o3012-6.0*o263*o2949*o72)*o8)*o84-2.0*o121*o2375*o259*o2964*o719*o811*o817*o842-o2227*o259*o714*o842*o843*o848+o259*o719*o843*(2.0*(o3037+o3038-2.0*o2958*o36*o734+2.0*o292*o2964*o811+2.0*o2964*o734*o821+2.0*o2958*o811*o821)+o121*o814*(o3037+o3038-6.0*o2958*o36*o734-6.0*o2964*o72*o811+8.0*o2964*o734*o821+8.0*o2958*o811*o821)+2.0*o37*(2.0*o209*o2958*o734-2.0*o2964*o36*o734*o821-2.0*o2958*o36*o811*o821+4.0*o2964*o811*o822)+o121*o2964*o811*o835*o843)*o848-o259*o2964*o719*o811*o842*o848*o879+o121*o708*o883*o887*(2.0*(o3088+o3089+2.0*o155*o2987*o741+2.0*o2993*o741*o821-2.0*o2993*o72*o892+2.0*o2987*o821*o892)+o259*o884*(o3088+o3089-6.0*o2987*o36*o741+8.0*o2993*o741*o821-6.0*o2993*o72*o892+8.0*o2987*o821*o892)+2.0*o73*(-2.0*o2993*o72*o741*o821+4.0*o2987*o741*o822+2.0*o2993*o345*o892-2.0*o2987*o72*o821*o892)+o259*o2987*o741*o883*o930)-2.0*o121*o1379*o2400*o259*o2987*o708*o741*o932-o121*o1381*o2987*o708*o741*o887*o932+o121*o2225*o703*o883*o887*o932)
 	du[18]=0.5*G*(o22*o2225*o59*o705*o710-o22*o2227*o59*o710*o716+o10*o1684*o59*o67*o75-o10*o1686*o59*o75*o81)-0.25*G*(o1684*o1727*o67+(o108*o3117+o263*o3123)*o70+o2225*o2263*o705-o2227*o2294*o716-o1686*o1758*o81+o708*(o3131*o734+o3137*o811)+(o115*o3153+o3147*o349)*o84+o719*(o3168*o741+o3162*o892))+0.25*G*(o1684*o339*o343*o389*o67*o8-2.0*o115*o1344*o1866*o259*o3147*o389*o70*o8-o115*o1346*o3147*o343*o389*o70*o8+o339*o343*o70*(o115*o259*o3147*o339*o387+o259*o340*(-6.0*o11*o115*o3147+8.0*o115*o273*o3153+o3237+o3238+8.0*o273*o3147*o349-6.0*o3153*o349*o72)+2.0*(2.0*o115*o247*o3147+2.0*o115*o273*o3153+o3237+o3238+2.0*o273*o3147*o349-2.0*o3153*o349*o72)+2.0*(4.0*o115*o274*o3147+2.0*o3153*o345*o349-2.0*o115*o273*o3153*o72-2.0*o273*o3147*o349*o72)*o73)*o8-o1686*o259*o298*o299*o304*o81-o259*o263*o298*o304*o3117*o335*o84-2.0*o1841*o259*o263*o269*o298*o3117*o8*o84+o259*o299*o304*(2.0*o14*(-2.0*o108*o11*o273*o3117+4.0*o263*o274*o3117+2.0*o108*o140*o3123-2.0*o11*o263*o273*o3123)+2.0*(2.0*o108*o273*o3117+2.0*o263*o292*o3117-2.0*o108*o11*o3123+2.0*o263*o273*o3123+o3184+o3187)+o263*o287*o299*o3117*o8+o266*(8.0*o108*o273*o3117-6.0*o108*o11*o3123+8.0*o263*o273*o3123+o3184+o3187-6.0*o263*o3117*o72)*o8)*o84-2.0*o121*o2375*o259*o3131*o719*o811*o817*o842-o2227*o259*o716*o842*o843*o848+o259*o719*o843*(2.0*(o3210+o3213-2.0*o3137*o36*o734+2.0*o292*o3131*o811+2.0*o3131*o734*o821+2.0*o3137*o811*o821)+o121*o814*(o3210+o3213-6.0*o3137*o36*o734-6.0*o3131*o72*o811+8.0*o3131*o734*o821+8.0*o3137*o811*o821)+2.0*o37*(2.0*o209*o3137*o734-2.0*o3131*o36*o734*o821-2.0*o3137*o36*o811*o821+4.0*o3131*o811*o822)+o121*o3131*o811*o835*o843)*o848-o259*o3131*o719*o811*o842*o848*o879+o121*o708*o883*o887*(2.0*(o3263+o3264+2.0*o155*o3162*o741+2.0*o3168*o741*o821-2.0*o3168*o72*o892+2.0*o3162*o821*o892)+o259*o884*(o3263+o3264-6.0*o3162*o36*o741+8.0*o3168*o741*o821-6.0*o3168*o72*o892+8.0*o3162*o821*o892)+2.0*o73*(-2.0*o3168*o72*o741*o821+4.0*o3162*o741*o822+2.0*o3168*o345*o892-2.0*o3162*o72*o821*o892)+o259*o3162*o741*o883*o930)-2.0*o121*o1379*o2400*o259*o3162*o708*o741*o932-o121*o1381*o3162*o708*o741*o887*o932+o121*o2225*o705*o883*o887*o932)
-	u[28]=o10+o22+o59+0.25*G*(o1692*o33+o1723*o51+o1727*o70+o2263*o708+o2294*o719+o1758*o84)-0.5*G*(o10*o22*o33*o39+o10*o22*o39*o51+o22*o59*o708*o710+o22*o59*o710*o719+o10*o59*o70*o75+o10*o59*o75*o84)-0.25*G*(o121*o161*o162*o168*o51+o203*o207*o257*o33*o8+o339*o343*o389*o70*o8+o259*o298*o299*o304*o84+o259*o719*o842*o843*o848+o121*o708*o883*o887*o932)
-	u[19] = qy1 * pz1 - qz1 * py1
-	u[20] = qz1 * px1 - qx1 * pz1
-	u[21] = qx1 * py1 - qy1 * px1
-	u[22] = qy2 * pz2 - qz2 * py2
-	u[23] = qz2 * px2 - qx2 * pz2
-	u[24] = qx2 * py2 - qy2 * px2
-	u[25] = qy3 * pz3 - qz3 * py3
-	u[26] = qz3 * px3 - qx3 * pz3
-	u[27] = qx3 * py3 - qy3 * px3
 end
 
 function newton(du, u, p, t)
@@ -1174,16 +1180,6 @@ function newton(du, u, p, t)
 	du[16]=0.5*G*(m1*m3*o40*o49-m1*m3*o51*o58+m2*m3*o76*o83-m2*m3*o85*o92)
 	du[17]=0.5*G*(m1*m3*o43*o49-m1*m3*o53*o58+m2*m3*o78*o83-m2*m3*o87*o92)
 	du[18]=0.5*G*(m1*m3*o46*o49-m1*m3*o55*o58+m2*m3*o80*o83-m2*m3*o89*o92)
-	u[28]=0.5*(o3*(px1*px1+py1*py1+pz1*pz1)+o7*(px2*px2+py2*py2+pz2*pz2)+o11*(px3*px3+py3*py3+pz3*pz3))-0.5*G*((1.0*m1*m2)/sqrt(o24)+(1.0*m1*m2)/sqrt(o36)+(1.0*m1*m3)/sqrt(o48)+(1.0*m1*m3)/sqrt(o57)+(1.0*m2*m3)/sqrt(o82)+(1.0*m2*m3)/sqrt(o91))
-	u[19] = qy1 * pz1 - qz1 * py1
-	u[20] = qz1 * px1 - qx1 * pz1
-	u[21] = qx1 * py1 - qy1 * px1
-	u[22] = qy2 * pz2 - qz2 * py2
-	u[23] = qz2 * px2 - qx2 * pz2
-	u[24] = qx2 * py2 - qy2 * px2
-	u[25] = qy3 * pz3 - qz3 * py3
-	u[26] = qz3 * px3 - qx3 * pz3
-	u[27] = qx3 * py3 - qy3 * px3
 end
 
 julia_main()
