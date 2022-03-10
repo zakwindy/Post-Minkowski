@@ -1,4 +1,6 @@
-function lyaExponent(rb, ra, pb, pa, numbodies)
+using Plots
+
+function phasePoints(rb, ra, pb, pa, numbodies)
     # ra and pa refer to the position and momentum of body a, similar thing for b
     n = size(ra)[1] # Number of snapshots
     nb = numbodies # Number of bodies in simulation
@@ -30,5 +32,29 @@ function lyaExponent(rb, ra, pb, pa, numbodies)
     end
         
     return phaseSpaceDistances
+
+end
+
+# Start simple, see which body pert gives biggest impact
+# Pertiurbation changing phase vs changing energy
+# Start with binary
+# Investigate both delta x, bigger and smaller than paper
+
+function lyaExp(rb, ra, pb, pa, numbodies, t)
+    
+    phaseDist = phasePoints(rb, ra, pb, pa, numbodies)
+    
+    N = size(phaseDist)[1]
+    A = [t ones(N)]
+    b = phaseDist
+
+    ab = A \ b
+    lse = norm(A*ab - b)
+
+    plot(t, phaseDist, seriestype = :scatter, label = "data points")
+    plot!(t, ab[1].*t + ab[2], label = "fitted line")
+    title!("Phase points and fitted line")
+    
+    return ab[1], lse
 
 end
