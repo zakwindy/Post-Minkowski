@@ -1,9 +1,17 @@
+##################
+### PM VERSION ###
+##################
+
 using Plots
 using CSV
 using DataFrames
 
+#####################################
+# Variables to adjust for given run #
+#####################################
+
 # Location of data files
-workingDirectory = "/Users/justin_tackett/Documents/Research/Dr. Neilsen/Code/localGit/Post-Minkowski/julia_code/solver/src"
+workingDirectory = "/Users/justin_tackett/Documents/Research/Dr. Neilsen/Code/localGit/Post-Minkowski/julia_code/solver/src/Lyapunov Data"
 
 pertDataName = "data_pn_p_1.csv" # Name of data file, perturbed
 notPertDataName = "data_pn_np_1.csv" # Name of data file, not perturbed
@@ -64,25 +72,26 @@ end
 # Main function to get Lyapunov exponents #
 ###########################################
 
-function lyapunov(dataNP, dataP, f)
+function lyapunov(dataNP, dataP, f, ts)
     Rs = getRvalues(dataNP, dataP, f)
+    print(string("These are the R values ", Rs, "\n")) # FIXME
     tFinal = dataNP[end, 1]
     dyfdy0 = deltaYnorm(dataNP[end,:],dataP[end,:])/deltaYnorm(dataNP[begin,:],dataP[begin,:])
-    tSize = size(dataNP)[1]
+    tSize = size(ts)[1]
 
     lambdaMax = (1/tFinal)*(log(dyfdy0)+ log(piProduct(Rs)))
     print(string("The lyapunov exponent is ",lambdaMax, "\n"))
 
-    #plotValues = [];
-    #tValues = dataNP[:, 1]
+    plotValues = [];
+    tValues = ts
 
-    #for i in 1:tSize
-    #    dydy0 = deltaYnorm(dataNP[i,:],dataP[i,:])/deltaYnorm(dataNP[begin,:],dataP[begin,:])
-    #    plotValue = log(dydy0)
-    #    push!(plotValues, plotValue)
-    #end
+    for i in 1:tSize
+        dydy0 = deltaYnorm(dataNP[i,:],dataP[i,:])/deltaYnorm(dataNP[begin,:],dataP[begin,:])
+        plotValue = log(dydy0)
+        push!(plotValues, plotValue)
+    end
 
-    #plot(tValues, plotValues)
+    plot(tValues, plotValues)
 end
 
 ##############################################
@@ -94,10 +103,15 @@ cd(workingDirectory)
 dataNP_1 = readData(notPertDataName) # Getting data from files
 dataP_1 = readData(pertDataName)
 
-dataNP_temp = Matrix(dataNP_1)
-dataP_temp = Matrix(dataP_1)
+# Checking to make sure time steps and starting and end points for both datasets are the same
+if dataNP_1[:,1] != dataP_1[:,1]
+    print("Times for perturbed and unperturbed data sets are not equal; check data runs")
+    return 1
+else
+    times = dataNP_1[:,1]
+end
 
-dataNP_2 = dataNP_temp[:,1:end .!=1]
-dataP_2 = dataP_temp[:,1:end .!=1]
+dataNP_2 = dataNP_1[:,1:end .!=1] # Data sets without the timesteps
+dataP_2 = dataP_1[:,1:end .!=1]
 
-lyapunov(dataNP_2, dataP_2, f);
+lyapunov(dataNP_2, dataP_2, f, times)
